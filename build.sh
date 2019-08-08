@@ -26,11 +26,6 @@ fi
 
 IMAGE=kappnav-ui
 
-# TODO: find a better way to make the build work without faking out the git repo
-cp -r ../.git .
-
 echo "Building ${IMAGE}"
 
 docker build -t ${IMAGE} . 
-
-rm -rf .git

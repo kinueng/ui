@@ -1,0 +1,226 @@
+/*****************************************************************
+ *
+ * Copyright 2019 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ *****************************************************************/
+
+@import 'node_modules/carbon-components/scss/globals/scss/_colors';
+@import 'node_modules/carbon-components/scss/globals/scss/_vars';
+
+.modal {
+
+  .bx--modal-container {
+    padding: 0;
+    margin: 0;
+    width: 50vw;
+  }
+
+  &.nav-modal .bx--modal-header {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &.modal-structured-list .bx--modal-content {
+    display: flex;
+    height: 40vh;
+    position: relative;
+  }
+
+  .bx--modal-header {
+    padding: 1.25rem 3rem 1.25rem 3rem;
+    border-bottom: 1px solid $color__gray-1;
+    margin-bottom: 0;
+
+    .toggle {
+      margin-right: 15px;
+      p {
+        font-size: .75rem;
+        font-weight: 600;
+        letter-spacing: .5px;
+      }
+    }
+  }
+
+  .bx--modal-content {
+    margin-bottom: 0;
+    .modal-form {
+      display: flex;
+      height: 40vh;
+      position: relative;
+    }
+  }
+
+  .bx--modal-footer {
+    border-top: 1px solid $color__gray-1;
+    margin: 0;
+  }
+
+  .modal-navigation-bar {
+    background: $color__gray-3;
+    padding-top: 1.625rem;
+    padding-bottom: 1.625rem;
+    border-right: 1px solid $color__gray-1;
+    position: fixed;
+    height: inherit;
+    width: 15%;
+    z-index: 2;
+    overflow-y: scroll;
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: .875rem;
+      > a {
+        color: $color__blue-90;
+        text-decoration: none;
+        padding: 0.875rem 1.25rem;
+        display: block;
+      }
+      > svg {
+        fill: $support-01;
+        margin-right: 18px;
+      }
+      &:hover,
+      &.active {
+        background: $color__blue-51;
+        > a { color: $color__white; }
+      }
+    }
+  }
+
+  .modal-navigation-bar + .modal-inner-content {
+    width: 70%;
+    margin-left: 30%;
+  }
+
+  .modal-inner-content {
+    width: 100%;
+    padding: 1.25rem 3.5625rem;
+    position: absolute;
+    .port-wrapper input[type=number] {
+      appearance: textfield;
+      &::-webkit-inner-spin-button,
+      &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+    }
+    .number-input-wrapper {
+      .bx--form-item > label {
+        display: none;
+      }
+    }
+
+    .bx--number {
+      position: relative;
+      align-items: center;
+
+      .bx--number__controls {
+        position: absolute;
+        right: .75rem;
+        left: unset;
+        button {
+          margin-bottom: unset;
+        }
+      }
+    }
+    button {
+      margin-left: 0;
+      margin-bottom: 1.5rem;
+    }
+
+    .field-row {
+      display: flex;
+
+      > .bx--form-item:not(:last-of-type) {
+        // Last element is untouched, the rest of the elements
+        // get this styling
+        margin-right: $spacing-07;  // Carbon v9's gutter sizing recommendation
+      }
+
+      .bx--text-input-override {
+        // This is Carbon v8's default
+        min-width: 10rem;
+      }
+    }
+  }
+
+  .bx--checkbox-label {
+    .bx--tooltip__trigger {
+      font-weight: normal;
+      font-size: .875rem;
+    }
+  }
+
+  .bx--form-item {
+    width: 100%;
+    margin-bottom: 1.5rem;
+  }
+
+  .bx--form-item-override {
+    margin-bottom: 0;
+  }
+}
+
+.form-modal {
+  .modal-inner-content {
+    .bx--form-item-override {
+      width: 100%;
+    }
+  }
+}
+
+.app-resources {
+  display: flex
+}
+
+.configure-client {
+  p {
+    font-size: .875rem;
+    color: $color__blue-90;
+  }
+  .description {
+    padding-bottom: .5rem;
+  }
+  .bold {
+    font-weight: bold;
+    margin-top: 1rem
+  }
+  .bx--modal-content {
+    overflow: visible;
+  }
+  .command-container {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: row;
+    background-color: $color__navy-gray-3;
+    .command {
+      white-space: pre;
+      padding: 1rem;
+      color: $color__white;
+      font-size: .875rem;
+      line-height: 1.2rem;
+      overflow-y: hidden;
+    }
+    .copy-button {
+      position: relative;
+      margin: .5rem .5rem 0 2rem;
+      svg {
+        fill: $color__blue-30;
+      }
+    }
+  }
+}

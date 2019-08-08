@@ -1,0 +1,136 @@
+/*****************************************************************
+ *
+ * Copyright 2019 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ *****************************************************************/
+ 
+@import 'node_modules/carbon-components/scss/globals/scss/_colors';
+@import 'scss/variables';
+
+$secondary-header-min-height: 4.125rem;
+$secondary-header-max-height: 6.5rem;
+
+.secondary-header {
+
+  header {
+    .bx--breadcrumb {
+      min-height: 15px;
+    }
+
+    .breadcrumb-item:last-child {
+      &:after {
+        display: none;
+      }
+    }
+    .bx--detail-page-header-icon-container {
+      display: none;
+    }
+    .bx--detail-page-header-title-container:last-child {
+      margin-bottom: 1rem;
+    }
+	
+	.bx--link {
+	  text-decoration: none;
+	  border-bottom: 1px solid transparent;
+	  font-weight: 400;
+	}
+	.bx--detail-page-header-menu {
+      right: 5%;
+    }
+  }
+
+  &.simple-header {
+    position: relative;
+    width: 100%;
+    background-color: #fff;
+    height: 3.5rem; 
+	padding: .75rem 5% 0;
+    &.inner-nav-collapsed-simple {
+      padding-left: 4%;
+    }
+    .bx--detail-page-header-title {
+      display: inline;
+    }
+  }
+  
+  .bx--detail-page-header-title {
+      margin-top: 0.25rem;
+   }
+
+  .bx--detail-page-header--with-tabs {
+    height: 5.5rem;
+    max-height: 5.5rem;
+    top: 3.25rem;
+    left: 0;
+  }
+  
+  .bx--detail-page-header--scroll.bx--detail-page-header--with-tabs {
+    padding: 0 2rem 5%;
+  }
+
+  &.detailed-header-override {
+    .bx--detail-page-header--with-tabs[data-header-active="false"] {
+      height: 90px;
+    }
+  }
+
+  &-actions {
+    position: fixed;
+    float: right;
+    top: 70px;
+    right: 9%;
+    z-index: 6001;
+
+    .bx--btn {
+      width: 108px;
+    }
+  }
+}
+
+.bx--detail-page-header--scroll ~ .secondary-header-actions {
+  top: 60px;
+}
+
+.secondary-header-wrapper {
+  position: relative;
+  width: 100%;
+  height: $secondary-header-max-height;
+  z-index: 1000;
+  background-color: #fff;
+  padding-top: 3.25rem;
+}
+
+.secondary-header-wrapper-min {
+  @extend .secondary-header-wrapper;
+  height: $secondary-header-min-height;
+}
+
+.with-inner-left-nav-header {
+  left: 10rem;
+  transition: left 300ms $animation__standard;
+}
+.inner-nav-collapsed-header{
+  left: 3rem;
+  transition: left 300ms $animation__standard;
+}
+//only for the nav with tabs. We can't pass classnames to the DetailPageHeader
+.with-inner-left-nav-simple > header{
+  left: 10rem;
+  transition: left 300ms $animation__standard;
+}
+.inner-nav-collapsed-simple > header{
+  left: 3rem;
+  transition: left 300ms $animation__standard;
+}

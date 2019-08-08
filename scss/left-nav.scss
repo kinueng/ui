@@ -1,0 +1,131 @@
+/*****************************************************************
+ *
+ * Copyright 2019 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ *****************************************************************/
+@import 'node_modules/carbon-components/scss/globals/scss/_colors';
+@import 'node_modules/carbon-components/scss/globals/scss/_layer';
+@import 'scss/variables';
+
+.left-nav {
+  position: fixed;
+  top: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+  width: 17.8125rem;
+  background-color: #EBF0F7;
+  z-index: 6001;
+  box-shadow: $box-shadow--temporary-nav;
+  padding: 70px 0 20px 0;
+  color: #1d364d;
+
+  a {
+    text-decoration: none;
+    color: inherit;
+    display: inline-block;
+    width: 100%;
+  }
+
+  &.transition-enter {
+    left: -17.8125rem;
+
+    &.transition-enter-active {
+      transform: translateX(100%);
+      transition: transform 300ms $animation__ease-in;
+    }
+  }
+
+  &.transition-exit.transition-exit-active {
+    transform: translateX(-100%);
+    transition: transform 300ms $animation__ease-out;
+  }
+
+  .primary-nav-item.open {
+    .icon-caret {
+      transform: rotate(90deg);
+    }
+  }
+
+  .primary-nav-item.open + .left-nav-subitem-list {
+    display: block;
+    height: inherit;
+    transition: height 300ms $animation__ease-in;
+  }
+
+  .icon-caret {
+    width: 6px;
+    height: 9px;
+    margin-left: -16px;
+    margin-right: 10px;
+    transition: transform 250ms $animation__standard;
+  }
+
+  .primary-nav-item:hover::before {
+    display: none;
+  }
+
+  .left-nav-subitem-list {
+    display: none;
+    height: 0;
+    transition: height 300ms $animation__ease-in;
+
+    .secondary-nav-item {
+      font-weight: 300;
+      padding-left: 86px;
+      white-space: nowrap;
+    }
+  }
+
+  .primary-nav-item {
+    font-weight: 700;
+    &:last-child {
+      margin-bottom: 89px;
+    }
+  }
+
+  .left-nav-item {
+    font-size: 1rem;
+    height: 50px;
+    vertical-align: middle;
+    line-height: 50px;
+    padding-left: 56px;
+    padding-right: 40px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &:hover,
+    &.selected {
+      background-color: rgba($color__white, .75);
+
+      &:before {
+        content: ' ';
+        width: 3px;
+        height: 50px;
+        position: absolute;
+        left: 0;
+        background: $color__blue-51;
+        color: $color__blue-51;
+      }
+
+      &:hover,
+      &.selected {
+        color: $color__blue-51;
+      }
+    }
+  }
+}

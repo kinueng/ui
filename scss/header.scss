@@ -1,0 +1,150 @@
+/*****************************************************************
+ *
+ * Copyright 2019 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ *****************************************************************/
+
+@import 'node_modules/carbon-components/scss/globals/scss/_colors';
+
+// Hamburger button - start
+// https://www.npmjs.com/package/hamburgers
+
+$hamburger-types: (slider);
+$hamburger-layer-color: #5596e6;
+$hamburger-layer-width: 20px;
+$hamburger-layer-height: 2px;
+$hamburger-layer-spacing: 4px;
+$hamburger-hover-opacity: 1;
+@import "node_modules/hamburgers/_sass/hamburgers/hamburgers";
+
+// Hamburger button - end
+
+.app-header-wrapper {
+  height: 3.082rem;
+}
+
+.app-header {
+  color: $color__white;
+  position: fixed;
+  z-index: 6002;
+  width: 100%;
+
+  a {
+    text-decoration: none;
+    color: $color__white;
+
+    &:hover {
+      color: $color__blue-30;
+      svg {
+        fill: $color__blue-30;
+      }
+    }
+
+    &.link-disabled {
+      cursor: not-allowed;
+      &:hover { color: inherit; }
+    }
+  }
+
+  svg { fill: $color__white; }
+
+  &__container {
+    color: $color__white;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    &.primary {
+      background: $color__navy-gray-1;
+      padding: 0 1rem;
+    }
+
+    &.secondary {
+      background: $color__blue-90;
+      padding: 0 1rem 0 0;
+    }
+  }
+
+  .app-menu-btn-container {
+    width: 60px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover,
+    &:focus,
+    &.is-open {
+      background-color: #3f8ee3;
+      .hamburger-inner {
+        &,
+        &::before,
+        &::after {
+          background-color: $color__white;
+        }
+      }
+    }
+
+    .tooltip {
+      padding: 1em;
+      border: 1px solid $color__gray-1;
+      box-shadow: 0 3px 3px 0 rgba($color__white,0.1);
+      background: $color__white;
+      position: absolute;
+      left: 10px;
+      top: 50px;
+      visibility: hidden;
+      color: $color__blue-90;
+      z-index: 6002;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      pointer-events: none;
+
+      &:before {
+        content: '';
+        position: absolute;
+        top: -6.5px;
+        left: 50%;
+        margin-left: -6.5px;
+        width: 0;
+        height: 0;
+        border-bottom: 6.5px solid $color__white;
+        border-right: 6.5px solid transparent;
+        border-left: 6.5px solid transparent;
+      }
+    }
+
+    &:hover > .tooltip {
+      visibility: visible;
+      transition-delay: 500ms;
+      transition-property: visibility
+    }
+  }
+
+  .logo-container {
+    margin-right: auto;
+    display: flex;
+    align-items: center;
+
+    .logo {
+      margin-left: 12px;
+
+      &-multi-cloud {
+        margin-top: 2px;
+      }
+    }
+
+  }
+}

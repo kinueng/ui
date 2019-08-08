@@ -1,0 +1,5 @@
+"labels": {
+  {{#each labels}}
+    {{#if name}}"{{name}}": "{{value}}"{{/if}}{{^if @last}},{{/if}}
+  {{/each}}
+}

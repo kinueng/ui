@@ -1,0 +1,16 @@
+{
+  "kind": "{{kind}}",
+  "apiVersion": "{{apiVersion}}",
+  "metadata": {
+    "name": "{{name}}",
+    "namespace": "{{namespace}}",
+    {{> labels }}
+  },
+  "spec": {
+    "host": "{{host}}",
+    "console_url": "{{consoleurl}}",
+    "soap_port": {{soapport}},
+    "credentials": "{{get_credentials selectCredentials secretName selectedSecret}}",
+    "interval": 30
+  }
+}

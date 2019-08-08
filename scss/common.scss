@@ -1,0 +1,195 @@
+/*****************************************************************
+ *
+ * Copyright 2019 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ *****************************************************************/
+ 
+@import 'node_modules/carbon-components/scss/globals/scss/styles';
+@import 'node_modules/carbon-components/scss/globals/scss/_colors';
+@import 'node_modules/carbon-components/scss/globals/scss/_helper-mixins';
+@import 'node_modules/carbon-addons-cloud/scss/styles.scss';
+
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.page-content-container {
+  padding: 54px 5% 54px;
+}
+
+.content-spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.bx--loading-overlay {
+  z-index: 10000; // need higher z-index with modals open
+}
+
+.no-resource {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 418px;
+  height: 411px;
+  background-color: rgba($color__white,  .65);
+  margin: auto;
+  color: $color__blue-90;
+  padding: 20px 40px;
+  border-top: 4px solid $color__blue-51;
+  box-shadow: 0 1px 2px lighten(#000, 90%);
+
+  .no-resource-icon {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    display: block;
+    margin: 0 auto 30px;
+  }
+
+  .no-resource-title {
+    font-weight: 300;
+    margin-bottom: 9px;
+    font-size: 1.8125rem;
+    text-align: center;
+    color: $color__navy-gray-6;
+  }
+
+  .no-resource-detail {
+    font-weight: 300;
+    font-size: 1rem;
+    margin-bottom: 21px;
+    text-align: center;
+    line-height: 1.2;
+    color: $color__navy-gray-6;
+
+    > a {
+      font-weight: 700;
+      margin-right: 5px;
+      font-size: .875rem;
+    }
+  }
+}
+
+.bx--inline-notification.persistent {
+  .bx--inline-notification__close-button {
+    display: none;
+  }
+}
+
+.bx--form-item {
+
+  .bx--tooltip__trigger {
+    
+    svg {
+      visibility: hidden;
+      vertical-align: middle;
+      pointer-events: visible;
+    }
+  }
+
+  &:hover,
+  &:focus-within {
+    svg {
+      visibility: visible;
+    }
+  }
+}
+
+.bx--footer.bx--footer-auto-width > div button {
+  width: auto;
+}
+
+.toast {
+  position: fixed;
+  top: 8.5%;
+  right: -100%;
+  z-index: 6000;
+  transition: right 1s ease-in;
+
+  &.bx--toast-notification {
+    margin: 0;
+  }
+
+  &.toast-open {
+    right: 0;
+    transition: right 1s ease-out;
+  }
+}
+
+.bx--radio-button-group.bx--radio-button-group-stacked {
+  align-items: flex-start;
+}
+
+.bx--radio-button-group-stacked {
+  display: flex;
+  flex-direction: column;
+  margin: .25rem;
+  .radioButtonWrapper {
+    margin-bottom: 1rem;
+  }
+}
+
+.bx--module__inner {
+  .collapsed {
+	display: none !important;
+  }
+}
+
+  .bx--accordion__heading {
+	padding: 0;
+	font-weight: 600;
+  }
+  
+.collapsedModule {
+	height: 4em !important;
+	
+	.bx--module__inner {
+	  min-height: 50px !important;
+	  box-shadow: none !important;
+	}
+  }
+
+.stackedDetails{
+  max-width: 35%;
+}
+	
+@media only screen and (max-width: 90rem) {
+	.stackedDetails{
+	  max-width: 100%;
+	}
+}
+
+.bx--tag--beta {
+  .expression{
+    padding: 0px .2rem;
+    display: inline-block;
+	font-weight: 600;
+  }
+}
+
+.form-items-indent{
+  margin-left: 2rem;
+}

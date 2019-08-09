@@ -1,4 +1,4 @@
-## kAppNav Application Viewer Prototype
+## kAppNav Application Viewer
 
 ### Table of Contents
 * [Description](#summary)

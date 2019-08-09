@@ -33,18 +33,6 @@ if(paths.length==1 || (paths.length==2 && paths[1] == 'applications') ) { //Appl
       <div>
         <Route exact render={(props) => <ViewContainer {...props} view='AppView' viewTitle={msgs.get('page.applicationView.title')}
             location={location}
-    /*        tabs={[
-            {
-              id: CONTEXT_PATH+'applications',
-              label: 'tabs.applications',
-              url: '/applications'
-            },
-            {
-              id: 'wasndcells',
-              label: 'tabs.wasndcells',
-              url: CONTEXT_PATH+'/wasndcells'
-            }
-          ]}*/
         />} />
       </div>
     </Router>,

@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/kappnav/ui.svg?branch=master)](https://travis-ci.com/kappnav/ui)
+
 ## kAppNav Application Viewer
 
 ### Table of Contents

@@ -178,7 +178,7 @@ app.use('/kappnav-ui/openshift/appLauncher.js', function(req, res, next) {
           `
           (function() {
             window.OPENSHIFT_CONSTANTS.APP_LAUNCHER_NAVIGATION = [{
-              title: "KAppNav",                            // The text label
+              title: "kAppNav",                            // The text label
               iconClass: "icon-appnav",                    // The icon you want to appearl
               href: "${url}",        // Where to go when this item is clicked
               tooltip: "Kubernetes Application Navigator"             // Optional tooltip to display on hover

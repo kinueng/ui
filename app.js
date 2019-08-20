@@ -29,7 +29,8 @@ const appName = require('./package').name,
 var log4js = require('log4js'),
     consolidate = require('consolidate'),
     cookieParser = require('cookie-parser'),
-    proxy = require('http-proxy-middleware')
+    proxy = require('http-proxy-middleware'),
+    https = require('https');
 
 const logger = log4js.getLogger('server')
 var log4js_config = process.env.LOG4JS_CONFIG ? JSON.parse(process.env.LOG4JS_CONFIG) : undefined
@@ -148,7 +149,7 @@ app.use('/kappnav-ui/openshift/featuredApp.js', function(req, res, next) {
           `
             (function() {
               window.OPENSHIFT_CONSTANTS.SAAS_OFFERINGS = [{
-                  title: "KAppNav",                         // The text label
+                  title: "kAppNav",                           // The text label
                   icon: "icon-kappnav-feature",               // The icon you want to appear
                   url: "${url}",      //  Where to go when this item is clicked
                   description: "Kubernetes Application Navigator"      // Short description
@@ -177,7 +178,7 @@ app.use('/kappnav-ui/openshift/appLauncher.js', function(req, res, next) {
           `
           (function() {
             window.OPENSHIFT_CONSTANTS.APP_LAUNCHER_NAVIGATION = [{
-              title: "KAppNav",                            // The text label
+              title: "kAppNav",                            // The text label
               iconClass: "icon-appnav",                    // The icon you want to appearl
               href: "${url}",        // Where to go when this item is clicked
               tooltip: "Kubernetes Application Navigator"             // Optional tooltip to display on hover
@@ -197,9 +198,6 @@ app.set('view engine', 'dust');
 app.set('views', __dirname + '/views');
 
 app.locals.manifest = require('./public/webpack-assets.json')
-
-var http = require('http')
-var server = http.createServer(app)
 
 app.get('*', function(req, res){
   var user = req.user ? req.user : "minikubeUser"
@@ -222,6 +220,13 @@ app.get('*', function(req, res){
 
 const port = process.env.PORT || config.httpPort;
 
+var options = {
+	key: fs.readFileSync('/etc/tls/private/tls.key'),
+	cert: fs.readFileSync('/etc/tls/private/tls.crt')
+};
+
+var server = https.createServer(options,app);
+
 server.listen(port, function(){
-  logger.info(`application navigator listening on  ${process.env.NODE_ENV === 'development' ? 'https' : 'http'}://localhost:${port}${CONTEXT_PATH}`);
+  logger.info(`application navigator listening on https://localhost:${port}${CONTEXT_PATH}`);
 });

@@ -42,7 +42,7 @@ require('./server/routers/index')(app);
 const TARGET = process.env.TARGET || "http://localhost:9080",
       CONTEXT_PATH = config.contextPath,
       STATIC_PATH = path.join(__dirname, 'public'),
-      KUBE_ENV = process.env.KUBE_ENV || "icp",
+      KUBE_ENV = process.env.KUBE_ENV || "okd",
       APPNAV_CONFIGMAP_NAMESPACE = process.env.KAPPNAV_CONFIG_NAMESPACE || 'kappnav'
 
 app.use(cookieParser())
@@ -220,12 +220,18 @@ app.get('*', function(req, res){
 
 const port = process.env.PORT || config.httpPort;
 
-var options = {
-	key: fs.readFileSync('/etc/tls/private/tls.key'),
-	cert: fs.readFileSync('/etc/tls/private/tls.crt')
-};
-
-var server = https.createServer(options,app);
+var server; 
+if(KUBE_ENV === 'minikube') {
+  var http = require('http');
+  server= http.createServer(app);
+}
+else { 
+  var options = {
+	  key: fs.readFileSync('/etc/tls/private/tls.key'),
+	  cert: fs.readFileSync('/etc/tls/private/tls.crt')
+  };
+  server = https.createServer(options,app); 
+} 
 
 server.listen(port, function(){
   logger.info(`application navigator listening on https://localhost:${port}${CONTEXT_PATH}`);

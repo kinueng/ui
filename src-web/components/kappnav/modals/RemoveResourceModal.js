@@ -23,7 +23,7 @@ import { Modal, Loading } from 'carbon-components-react'
 import msgs from '../../../../nls/kappnav.properties'
 import { withRouter } from 'react-router-dom'
 import { REQUEST_STATUS, RESOURCE_TYPES } from '../../../actions/constants'
-import { translateKind } from '../../../actions/common'
+import { translateKind, getToken } from '../../../actions/common'
 
 class RemoveResourceModal extends React.PureComponent {
 
@@ -43,7 +43,10 @@ class RemoveResourceModal extends React.PureComponent {
     }.bind(this);
 
     fetch(this.props.submitUrl, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: {
+        "CSRF-Token": getToken()
+      }
     })
       .then(response => deleteCallback(response))
   }

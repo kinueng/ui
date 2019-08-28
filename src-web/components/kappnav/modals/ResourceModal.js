@@ -24,7 +24,7 @@ import { Modal, Loading, InlineNotification } from 'carbon-components-react'
 import msgs from '../../../../nls/kappnav.properties'
 import { REQUEST_STATUS, RESOURCE_TYPES } from '../../../actions/constants'
 import jsYaml from 'js-yaml'
-import { translateKind } from '../../../actions/common'
+import { translateKind, getToken } from '../../../actions/common'
 
 require('../../../../scss/modal.scss')
 
@@ -94,7 +94,8 @@ class ResourceModal extends React.PureComponent {
             method: 'PUT',
             cache: 'no-cache',
             headers: {
-              'Content-Type': 'application/json; charset=utf-8'
+              'Content-Type': 'application/json; charset=utf-8',
+              "CSRF-Token": getToken()
             },
             body: JSON.stringify(resource),
           })

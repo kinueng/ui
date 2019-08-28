@@ -22,6 +22,7 @@ import React from 'react'
 import { Form, Modal, InlineNotification, TextInput, Select, SelectItem } from 'carbon-components-react'
 import msgs from '../../../../nls/kappnav.properties'
 import { FieldWrapper } from '../common/FormField'
+import { getToken } from '../../../actions/common'
 import lodash from 'lodash'
 
 const withForm = (Component, initialForm) => {
@@ -106,7 +107,8 @@ const withForm = (Component, initialForm) => {
           method: 'POST',
           headers: {
             "Content-Type": "application/json",
-            "x-user": document.documentElement.getAttribute("user")
+            "x-user": document.documentElement.getAttribute("user"),
+            "CSRF-Token": getToken()
           },
           body: JSON.stringify(data)
         })

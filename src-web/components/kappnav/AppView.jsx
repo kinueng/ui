@@ -21,7 +21,7 @@ import React, {Component} from 'react'
 import {Loading, DataTable} from 'carbon-components-react'
 import ReactDOM from 'react-dom'
 import {CONTEXT_PATH, PAGE_SIZES, SORT_DIRECTION_ASCENDING, SORT_DIRECTION_DESCENDING, RESOURCE_TYPES} from '../../actions/constants'
-import {getRowSlice, sort, sortColumn, getOverflowMenu, getStatus, buildStatusHtml} from '../../actions/common'
+import {getRowSlice, sort, sortColumn, getOverflowMenu, getStatus, buildStatusHtml, getToken} from '../../actions/common'
 import msgs from '../../../nls/kappnav.properties'
 import ResourceTable from './common/ResourceTable.js'
 import getResourceData from '../../definitions/index'
@@ -213,7 +213,8 @@ class AppView extends React.Component {
       method: "POST",
       cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
       headers: {
-        "Content-Type": "application/json; charset=utf-8"
+        "Content-Type": "application/json; charset=utf-8",
+        "CSRF-Token": getToken()
       },
       body: JSON.stringify(data)
     }).then(response => {

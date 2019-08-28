@@ -14,7 +14,7 @@
  * limitations under the License.
 !}
 
-{>"page" myLocale="{myLocale}" id="kappnav-ui" kube="{kube}" appnavConfigmapNamespace="{appnavConfigmapNamespace}" /}
+{>"page" myLocale="{myLocale}" id="kappnav-ui" kube="{kube}" csrfToken="{csrfToken}" appnavConfigmapNamespace="{appnavConfigmapNamespace}" /}
 <script src="{contextPath}{@properties href="nls/kappnav.properties" locale=myLocale/}"></script>
 <script src="{contextPath}/{manifest.vendorappnav.js}"></script>
 <script src="{contextPath}/{manifest.main.js}"></script>

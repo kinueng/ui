@@ -32,6 +32,16 @@ import { CONFIG_CONSTANTS, STATUS_COLORS } from './constants'
  */
 import { SORT_DIRECTION_ASCENDING, SORT_DIRECTION_DESCENDING } from '../actions/constants'
 
+export const getToken = () => {
+  var token = null
+  try{
+    token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+  } catch (e){
+    //catch all. do nothing, token will be null
+  }
+  return token
+}
+
 export const translateKind = (kind) => {
   if(! kind) {
     // For whatever reason, during the ReactJS component lifecycle,

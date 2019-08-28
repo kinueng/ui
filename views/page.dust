@@ -16,6 +16,7 @@
 
 <!DOCTYPE html>
 <html lang="{myLocale}" kube="{kube}" user="{user}" appnavConfigmapNamespace="{appnavConfigmapNamespace}" >
+    <meta name="csrf-token" content="{csrfToken}">
     <head>
         <meta charset="UTF-8">
 		<link rel='stylesheet' href="{contextPath}/{manifest.common.css}">

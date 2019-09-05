@@ -83,7 +83,7 @@ class ResourceTable extends React.Component {
 						  <DataTable.TableRow>
 						    {(() => {
 							  return headers.map(header => {
-									if(header.key === 'action') {
+									if(header.key === 'menuAction') {
 									  return (
 									    <DataTable.TableHeader key={header.key}>
 										    <span className='bx--table-header-label'>{header.header}</span>

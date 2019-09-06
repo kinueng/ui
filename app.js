@@ -2,12 +2,12 @@
  *
  * Copyright 2019 IBM Corporation
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,34 +16,33 @@
  *
  *****************************************************************/
 
-const appName = require('./package').name,
-      express = require('express'),
+const express = require('express'),
       config = require('./config/config-defaults.json'),
       path = require('path'),
       fs = require('fs'),
       moment = require('moment'),
       i18n = require('node-i18n-util'),
       app = express(),
-      request = require('request');
+      request = require('request')
 
 var log4js = require('log4js'),
     consolidate = require('consolidate'),
     cookieParser = require('cookie-parser'),
     csurf = require('csurf'),
     proxy = require('http-proxy-middleware'),
-    https = require('https');
+    https = require('https')
 
 const logger = log4js.getLogger('server')
 var log4js_config = process.env.LOG4JS_CONFIG ? JSON.parse(process.env.LOG4JS_CONFIG) : undefined
 log4js.configure(log4js_config || 'config/log4js.json')
 
-require('./lib/shared/dust-helpers');
-require('./server/routers/index')(app);
+require('./lib/shared/dust-helpers')
+require('./server/routers/index')(app)
 
-const TARGET = process.env.TARGET || "http://localhost:9080",
+const TARGET = process.env.TARGET || 'http://localhost:9080',
       CONTEXT_PATH = config.contextPath,
       STATIC_PATH = path.join(__dirname, 'public'),
-      KUBE_ENV = process.env.KUBE_ENV || "okd",
+      KUBE_ENV = process.env.KUBE_ENV || 'okd',
       APPNAV_CONFIGMAP_NAMESPACE = process.env.KAPPNAV_CONFIG_NAMESPACE || 'kappnav'
 
 const csrfMiddleware = csurf({ cookie: true })
@@ -59,7 +58,7 @@ var exclude = function(path) {
 app.use(exclude('/health'), cookieParser(), csrfMiddleware)
 
 // error handler
-app.use(function (err, req, res, next) {
+app.use((err, req, res, next) => {
   if (err.code !== 'EBADCSRFTOKEN') return next(err)
 
   // handle CSRF token errors here
@@ -67,24 +66,24 @@ app.use(function (err, req, res, next) {
   res.send('form tampered with')
 })
 
-app.all('*', function(req, res, next) {
+app.all('*', (req, res, next) => {
   if(KUBE_ENV === 'icp') {
     var host = 'https://'+req.headers['host']
     var access_token = (req.cookies && req.cookies['cfc-access-token-cookie']) || ''
 
-    var url = host + '/idprovider/v1/auth/exchangetoken';
+    var url = host + '/idprovider/v1/auth/exchangetoken'
     var headers = {
       'Content-Type' : 'application/x-www-form-urlencoded'
-    };
-    var form = { access_token: access_token};
+    }
+    var form = { access_token: access_token}
 
-    request.post({ url: url, 
-                   form: form, 
-		   headers: headers, 
-		   method: 'POST', 
-		   rejectUnauthorized: false			 
-		 }, function (error, response, body) {
-	
+    request.post({ url: url,
+      form: form,
+      headers: headers,
+      method: 'POST',
+      rejectUnauthorized: false
+    }, (error, response, body) => {
+
       if(!error && response.statusCode == 200) {
         req.user = JSON.parse(body).sub
         if(!JSON.parse(body).id_token) {
@@ -92,10 +91,9 @@ app.all('*', function(req, res, next) {
         }
         next()
       } else {
-	//Not a valid token
+        //Not a valid token
         return res.redirect(host + '/oidc/logout.jsp?error=noteam')
       }
-	
     })
   } else {
     //not ICP, skip getting jwt
@@ -112,7 +110,7 @@ app.use(CONTEXT_PATH, express.static(STATIC_PATH, {
       res.setHeader('Expires', moment().add(12, 'months').toDate())
     }
     res.setHeader('Strict-Transport-Security', 'max-age=99999999')
-    res.setHeader('Content-Security-Policy', "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; frame-ancestors 'self'")
+    res.setHeader('Content-Security-Policy', 'default-src "self" img-src "self" data: style-src "self" script-src "self" frame-ancestors "self"')
   }
 }))
 
@@ -122,29 +120,29 @@ app.use('/kappnav', proxy({
   secure: false
 }))
 
-app.use('/kappnav-ui/openshift/appNavIcon.css', function(req, res, next) {
+app.use('/kappnav-ui/openshift/appNavIcon.css', (req, res) => {
   request({
     url: TARGET + '/kappnav/configmap/kappnav-config?namespace=' + APPNAV_CONFIGMAP_NAMESPACE,
     method: 'GET',
     rejectUnauthorized: false
-  }, function (error, response, body) {
+  }, (error, response, body) => {
     if (!error && response.statusCode === 200) {
       var json = JSON.parse(body)
       var url = json.data['kappnav-url']
-      let appNavIcon = 
+      const appNavIcon =
           `
             .icon-appnav {
-              background-repeat: no-repeat;
-              background-image: url(${url}/graphics/KAppNavlogo.svg);
-              height: 20px;
+              background-repeat: no-repeat
+              background-image: url(${url}/graphics/KAppNavlogo.svg)
+              height: 20px
             }
  
            .icon-kappnav-feature {
-              display: block;
-              background-repeat: no-repeat;
-              background-image: url(${url}/graphics/KAppNavlogo.svg);
-              height: 72px;
-              width: 72px;
+              display: block
+              background-repeat: no-repeat
+              background-image: url(${url}/graphics/KAppNavlogo.svg)
+              height: 72px
+              width: 72px
             }
           `
       res.type('.css')
@@ -156,16 +154,16 @@ app.use('/kappnav-ui/openshift/appNavIcon.css', function(req, res, next) {
   })
 })
 
-app.use('/kappnav-ui/openshift/featuredApp.js', function(req, res, next) {
+app.use('/kappnav-ui/openshift/featuredApp.js', (req, res) => {
   request({
     url: TARGET + '/kappnav/configmap/kappnav-config?namespace='+APPNAV_CONFIGMAP_NAMESPACE,
     method: 'GET',
     rejectUnauthorized: false
-  }, function (error, response, body) {
+  }, (error, response, body) => {
     if (!error && response.statusCode === 200) {
       var json = JSON.parse(body)
       var url = json.data['kappnav-url']
-      let featuredApp =
+      const featuredApp =
           `
             (function() {
               window.OPENSHIFT_CONSTANTS.SAAS_OFFERINGS = [{
@@ -173,8 +171,8 @@ app.use('/kappnav-ui/openshift/featuredApp.js', function(req, res, next) {
                   icon: "icon-kappnav-feature",               // The icon you want to appear
                   url: "${url}",      //  Where to go when this item is clicked
                   description: "Kubernetes Application Navigator"      // Short description
-                }];
-            }());
+                }]
+            }())
           `
       res.type('.js')
       res.send(featuredApp)
@@ -185,16 +183,16 @@ app.use('/kappnav-ui/openshift/featuredApp.js', function(req, res, next) {
 })
 
 
-app.use('/kappnav-ui/openshift/appLauncher.js', function(req, res, next) {
+app.use('/kappnav-ui/openshift/appLauncher.js', (req, res) => {
   request({
     url: TARGET + '/kappnav/configmap/kappnav-config?namespace='+APPNAV_CONFIGMAP_NAMESPACE,
     method: 'GET',
     rejectUnauthorized: false
-  }, function (error, response, body) {
+  }, (error, response, body) => {
     if (!error && response.statusCode === 200) {
       var json = JSON.parse(body)
       var url = json.data['kappnav-url']
-      let appLauncher = 
+      const appLauncher =
           `
           (function() {
             window.OPENSHIFT_CONSTANTS.APP_LAUNCHER_NAVIGATION = [{
@@ -202,8 +200,8 @@ app.use('/kappnav-ui/openshift/appLauncher.js', function(req, res, next) {
               iconClass: "icon-appnav",                    // The icon you want to appearl
               href: "${url}",        // Where to go when this item is clicked
               tooltip: "Kubernetes Application Navigator"             // Optional tooltip to display on hover
-            }];
-          }());
+            }]
+          }())
           `
       res.type('.js')
       res.send(appLauncher)
@@ -213,47 +211,45 @@ app.use('/kappnav-ui/openshift/appLauncher.js', function(req, res, next) {
   })
 })
 
-app.engine('dust', consolidate.dust);
-app.set('view engine', 'dust');
-app.set('views', __dirname + '/views');
+app.engine('dust', consolidate.dust)
+app.set('view engine', 'dust')
+app.set('views', __dirname + '/views')
 
 app.locals.manifest = require('./public/webpack-assets.json')
 
-app.get('*', function(req, res){
-  var user = req.user ? req.user : "minikubeUser"
-  
+app.get('*', (req, res) => {
   res.setHeader('Cache-Control', 'no-store')
   res.setHeader('Pragma', 'no-cache')
   res.setHeader('Strict-Transport-Security', 'max-age=99999999')
-  res.setHeader('Content-Security-Policy', "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' blob: https://"+req.headers['host']+"/*; frame-ancestors 'self'")
+  res.setHeader('Content-Security-Policy', 'default-src "self" img-src "self" data: style-src "self" "unsafe-inline" script-src "self" blob: https://'+req.headers['host']+'/* frame-ancestors "self"')
 
   res.render('index', {
-        myLocale: i18n.locale(req),
-        kube: KUBE_ENV,
-        appnavConfigmapNamespace: APPNAV_CONFIGMAP_NAMESPACE,
-        contextPath: CONTEXT_PATH,
-        user: req.user,
-        title: 'Application Navigator',
-        csrfToken: req.csrfToken()
-  });
-});
+    myLocale: i18n.locale(req),
+    kube: KUBE_ENV,
+    appnavConfigmapNamespace: APPNAV_CONFIGMAP_NAMESPACE,
+    contextPath: CONTEXT_PATH,
+    user: req.user,
+    title: 'Application Navigator',
+    csrfToken: req.csrfToken()
+  })
+})
 
 
-const port = process.env.PORT || config.httpPort;
+const port = process.env.PORT || config.httpPort
 
-var server; 
+var server
 if(KUBE_ENV === 'minikube') {
-  var http = require('http');
-  server= http.createServer(app);
+  var http = require('http')
+  server= http.createServer(app)
 }
-else { 
+else {
   var options = {
-	  key: fs.readFileSync('/etc/tls/private/tls.key'),
-	  cert: fs.readFileSync('/etc/tls/private/tls.crt')
-  };
-  server = https.createServer(options,app); 
-} 
+    key: fs.readFileSync('/etc/tls/private/tls.key'),
+    cert: fs.readFileSync('/etc/tls/private/tls.crt')
+  }
+  server = https.createServer(options,app)
+}
 
-server.listen(port, function(){
-  logger.info(`application navigator listening on https://localhost:${port}${CONTEXT_PATH}`);
-});
+server.listen(port, () => {
+  logger.info(`application navigator listening on https://localhost:${port}${CONTEXT_PATH}`)
+})

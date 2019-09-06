@@ -29,6 +29,7 @@ const appName = require('./package').name,
 var log4js = require('log4js'),
     consolidate = require('consolidate'),
     cookieParser = require('cookie-parser'),
+    csurf = require('csurf'),
     proxy = require('http-proxy-middleware'),
     https = require('https');
 
@@ -45,7 +46,26 @@ const TARGET = process.env.TARGET || "http://localhost:9080",
       KUBE_ENV = process.env.KUBE_ENV || "okd",
       APPNAV_CONFIGMAP_NAMESPACE = process.env.KAPPNAV_CONFIG_NAMESPACE || 'kappnav'
 
-app.use(cookieParser())
+const csrfMiddleware = csurf({ cookie: true })
+
+var exclude = function(path) {
+  return function(req, res, next) {
+    if (path !== req.path) {
+      return next()
+    }
+  }
+}
+
+app.use(exclude('/health'), cookieParser(), csrfMiddleware)
+
+// error handler
+app.use(function (err, req, res, next) {
+  if (err.code !== 'EBADCSRFTOKEN') return next(err)
+
+  // handle CSRF token errors here
+  res.status(403)
+  res.send('form tampered with')
+})
 
 app.all('*', function(req, res, next) {
   if(KUBE_ENV === 'icp') {
@@ -213,7 +233,8 @@ app.get('*', function(req, res){
         appnavConfigmapNamespace: APPNAV_CONFIGMAP_NAMESPACE,
         contextPath: CONTEXT_PATH,
         user: req.user,
-        title: 'Application Navigator'
+        title: 'Application Navigator',
+        csrfToken: req.csrfToken()
   });
 });
 

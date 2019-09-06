@@ -110,7 +110,8 @@ app.use(CONTEXT_PATH, express.static(STATIC_PATH, {
       res.setHeader('Expires', moment().add(12, 'months').toDate())
     }
     res.setHeader('Strict-Transport-Security', 'max-age=99999999')
-    res.setHeader('Content-Security-Policy', 'default-src "self" img-src "self" data: style-src "self" script-src "self" frame-ancestors "self"')
+    // eslint-disable-next-line quotes
+    res.setHeader('Content-Security-Policy', "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; frame-ancestors 'self'")
   }
 }))
 
@@ -221,7 +222,8 @@ app.get('*', (req, res) => {
   res.setHeader('Cache-Control', 'no-store')
   res.setHeader('Pragma', 'no-cache')
   res.setHeader('Strict-Transport-Security', 'max-age=99999999')
-  res.setHeader('Content-Security-Policy', 'default-src "self" img-src "self" data: style-src "self" "unsafe-inline" script-src "self" blob: https://'+req.headers['host']+'/* frame-ancestors "self"')
+  // eslint-disable-next-line quotes
+  res.setHeader('Content-Security-Policy', "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' blob: https://"+req.headers['host']+"/*; frame-ancestors 'self'")
 
   res.render('index', {
     myLocale: i18n.locale(req),

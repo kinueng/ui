@@ -119,12 +119,18 @@ class JobView extends React.Component {
       .then(result => result.json())
       .then(result => {
         var data = result.data
-        const urlActions = JSON.parse(data['url-actions'])[0]
-        //let urlPattern = urlActions[0] && urlActions[0]['url-pattern']
+        let urlWithVariables = undefined
+        let urlActions = JSON.parse(data['url-actions'])
+        if(urlActions.length === 0) {
+          urlWithVariables = ''
+        } else {
+          urlWithVariables = urlActions[0]
+        }
+
         this.setState({
-          urlActions: urlActions
+          urlActions: urlWithVariables
         })
-      });
+      })
   }
 
   filterTable(searchValue, pageNumber, pageSize, totalRows){
@@ -211,7 +217,7 @@ class JobView extends React.Component {
     var statusText = ''
     var sortTitle = ''
 
-    var appName = job && job.metadata.labels['app-nav-job-application-name']
+    var appName = job && job.metadata.labels['kappnav-job-application-name']
 
     // Default the status to Normal until the job returns a done state (eg FAILED, COMPLETED)
     var doneState = 'Normal'
@@ -257,6 +263,7 @@ class JobView extends React.Component {
         const metadata = job.metadata
         const metadataLabel = metadata.labels
         const appUuid = metadata.name
+        const jobName = metadataLabel['kappnav-job-action-name']
 
         var itemObj = {}
         itemObj.id = metadata.uid+'-job'
@@ -264,24 +271,29 @@ class JobView extends React.Component {
 
         const urlActions = this.state.urlActions
 
-        const kind = 'Job'
-        const linkId = kind+'_'+metadata.name+'link'
-        itemObj.actionName = <a rel="noreferrer" id={linkId} href='#' onClick={performUrlAction.bind(this, urlActions['url-pattern'], urlActions['open-window'], kind, appUuid, metadata.namespace, undefined, true)}>{metadataLabel['app-nav-job-action-name']}</a>
-        performUrlAction(urlActions['url-pattern'], urlActions['open-window'], kind, appUuid, metadata.namespace, linkId, false)  //update the link in place
+        if(urlActions) {
+          const kind = 'Job'
+          const linkId = kind+'_'+metadata.name+'link'
+          itemObj.actionName = <a rel="noreferrer" id={linkId} href='#' onClick={performUrlAction.bind(this, urlActions['url-pattern'], urlActions['open-window'], kind, appUuid, metadata.namespace, undefined, true)}>{jobName}</a>
+          performUrlAction(urlActions['url-pattern'], urlActions['open-window'], kind, appUuid, metadata.namespace, linkId, false)  //update the link in place
+        } else {
+          // Not every K8 platform has a URL for displaying K8 Job kind details
+          itemObj.actionName = jobName
+        }
         
-        var applicationName = metadataLabel['app-nav-job-application-name']
+        var applicationName = metadataLabel['kappnav-job-application-name']
         if (applicationName && applicationName === 'kappnav.not.assigned') {
           itemObj.appName = msgs.get('not.assigned')
         } else {
-          itemObj.appName = <a href={location.protocol + '//' + location.host + CONTEXT_PATH + '/applications/' + encodeURIComponent(applicationName) + '?namespace=' + metadataLabel['app-nav-job-component-namespace']}>
-            {metadataLabel['app-nav-job-application-namespace'] + '/' + applicationName}
+          itemObj.appName = <a href={location.protocol + '//' + location.host + CONTEXT_PATH + '/applications/' + encodeURIComponent(applicationName) + '?namespace=' + metadataLabel['kappnav-job-component-namespace']}>
+            {metadataLabel['kappnav-job-application-namespace'] + '/' + applicationName}
           </a>
         }
 
         const createdTime = getCreationTime(job);
         const howOldInMilliseconds = getAgeDifference(createdTime).diffDuration + ''
         itemObj.age = <div data-sorttitle={howOldInMilliseconds}>{getAge(job)}</div>
-        itemObj.component = metadataLabel['app-nav-job-component-namespace'] + '/' + metadataLabel['app-nav-job-component-name']
+        itemObj.component = metadataLabel['kappnav-job-component-namespace'] + '/' + metadataLabel['kappnav-job-component-name']
         itemObj.menuAction = getOverflowMenu(job, job['action-map'], jobResourceData)
         rowArray.push(itemObj)
       })

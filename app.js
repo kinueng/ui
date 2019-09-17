@@ -55,6 +55,11 @@ var exclude = function(path) {
   }
 }
 
+//Redirect / to /kappnav-ui, (because the auth proxy sidecar redirects to /)
+app.all('/', (req, res, next) => {
+  res.redirect(CONTEXT_PATH)
+})
+
 app.use(exclude('/health'), cookieParser(), csrfMiddleware)
 
 // error handler
@@ -133,17 +138,17 @@ app.use('/kappnav-ui/openshift/appNavIcon.css', (req, res) => {
       const appNavIcon =
           `
             .icon-appnav {
-              background-repeat: no-repeat
-              background-image: url(${url}/graphics/KAppNavlogo.svg)
-              height: 20px
+              background-repeat: no-repeat;
+              background-image: url(${url}/graphics/KAppNavlogo.svg);
+              height: 20px;
             }
  
            .icon-kappnav-feature {
-              display: block
-              background-repeat: no-repeat
-              background-image: url(${url}/graphics/KAppNavlogo.svg)
-              height: 72px
-              width: 72px
+              display: block;
+              background-repeat: no-repeat;
+              background-image: url(${url}/graphics/KAppNavlogo.svg);
+              height: 72px;
+              width: 72px;
             }
           `
       res.type('.css')
@@ -239,19 +244,9 @@ app.get('*', (req, res) => {
 
 const port = process.env.PORT || config.httpPort
 
-var server
-if(KUBE_ENV === 'minikube') {
-  var http = require('http')
-  server= http.createServer(app)
-}
-else {
-  var options = {
-    key: fs.readFileSync('/etc/tls/private/tls.key'),
-    cert: fs.readFileSync('/etc/tls/private/tls.crt')
-  }
-  server = https.createServer(options,app)
-}
+var http = require('http')
+var server = http.createServer(app)
 
 server.listen(port, () => {
-  logger.info(`application navigator listening on https://localhost:${port}${CONTEXT_PATH}`)
+  logger.info(`application navigator listening on http://localhost:${port}${CONTEXT_PATH}`)
 })

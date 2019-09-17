@@ -55,7 +55,7 @@ const General = ({ form, onChange, children, error, labelName, labelContent }, c
         id='name'
         hideLabel
         className='bx--text-input-override'
-        labelText={labelName || msgs.get('formfield.name')}
+        labelText={labelName || msgs.get('formfield.name') + ' ' + msgs.get('formtip.common.name')}
         value={form.name}
         onChange={transform.bind(null, 'name', onChange)}
         invalid={error && error.name}
@@ -73,7 +73,7 @@ const Label = ({ id, item, onModify, onRemove }, context) =>
         value={item.name}
         hideLabel
         className='bx--text-input-override'
-        labelText={msgs.get('formfield.label')}
+        labelText={msgs.get('formfield.label') + ' ' + msgs.get('formtip.common.label.label')}
         onChange={onModify.bind(null, 'name')} />
     </FieldWrapper>
     <FieldWrapper labelText={msgs.get('formfield.value')} content={msgs.get('formtip.common.label.value')}>
@@ -82,7 +82,7 @@ const Label = ({ id, item, onModify, onRemove }, context) =>
         value={item.value}
         hideLabel
         className='bx--text-input-override'
-        labelText={msgs.get('formfield.value')}
+        labelText={msgs.get('formfield.value') + ' ' + msgs.get('formtip.common.label.value')}
         onChange={onModify.bind(null, 'value')} />
     </FieldWrapper>
     <RemoveIcon id={`labels-remove-${id}`} onRemove={onRemove} />
@@ -96,7 +96,7 @@ const MatchLabel = ({ id, item, onModify, onRemove }, context) =>
         value={item.name}
         hideLabel
         className='bx--text-input-override'
-        labelText={msgs.get('formfield.label')}
+        labelText={msgs.get('formfield.label') + ' ' + msgs.get('formtip.common.matchLabel')}
         onChange={onModify.bind(null, 'name')} />
     </FieldWrapper>
     <FieldWrapper labelText={msgs.get('formfield.value')} content={msgs.get('formtip.common.matchLabel')}>
@@ -105,7 +105,7 @@ const MatchLabel = ({ id, item, onModify, onRemove }, context) =>
         value={item.value}
         hideLabel
         className='bx--text-input-override'
-        labelText={msgs.get('formfield.value')}
+        labelText={msgs.get('formtip.common.matchLabel')}
         onChange={onModify.bind(null, 'value')} />
     </FieldWrapper>
     <RemoveIcon id={`labels-remove-${id}`} onRemove={onRemove} />
@@ -141,7 +141,7 @@ const NamespaceSelect = ({ form, namespaces, onChange, labelName, labelContent }
         value={item.key}
         hideLabel
         className='bx--text-input-override'
-        labelText={msgs.get('formfield.key')}
+        labelText={msgs.get('formfield.key') + ' ' + msgs.get('formtip.selectors.matchExpression.key')}
         onChange={onModify.bind(null, 'key')} />
     </FieldWrapper>
     <FieldWrapper labelText={msgs.get('formfield.operator')} content={msgs.get('formtip.selectors.matchExpression.operator', ['<br/>'])}>
@@ -150,7 +150,7 @@ const NamespaceSelect = ({ form, namespaces, onChange, labelName, labelContent }
         value={item.operator}
         hideLabel
         className='bx--text-input-override'
-        labelText={msgs.get('formfield.operator')}
+        labelText={msgs.get('formfield.operator') + ' ' + msgs.get('formtip.selectors.matchExpression.operator', ['<br/>'])}
         onChange={onModify.bind(null, 'operator')} />
     </FieldWrapper>
     <FieldWrapper labelText={msgs.get('formfield.values')} content={msgs.get('formtip.selectors.matchExpression.value')}>
@@ -159,7 +159,7 @@ const NamespaceSelect = ({ form, namespaces, onChange, labelName, labelContent }
         value={item.values}
         hideLabel
         className='bx--text-input-override'
-        labelText={msgs.get('formfield.values')}
+        labelText={msgs.get('formfield.values') + ' ' + msgs.get('formtip.selectors.matchExpression.value')}
         onChange={onModify.bind(null, 'values')} />
     </FieldWrapper>
     <RemoveIcon id={`match-expression-remove-${id}`} onRemove={onRemove} />
@@ -173,7 +173,7 @@ const NamespaceSelect = ({ form, namespaces, onChange, labelName, labelContent }
           value={item.group}
           hideLabel
           className='bx--text-input-override'
-          labelText={msgs.get('formfield.group')}
+          labelText={msgs.get('formfield.group') + ' ' + msgs.get('formtip.common.group')}
           onChange={onModify.bind(null, 'group')} />
       </FieldWrapper>
       <FieldWrapper labelText={msgs.get('formfield.kind')} content={msgs.get('formtip.common.kind')}>
@@ -182,7 +182,7 @@ const NamespaceSelect = ({ form, namespaces, onChange, labelName, labelContent }
           value={item.kind}
           hideLabel
           className='bx--text-input-override'
-          labelText={msgs.get('formfield.kind')}
+          labelText={msgs.get('formfield.kind') + ' ' + msgs.get('formtip.common.kind')}
           onChange={onModify.bind(null, 'kind')} />
       </FieldWrapper>
       <RemoveIcon id={`labels-remove-${id}`} onRemove={onRemove} />

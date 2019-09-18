@@ -202,6 +202,7 @@ class ActionModal extends React.PureComponent {
             onRequestSubmit={submitForm}
             role='region'
             modalAriaLabel={msgs.get(label.heading)}
+            selectorPrimaryFocus='.bx--modal-close'
             aria-label={msgs.get(label.heading)}>
             {reqErrorMsg && reqErrorMsg.length > 0 &&
               reqErrorMsg.map((err,key) => <InlineNotification key={key} kind='error' title='' subtitle={err} iconDescription={msgs.get('svg.description.error')} />)

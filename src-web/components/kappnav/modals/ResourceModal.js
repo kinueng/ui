@@ -178,6 +178,7 @@ class ResourceModal extends React.PureComponent {
           iconDescription={msgs.get('modal.button.close.the.modal')}
           className='modal'
           open={open}
+          selectorPrimaryFocus='.bx--modal-close'
           primaryButtonText={msgs.get(label.primaryBtn)}
           secondaryButtonText={msgs.get('modal.button.cancel')}
           modalLabel={modalLabel}

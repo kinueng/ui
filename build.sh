@@ -16,16 +16,9 @@
 # limitations under the License.
 ###############################################################################
 set -Eeo pipefail
-if [ $(arch) = "ppc64le" ]; then
-  ARCH=ppc64le
-elif [ $(arch) = "s390x" ]; then
-  ARCH=s390x
-else
-  ARCH=amd64
-fi
-
 IMAGE=kappnav-ui
+VERSION=0.1.1
 
-echo "Building ${IMAGE}"
+echo "Building ${IMAGE} ${VERSION}"
 
-docker build -t ${IMAGE} . 
+docker build --build-arg VERSION=${VERSION} --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') -t ${IMAGE} .

@@ -58,6 +58,7 @@ class ActionMessageModal extends React.PureComponent {
           className='bx--modal--danger'
           id='submit-action-message-dialog'
           role='region'
+          selectorPrimaryFocus='.bx--modal-close'
           aria-label={'Label'}
           open={open}>
            <ModalHeader buttonOnClick={handleClose}>
@@ -77,6 +78,7 @@ class ActionMessageModal extends React.PureComponent {
         <ComposedModal
           id='submit-action-message-dialog'
           role='region'
+          selectorPrimaryFocus='.bx--modal-close'
           aria-label={'Label'}
           open={open}>
           <ModalHeader buttonOnClick={handleClose}>

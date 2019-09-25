@@ -80,8 +80,8 @@ class ActionMessageModal extends React.PureComponent {
           aria-label={'Label'}
           open={open}>
           <ModalHeader buttonOnClick={handleClose}>
-            <h4 className="bx--modal-header__label">{result.metadata.labels['app-nav-job-component-name']}</h4>
-            <h2 className="bx--modal-header__heading">{result.metadata.annotations['app-nav-job-action-text']}</h2>
+            <h4 className="bx--modal-header__label">{result.metadata.labels['kappnav-job-component-name']}</h4>
+            <h2 className="bx--modal-header__heading">{result.metadata.annotations['kappnav-job-action-text']}</h2>
           </ModalHeader>
           <ModalBody>
             {msgs.get('job.success')}

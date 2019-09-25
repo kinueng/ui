@@ -6,7 +6,7 @@ COPY package.json /app/
 
 #Hack because the npm run build uses a plugin to setup a build version based on the git repo
 #We should revisit how better to reorganize this
-COPY .git /app/.git 
+COPY .git /app/.git
 
 # verify cache to prevent checksum error on npm install
 RUN cd /app; npm cache verify; npm install
@@ -34,10 +34,14 @@ RUN cd /app; npm run build:production; npm prune; rm -rf .git
 # Stage 2: Run node server
 FROM registry.access.redhat.com/ubi7/nodejs-8:1-47
 
+ARG VERSION
+ARG BUILD_DATE
+
 LABEL name="Application Navigator" \
       vendor="kAppNav" \
-      version="1.0.0" \
-      release="1.0.0" \
+      version=$VERSION \
+      release=$VERSION \
+      created=$BUILD_DATE \
       summary="UI image for Application Navigator" \
       description="This image contains the UI for Application Navigator"
 

@@ -135,7 +135,7 @@ class NavModal extends React.PureComponent {
         {this.props.buttonName}
       </Button>
       {
-        open && <ComposedModal id='nav-modal' className='modal nav-modal' role='region' aria-label={this.props.modalHeading} open={open} onClose={() => this.toggleModal(false)}>
+        open && <ComposedModal id='nav-modal' selectorPrimaryFocus='.bx--modal-close' className='modal nav-modal' role='region' aria-label={this.props.modalHeading} open={open} onClose={() => this.toggleModal(false)}>
             <ModalHeader buttonOnClick={this.handleOpen.bind(this, false)} iconDescription={this.props.closeButtonLabel}>
               <div>
                 <p className='bx--modal-header__label'>

@@ -82,6 +82,7 @@ class RemoveResourceModal extends React.PureComponent {
         <Modal
           danger
           id='remove-resource-modal'
+          selectorPrimaryFocus='.bx--modal-close'
           iconDescription={msgs.get('modal.button.close.the.modal')}
           open={open}
           primaryButtonText={msgs.get(label.primaryBtn)}

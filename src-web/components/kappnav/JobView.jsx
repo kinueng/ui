@@ -17,11 +17,13 @@
  *****************************************************************/
 
 import 'carbon-components/scss/globals/scss/styles.scss'
-import React from 'react'
+import React, {Component} from 'react';
+import { connect } from 'react-redux'
 import {Loading} from 'carbon-components-react'
 import {CONTEXT_PATH, PAGE_SIZES, SORT_DIRECTION_ASCENDING, RESOURCE_TYPES, STATUS_COLORS} from '../../actions/constants'
 import {getRowSlice, sort, sortColumn, getOverflowMenu, buildStatusHtml, getAge, getAgeDifference, getCreationTime, performUrlAction} from '../../actions/common'
 import msgs from '../../../nls/kappnav.properties'
+import SecondaryHeader from './common/SecondaryHeader.jsx'
 import ResourceTable from './common/ResourceTable.js'
 import getResourceData from '../../definitions/index'
 import PropTypes from 'prop-types'
@@ -30,7 +32,8 @@ import PropTypes from 'prop-types'
 const jobResourceData = getResourceData(RESOURCE_TYPES.JOB)
 
 // This is the view that shows a collection of Command Actions jobs
-class JobView extends React.Component {
+class JobView extends Component {
+  
 
   constructor(props) {
     super(props);
@@ -59,10 +62,16 @@ class JobView extends React.Component {
     this.fetchData = this.fetchData.bind(this);
   }
   render() {
+    let viewTitle = msgs.get('page.jobsView.title');
     if (this.state.loading)
       return <Loading withOverlay={false} className='content-spinner'/>
     else
       return (
+        <div>
+          <SecondaryHeader title={viewTitle} location={location}/>
+          <div className="page-content-container" role="main">
+
+        
         <ResourceTable
           rows={this.state.rows}
           headers={this.state.headers} title={''}
@@ -79,28 +88,30 @@ class JobView extends React.Component {
             this.handleSort(e)
           }}
           pageNumber={this.state.pageNumber}
-          namespace={this.props.namespace}
-          namespaces={this.props.namespaces}
+          namespace={this.props.baseInfo.selectedNamespace}
+          namespaces={this.props.baseInfo.namespaces}
         />
+        </div>
+        </div>
       )
   }
 
   componentDidMount() {
-    this.fetchData(this.props.namespace, this.state.search, this.props.appNavConfigData)
+    this.fetchData(this.props.baseInfo.selectedNamespace, this.state.search, this.props.baseInfo.appNavConfigMap)
 
     this.fetchJobUrlPattern()
 
     var self = this
     window.setInterval(() => {
-      self.refreshData(self.props.namespace, self.state.search, self.props.appNavConfigData)
+      self.refreshData(self.props.baseInfo.selectedNamespace, self.state.search, self.props.baseInfo.appNavConfigMap)
     }, 10000)
   }
 
   shouldComponentUpdate(nextProps) {
-    if (this.props.namespace == nextProps.namespace) {
+    if (this.props.baseInfo.selectedNamespace == nextProps.baseInfo.selectedNamespace) {
       return true
     } else {
-      this.fetchData(nextProps.namespace, undefined, this.props.appNavConfigData)
+      this.fetchData(nextProps.baseInfo.selectedNamespace, undefined, this.props.baseInfo.appNavConfigMap)
     }
     return false
   }
@@ -302,10 +313,10 @@ class JobView extends React.Component {
   }
 } // end of JobView component
 
-JobView.propTypes = {
-  appNavConfigData: PropTypes.object.isRequired,
-  namespace: PropTypes.string.isRequired,
-  namespaces: PropTypes.array.isRequired
-}
-
-export default JobView
+export default connect(
+  (state) => ({
+      baseInfo: state.baseInfo,
+  }),
+  {
+  }
+)(JobView);

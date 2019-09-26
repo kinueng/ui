@@ -17,148 +17,66 @@
  *****************************************************************/
 
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { fetchLoadingNamespaces, fetchLoadingSecrets, fetchLoadingAppNavConfigMaps } from '../reducers/BaseServiceReducer';
 import AppView from './kappnav/AppView.jsx';
 import ComponentView from './kappnav/ComponentView.jsx';
 import DetailView from './kappnav/DetailView.jsx';
 import JobView from './kappnav/JobView.jsx';
-import SecondaryHeader from './kappnav/common/SecondaryHeader.jsx';
-import NamespaceDropdown from './kappnav/common/NamespaceDropdown';
-import { RESOURCE_TYPES } from '../actions/constants';
-import getResourceData from '../definitions/index';
 
-class ViewContainer extends React.Component {
+class ViewContainer extends Component {
 
-  constructor (props){
-    super(props)
-        
-    // make 'this' visible to class methods
-    this.fetchNamespaces = this.fetchNamespaces.bind(this)
-    this.fetchAppNavConfigMap = this.fetchAppNavConfigMap.bind(this)
+    componentWillMount = () => {
+        if (this.props.baseInfo.namespaces.length === 0) {
+            this.props.fetchLoadingNamespaces();
+        }
 
-		document.title = 'Application Navigator'
+        if (this.props.baseInfo.secrets.length === 0) {
+            console.log("I am here")
+            this.props.fetchLoadingSecrets();
+        }
 
-    var loadingNamespace = false
-    var loadingExsitingSecrets = false
-    if(props.view === 'AppView') {
-      loadingNamespace = true
-      this.fetchNamespaces();
+        if (Object.keys(this.props.baseInfo.appNavConfigMap).length === 0) {
+            this.props.fetchLoadingAppNavConfigMaps();
+        }
     }
 
-    var loadingAppNavConfigData = true;
-    this.fetchAppNavConfigMap();
+    render() {
+        if (Object.keys(this.props.baseInfo.appNavConfigMap).length === 0){
+            return (<div></div>)
+        }
+        else{
+        return (
+            <div >
+                <main >
+                    <Router>
+                        <Switch >
+                            <Route exact path="/kappnav-ui/" component={AppView} />
 
-    this.state = {
-      namespaces: [{Name:'default'}],
-      namespace: props.namespace ? props.namespace : '',
-      loadingNamespace: loadingNamespace,
-      loadingExsitingSecrets: loadingExsitingSecrets,
-      loadingAppNavConfigData: loadingAppNavConfigData,
-      appNavConfigData: {}
-    }
-  }
+                            <Route exact path="/kappnav-ui/applications" component={AppView} />
 
-  fetchNamespaces() {
-    fetch('/kappnav/namespaces')
-		.then(result=>result.json())
-		.then(result=>{
-      var namespacesArray = []
-      result.namespaces.forEach((ns) => {
-        var itemObj = {}
-        itemObj.Name = ns.metadata.name
-        namespacesArray.push(itemObj)
-      });
-      this.setState({namespaces:namespacesArray, loadingNamespace:false})
-    });
-  }
+                            <Route exact path="/kappnav-ui/jobs" component={JobView} />
 
-  fetchExistingSecrets() {
-    fetch('/kappnav/secrets/credential-type/app-navigator')
-		.then(result=>result.json())
-		.then(result=>{
-      var existingSecretsArray = []
-      result.secrets.forEach((ns) => {
-        var itemObj = {}
-        itemObj.Name = ns.metadata.name
-        existingSecretsArray.push(itemObj)
-      });
-      this.setState({existingSecrets:existingSecretsArray, loadingExsitingSecrets:false})
-    });
-  }
+                            <Route exact path="/kappnav-ui/applications/:applicationName" component={ComponentView} />
 
-  fetchAppNavConfigMap() {
-    fetch('/kappnav/configmap/kappnav-config?namespace='+document.documentElement.getAttribute('appnavConfigmapNamespace'))
-		.then(result=>result.json())
-		.then(result=>{
-      var data = result.data
-      var appNavConfigData = {}
-      appNavConfigData.statuColorMapping = JSON.parse(data['status-color-mapping'])
-      appNavConfigData.statusPrecedence = JSON.parse(data['app-status-precedence'])
-      appNavConfigData.statusUnknown = data['status-unknown']
-      this.setState({appNavConfigData:appNavConfigData, loadingAppNavConfigData:false})
-    });
-  }
-
-  render() {
-
-    if(this.state.loadingNamespace || this.state.loadingAppNavConfigData || this.state.loadingExsitingSecrets) { //dont render yet
-      return (<div></div>)
-    }
-
-    const {
-      name,
-      breadcrumbItems,
-      location,
-      tabs,
-			viewTitle,
-      view,
-      resourceType
-		} = this.props
-
-    return (
-      <div>
-        <SecondaryHeader title={viewTitle} breadcrumbItems={breadcrumbItems} tabs={tabs} location={location}/>
-      <div className="page-content-container" role="main">
-          {(() => {
-            if(view === 'AppView') {
-              return (
-            <div>
-                <NamespaceDropdown namespaces={this.state.namespaces}
-                                   selected_namespaces={this.state.namespace}
-                                   switchNamespace={(e)=>{this.switchNamespace(e)}}/>
-                <AppView namespace={this.state.namespace} namespaces={this.state.namespaces} appNavConfigData={this.state.appNavConfigData}/>
+                            <Route exact path="/kappnav-ui/was-nd-cells/:cellName/was-traditional-app/:applicationName" component={DetailView} />
+                        </Switch>
+                    </Router>
+                </main>
             </div>
-              )
-            } else if(view === 'ComponentView') {
-              return (
-                <ComponentView name={name} 
-                  resourceType={resourceType} 
-                  namespace={this.state.namespace} 
-                  namespaces={this.state.namespaces} 
-                  appNavConfigData={this.state.appNavConfigData}/>
-              )
-            } else if(view === 'DetailView') {
-              return (
-                <DetailView name={name} namespace={this.state.namespace} appNavConfigData={this.state.appNavConfigData}/>
-              )
-            } else if(view === 'JobView') {
-              return (
-                <JobView namespace={this.state.namespace} namespaces={this.state.namespaces} appNavConfigData={this.state.appNavConfigData}/>
-              )
-            }
-          })()}
-        </div>
-      </div>
-    );
-  }
+        );
+        }
+    }
+}
 
-  switchNamespace(e){
-     if(e.selectedItem.id == 'all'){
-       this.setState({namespace: ''})
-     } else {
-       this.setState({namespace: e.selectedItem.value})
-     }
-  }
-
-} // end of ViewContainer component
-
-export default ViewContainer
+export default connect(
+    (state) => ({
+        baseInfo: state.baseInfo,
+    }),
+    {
+        fetchLoadingNamespaces,
+        fetchLoadingSecrets,
+        fetchLoadingAppNavConfigMaps
+    }
+)(ViewContainer);

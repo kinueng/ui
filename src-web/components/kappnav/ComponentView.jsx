@@ -17,18 +17,20 @@
  *****************************************************************/
 
 import 'carbon-components/scss/globals/scss/styles.scss';
-import React from 'react'
+import React, {Component} from 'react';
+import { connect } from 'react-redux';
 import lodash from 'lodash'
 import { Module, ModuleBody } from 'carbon-addons-cloud-react'
 import { Loading } from 'carbon-components-react'
 import ResourceTable from './common/ResourceTable.js'
 import StructuredListModule from './common/StructuredListModule'
-import { CONTEXT_PATH, PAGE_SIZES, SORT_DIRECTION_ASCENDING } from '../../actions/constants'
+import { CONTEXT_PATH, PAGE_SIZES, SORT_DIRECTION_ASCENDING, RESOURCE_TYPES } from '../../actions/constants'
 import { getRowSlice, sort, sortColumn } from '../../actions/common'
+import SecondaryHeader from './common/SecondaryHeader.jsx'
 import getResourceData, { refreshResource, refreshResourceComponent } from '../../definitions/index'
 import msgs from '../../../nls/kappnav.properties'
 
-class ComponentView extends React.Component {
+class ComponentView extends Component {
   constructor (props){
     super(props);
 
@@ -44,7 +46,9 @@ class ComponentView extends React.Component {
       sortDirection: SORT_DIRECTION_ASCENDING,
       pageSize: PAGE_SIZES.DEFAULT,
       pageNumber: 1,
-      search: undefined
+      search: undefined,
+      resourceType : RESOURCE_TYPES.APPLICATION,
+      name : decodeURIComponent(location.pathname.split('/').filter(function (e) { return e })[2])
     };
 
     this.fetchData = this.fetchData.bind(this);
@@ -52,15 +56,22 @@ class ComponentView extends React.Component {
   }
 
   render() {
-    const resourceType = this.props.resourceType
+    const resourceType = this.state.resourceType
     const resourceData = getResourceData(resourceType)
+    let title = msgs.get('page.applicationView.title') // default = application
+    let titleUrl = CONTEXT_PATH + '/applications' // default = application
+    let resourceName = this.state.name
+    let breadcrumbItems = [
+      {label : title, url : titleUrl},
+      {label : resourceName}
+      ]
 
     let basicDetailPane = <StructuredListModule
       title={resourceData.detailKeys.title}
       expanded={resourceData.detailKeys.expanded}
       headerRows={resourceData.detailKeys.headerRows}
       rows={resourceData.detailKeys.rows}
-      id={this.props.name+'-overview-module'}
+      id={this.state.name+'-overview-module'}
       data={this.state.data} />
 
     let additionalDetailPane;
@@ -72,7 +83,7 @@ class ComponentView extends React.Component {
         expanded={resourceData.additionalDetailKeys.expanded}
         headerRows={resourceData.additionalDetailKeys.headerRows}
         rows={resourceData.additionalDetailKeys.rows}
-        id={this.props.name+'additional-details-overview-module'}
+        id={this.state.name+'additional-details-overview-module'}
         data={this.state.data} />
     }
 
@@ -81,7 +92,7 @@ class ComponentView extends React.Component {
       <div className='bx--module__header' style={{justifyContent: 'space-between'}} onClick={(e)=>{this.toggleExpandCollapse()}}>
         <ul data-accordion className="bx--accordion">
           <li data-accordion-item className="bx--accordion__item" className={this.state.expanded ? 'bx--accordion__item--active' : '' }>
-            <button className="bx--accordion__heading" aria-expanded={this.state.expanded} aria-controls={this.props.name+"modulePane"} title={this.state.expanded ? msgs.get('collapse') : msgs.get('expand') }>
+            <button className="bx--accordion__heading" aria-expanded={this.state.expanded} aria-controls={this.state.name+"modulePane"} title={this.state.expanded ? msgs.get('collapse') : msgs.get('expand') }>
               <svg className="bx--accordion__arrow" width="7" height="12" viewBox="0 0 7 12">
                 <path fillRule="nonzero" d="M5.569 5.994L0 .726.687 0l6.336 5.994-6.335 6.002L0 11.27z" />
               </svg>
@@ -92,7 +103,7 @@ class ComponentView extends React.Component {
       </div>
 
     let moduleBody = 
-      <ModuleBody id={this.props.name+"modulePane"} className={this.state.expanded ? '' : 'collapsed'}>
+      <ModuleBody id={this.state.name+"modulePane"} className={this.state.expanded ? '' : 'collapsed'}>
         {(() => {
           if(this.state.loadingComponents) {
             return <Loading withOverlay={false} className='module-spinner' />
@@ -110,16 +121,20 @@ class ComponentView extends React.Component {
                 sortColumn={this.state.sortColumn}
                 sortDirection={this.state.sortDirection}
                 handleSort={(e)=>{this.handleSort(e)}}
-                namespaces={this.props.namespaces}
+                namespaces={this.props.baseInfo.namespaces}
               />
             )
           }
         })()}
       </ModuleBody>
 
-
+console.log("viewTitle " + this.state.name + " breadcrumbItems " + breadcrumbItems  + "location " + location);
     return (
-      <div className='overview-content'>
+      <div>
+        <SecondaryHeader title={this.state.name} breadcrumbItems={breadcrumbItems} location={location}/>
+      
+      
+      <div className="page-content-container overview-content" role="main">
 
         {(() => {
           if (!this.state.loading) {
@@ -132,11 +147,12 @@ class ComponentView extends React.Component {
           }
         })()}
 
-        <Module className={this.state.expanded ? '' : 'collapsedModule' } id={this.props.name+'-component-module'}>
+        <Module className={this.state.expanded ? '' : 'collapsedModule' } id={this.state.name+'-component-module'}>
           { moduleHeader }
           { moduleBody }
         </Module>
 
+      </div>
       </div>
     );
   }
@@ -146,13 +162,14 @@ class ComponentView extends React.Component {
   }
 
   componentDidMount(){
-    this.fetchData(this.props.name);
-
+    this.fetchData(this.state.name);
+    if(window.secondaryHeader !== undefined){
     if (!window.secondaryHeader.refreshCallback) {
+      console.log("I am here finally in componentDidMount")
       window.secondaryHeader.refreshCallback = function(result) {
-        if(result && result.operation == "delete" && result.name == this.props.name) {
+        if(result && result.operation == "delete" && result.name == this.state.name) {
           //we just deleted the RESOURCE_TYPE that we are currently displaying. Go back to the RESOURCE_TYPE list.
-          let url= location.protocol+'//'+location.host + CONTEXT_PATH + '/' + this.getResourcePageUrl(this.props.resourceType);
+          let url= location.protocol+'//'+location.host + CONTEXT_PATH + '/' + this.getResourcePageUrl(this.state.resourceType);
           window.location.href = url;
         } else {
           var skipComponentReload = true;
@@ -166,20 +183,21 @@ class ComponentView extends React.Component {
             //Update Table only if the component list could be effected by the application edit
             skipComponentReload = false;
           }
-          this.fetchData(this.props.name, skipComponentReload);
+          this.fetchData(this.state.name, skipComponentReload);
         }
       }.bind(this);
     }
+  }
 
     var self = this;
     window.setInterval(function(){
-      refreshResource(self.props.name, self.props.namespace, self.props.resourceType, self.props.appNavConfigData).then(result => {
+      refreshResource(self.state.name, self.props.baseInfo.selectedNamespace, self.state.resourceType, self.props.baseInfo.appNavConfigMap).then(result => {
         self.setState({loading: false, data: result});
       });
     }, 10000);
 
     window.setInterval(function(){
-      refreshResourceComponent(self.props.name, self.props.namespace, self.props.resourceType, self.props.appNavConfigData).then(result => {
+      refreshResourceComponent(self.state.name, self.props.baseInfo.selectedNamespace, self.state.resourceType, self.props.baseInfo.appNavConfigMap).then(result => {
         if(result === null) {
           this.setState({loadingComponents: false});
         }
@@ -261,13 +279,13 @@ class ComponentView extends React.Component {
 fetchData(name, skipComponentReload) {
   this.setState({loading: true, loadingComponents: !skipComponentReload});
 
-  refreshResource(name, this.props.namespace, this.props.resourceType, this.props.appNavConfigData).then(result => {
+  refreshResource(name, this.props.baseInfo.selectedNamespace, this.state.resourceType, this.props.baseInfo.appNavConfigMap).then(result => {
     this.setState({loading: false, data: result})
   });
 
   var self = this;
   if(!skipComponentReload) {
-    refreshResourceComponent(name, this.props.namespace, this.props.resourceType, this.props.appNavConfigData).then(result => {
+    refreshResourceComponent(name, this.props.baseInfo.selectedNamespace, this.state.resourceType, this.props.baseInfo.appNavConfigMap).then(result => {
       self.setState({loadingComponents: false});
       self.filterTable(self.state.search, this.state.pageNumber, this.state.pageSize, result)
     });
@@ -276,4 +294,10 @@ fetchData(name, skipComponentReload) {
 
 } // end of ComponentView component
 
-export default ComponentView;
+export default connect(
+  (state) => ({
+      baseInfo: state.baseInfo,
+  }),
+  {
+  }
+)(ComponentView);

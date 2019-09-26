@@ -17,44 +17,65 @@
  *****************************************************************/
 
 import 'carbon-components/scss/globals/scss/styles.scss'
-import React, { Component } from 'react'
+import React, {Component} from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types'
 import { Loading } from 'carbon-components-react'
 import StructuredListModule from './common/StructuredListModule'
 import {updateSecondaryHeader, getOverflowMenu, getStatus} from '../../actions/common'
+import SecondaryHeader from './common/SecondaryHeader.jsx'
 
 
-class DetailView extends React.Component {
+class DetailView extends Component {
   constructor (props){
     super(props)
 
     this.state = {
       data: {},
-      loading: true
+      loading: true,
+      name : decodeURIComponent(location.pathname.split('/').filter(function (e) { return e })[4])
     }
 
     this.fetchData = this.fetchData.bind(this)
   }
 
   render() {
+    var paths = location.pathname.split('/')
+    paths = paths.filter(function (e) { return e })
+    let title = msgs.get('page.applicationView.title')
+    let name = decodeURIComponent(paths[2])
+    let parent_ns = decodeURIComponent(url.searchParams.get("parentnamespace"))
+    let itemName = decodeURIComponent(paths[4])
+    let ns = decodeURIComponent(url.searchParams.get("namespace"))
+    
+    let breadcrumbItems=[{label:title, url:CONTEXT_PATH+'/' + paths[1]},
+                          {label:name, url:CONTEXT_PATH+'/'+paths[1]+'/'+encodeURIComponent(name)+'?namespace='+encodeURIComponent(parent_ns)},
+                          {label:itemName, url:CONTEXT_PATH+'/'+paths[1]+'/'+encodeURIComponent(name)+'/'+resourceType+'/'+encodeURIComponent(itemName)+'?namespace='+encodeURIComponent(ns)+'&parentnamespace='+encodeURIComponent(parent_ns)} ]
+
     if (this.state.loading)
       return <Loading withOverlay={false} className='content-spinner' />
     else return (
+      <div>
+        <SecondaryHeader title={this.state.name} breadcrumbItems={breadcrumbItems} location={location}/>
+      <div className="page-content-container" role="main">
+      
       <StructuredListModule
         title={this.props.staticResourceData.detailKeys.title}
         headerRows={this.props.staticResourceData.detailKeys.headerRows}
         rows={this.props.staticResourceData.detailKeys.rows}
-        id={this.props.name+'-overview-module'}
+        id={this.state.name+'-overview-module'}
         data={this.state.data} />
+        </div>
+        </div>
     )
   }
 
   componentDidMount(){
-    this.fetchData(this.props.name, this.props.namespace)
-
+    this.fetchData(this.state.name, this.props.baseInfo.selectedNamespace)
+    if(window.secondaryHeader !== undefined){
     if (!window.secondaryHeader.refreshCallback) {
       window.secondaryHeader.refreshCallback = function(result) {
-        if(result && result.operation == 'delete' && result.name == this.props.name){
+        if(result && result.operation == 'delete' && result.name == this.state.name){
           const breadcrumbs = window.secondaryHeader.props.breadcrumbItems
           let url= '/'+this.props.staticResourceData.resourceType+'s'
           if(breadcrumbs) {
@@ -63,14 +84,15 @@ class DetailView extends React.Component {
           window.location.href = location.protocol+'//'+location.host+url
         } else {
           //Update Table
-          this.fetchData(this.props.name, this.props.namespace)
+          this.fetchData(this.state.name, this.props.baseInfo.selectedNamespace)
         }
       }.bind(this)
     }
+  }
 
     var self = this
     window.setInterval(() => {
-      self.refreshDetail(self.props.name, self.props.namespace)
+      self.refreshDetail(self.state.name, self.props.baseInfo.selectedNamespace)
     }, 30000)
   }
 
@@ -101,7 +123,7 @@ class DetailView extends React.Component {
                 //no error here because it just means that the action maps will not be populated
                 // try to populate at least the built in urlActions
                 var metadata = result.metadata
-                updateSecondaryHeader(getStatus(metadata, this.props.appNavConfigData).statusColor, getStatus(metadata, this.props.appNavConfigData).statusText, getOverflowMenu(result, undefined, this.props.staticResourceData, undefined, undefined))
+                updateSecondaryHeader(getStatus(metadata, this.props.baseInfo.appNavConfigMap).statusColor, getStatus(metadata, this.props.baseInfo.appNavConfigMap).statusText, getOverflowMenu(result, undefined, this.props.staticResourceData, undefined, undefined))
                 return null
               } else {
                 return response.json();
@@ -121,7 +143,7 @@ class DetailView extends React.Component {
                 }
 
                 var applicationNamespace = metadata.namespace
-                updateSecondaryHeader(getStatus(metadata, this.props.appNavConfigData).statusColor, getStatus(metadata, this.props.appNavConfigData).statusText, getOverflowMenu(result, actions, this.props.staticResourceData, applicationName, applicationNamespace))
+                updateSecondaryHeader(getStatus(metadata, this.props.baseInfo.appNavConfigMap).statusColor, getStatus(metadata, this.props.baseInfo.appNavConfigMap).statusText, getOverflowMenu(result, actions, this.props.staticResourceData, applicationName, applicationNamespace))
               }
             })
         }
@@ -131,10 +153,13 @@ class DetailView extends React.Component {
 } // end of DetailView component
 
 DetailView.propTypes = {
-  appNavConfigData: PropTypes.object.isRequired,
-  name: PropTypes.string.isRequired,
-  namespace: PropTypes.string.isRequired,
   staticResourceData: PropTypes.object.isRequired
 }
 
-export default DetailView
+export default connect(
+  (state) => ({
+      baseInfo: state.baseInfo,
+  }),
+  {
+  }
+)(DetailView);

@@ -18,17 +18,18 @@
  
 'use strict'
 
-import React from 'react'
-//import { connect } from 'react-redux'
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import lodash from 'lodash'
 import { DropdownV2 } from 'carbon-components-react'
-import msgs from '../../../../nls/kappnav.properties'
+import msgs from '../../../../nls/kappnav.properties';
+import { fetchLoadingSelectedNamespace } from '../../../reducers/BaseServiceReducer';
 
 require('../../../../scss/namespace-dropdown.scss')
 
 const translateWithId = (locale, id) => msgs.get(id)
 
-class NamespaceDropdown extends React.PureComponent {
+class NamespaceDropdown extends Component {
 
   //state = {
   //  isScrollingDownward: this.props.isScrollingDownward || false,
@@ -81,8 +82,19 @@ class NamespaceDropdown extends React.PureComponent {
     window.removeEventListener('scroll', this._debouncedScroll)
   }
 
+  updateSelectedNamespace = (event) => {
+    if(event.selectedItem.id == 'all'){
+        this.props.fetchLoadingSelectedNamespace('')
+      } else {
+        this.props.fetchLoadingSelectedNamespace(event.selectedItem.value)
+      }
+  }
+
   render() {
-    const { namespaces, selected_namespaces } = this.props
+    //const { namespaces, selected_namespaces } = this.props
+    const namespaces = this.props.baseInfo.namespaces;
+    console.log("I m namespaces " + JSON.stringify(namespaces, null,4))
+    const selected_namespaces = this.props.baseInfo.selectedNamespace;
     const { isScrollingDownward } = this.state
     const hasMultipleNamespaces = namespaces && namespaces.length > 1
     let dropdownItems = Object.assign({}, namespaces)
@@ -97,10 +109,18 @@ class NamespaceDropdown extends React.PureComponent {
       ariaLabel={selected_namespaces.toString()}
       className={`namespaces`}
       data-header-active={isScrollingDownward}
-      onChange={this.props.switchNamespace}
+      //onChange={this.props.switchNamespace}
+      onChange={(event) => this.updateSelectedNamespace(event)}
       translateWithId={translateWithId.bind(null, document.documentElement.lang)}
       items={dropdownItems} />
   }
 }
 
-export default NamespaceDropdown
+export default connect(
+    (state) => ({
+        baseInfo: state.baseInfo,
+    }),
+    {
+        fetchLoadingSelectedNamespace
+    }
+)(NamespaceDropdown);

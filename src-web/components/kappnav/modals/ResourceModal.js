@@ -179,6 +179,9 @@ class ResourceModal extends React.PureComponent {
       <div id='resource-modal-container' ref={div => this.resourceModal = div} tabIndex='-1' role='region' onKeyDown={this.escapeEditor} aria-label={ariaLabelForEscapingEditor}> {/* eslint-disable-line jsx-a11y/no-noninteractive-element-interactions */}
         {reqCount && reqCount > 0 && <Loading />}
         <Modal
+          // https://github.com/carbon-design-system/carbon/issues/4036
+          // Carbon Modal a11y focus workaround
+          focusTrap={false}
           id='resource-modal'
           iconDescription={msgs.get('modal.button.close.the.modal')}
           className='modal'

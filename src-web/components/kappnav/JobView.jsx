@@ -5,9 +5,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,7 +17,7 @@
  *****************************************************************/
 
 import 'carbon-components/scss/globals/scss/styles.scss'
-import React, {Component} from 'react';
+import React, {Component} from 'react'
 import { connect } from 'react-redux'
 import {Loading} from 'carbon-components-react'
 import {CONTEXT_PATH, PAGE_SIZES, SORT_DIRECTION_ASCENDING, RESOURCE_TYPES, STATUS_COLORS} from '../../actions/constants'
@@ -33,10 +33,9 @@ const jobResourceData = getResourceData(RESOURCE_TYPES.JOB)
 
 // This is the view that shows a collection of Command Actions jobs
 class JobView extends Component {
-  
 
   constructor(props) {
-    super(props);
+    super(props)
 
     this.state = {
       loading: true,
@@ -56,42 +55,41 @@ class JobView extends Component {
         {key: 'age', header: msgs.get('table.header.age')},
         {key: 'menuAction', header: msgs.get('table.header.action')}
       ]
-    };
+    }
 
     // make 'this' visible to class methods
-    this.fetchData = this.fetchData.bind(this);
+    this.fetchData = this.fetchData.bind(this)
   }
   render() {
-    let viewTitle = msgs.get('page.jobsView.title');
+    const viewTitle = msgs.get('page.jobsView.title')
     if (this.state.loading)
-      return <Loading withOverlay={false} className='content-spinner'/>
+      return <Loading withOverlay={false} className='content-spinner' />
     else
       return (
         <div>
-          <SecondaryHeader title={viewTitle} location={location}/>
+          <SecondaryHeader title={viewTitle} location={location} />
           <div className="page-content-container" role="main">
 
-        
-        <ResourceTable
-          rows={this.state.rows}
-          headers={this.state.headers} title={''}
-          onInputChange={(e) => {
-            this.searchInputChange(e)
-          }}
-          totalNumberOfRows={this.state.filteredRows.length}
-          changeTablePage={(e) => {
-            this.handlePaginationClick(e)
-          }}
-          sortColumn={this.state.sortColumn}
-          sortDirection={this.state.sortDirection}
-          handleSort={(e) => {
-            this.handleSort(e)
-          }}
-          pageNumber={this.state.pageNumber}
-          namespace={this.props.baseInfo.selectedNamespace}
-          namespaces={this.props.baseInfo.namespaces}
-        />
-        </div>
+            <ResourceTable
+              rows={this.state.rows}
+              headers={this.state.headers} title={''}
+              onInputChange={(e) => {
+                this.searchInputChange(e)
+              }}
+              totalNumberOfRows={this.state.filteredRows.length}
+              changeTablePage={(e) => {
+                this.handlePaginationClick(e)
+              }}
+              sortColumn={this.state.sortColumn}
+              sortDirection={this.state.sortDirection}
+              handleSort={(e) => {
+                this.handleSort(e)
+              }}
+              pageNumber={this.state.pageNumber}
+              namespace={this.props.baseInfo.selectedNamespace}
+              namespaces={this.props.baseInfo.namespaces}
+            />
+          </div>
         </div>
       )
   }
@@ -131,7 +129,7 @@ class JobView extends Component {
       .then(result => {
         var data = result.data
         let urlWithVariables = undefined
-        let urlActions = JSON.parse(data['url-actions'])
+        const urlActions = JSON.parse(data['url-actions'])
         if(urlActions.length === 0) {
           urlWithVariables = ''
         } else {
@@ -152,7 +150,7 @@ class JobView extends Component {
       totalRows.forEach((row) => {
         if (row.appName.props) {
           // Account for the possiblity of the name being a link
-          // When the application name is a link, the searchable application name text is 
+          // When the application name is a link, the searchable application name text is
           // under the "props" key
           if (('' + row.appName.props.children).toLowerCase().includes(searchValueLowerCase)) {
             filteredRows.push(row)
@@ -174,7 +172,7 @@ class JobView extends Component {
         })
 
         if(searchFields.some(field => field.includes(searchValueLowerCase))) {
-          // If one of the fields contains the search string, add the row 
+          // If one of the fields contains the search string, add the row
           // to what will be showed in filtered view
           filteredRows.push(row)
           return
@@ -301,7 +299,7 @@ class JobView extends Component {
           </a>
         }
 
-        const createdTime = getCreationTime(job);
+        const createdTime = getCreationTime(job)
         const howOldInMilliseconds = getAgeDifference(createdTime).diffDuration + ''
         itemObj.age = <div data-sorttitle={howOldInMilliseconds}>{getAge(job)}</div>
         itemObj.component = metadataLabel['kappnav-job-component-namespace'] + '/' + metadataLabel['kappnav-job-component-name']
@@ -313,10 +311,14 @@ class JobView extends Component {
   }
 } // end of JobView component
 
+JobView.propTypes = {
+  baseInfo: PropTypes.object
+}
+
 export default connect(
   (state) => ({
-      baseInfo: state.baseInfo,
+    baseInfo: state.baseInfo,
   }),
   {
   }
-)(JobView);
+)(JobView)

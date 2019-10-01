@@ -5,9 +5,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,15 +15,16 @@
  * limitations under the License.
  *
  *****************************************************************/
- 
+
 'use strict'
 
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import lodash from 'lodash'
 import { DropdownV2 } from 'carbon-components-react'
-import msgs from '../../../../nls/kappnav.properties';
-import { fetchLoadingSelectedNamespace } from '../../../reducers/BaseServiceReducer';
+import msgs from '../../../../nls/kappnav.properties'
+import { fetchLoadingSelectedNamespace } from '../../../reducers/BaseServiceReducer'
+import PropTypes from 'prop-types'
 
 require('../../../../scss/namespace-dropdown.scss')
 
@@ -31,13 +32,8 @@ const translateWithId = (locale, id) => msgs.get(id)
 
 class NamespaceDropdown extends Component {
 
-  //state = {
-  //  isScrollingDownward: this.props.isScrollingDownward || false,
-  //  lastPosition: 0,
-  //}
-
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       isScrollingDownward: false,
       lastPosition: 0
@@ -72,7 +68,7 @@ class NamespaceDropdown extends Component {
     window.addEventListener('scroll', this._debouncedScroll)
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.isScrollingDownward !== this.props.isScrollingDownward) {
       this.setState({ isScrollingDownward: nextProps.isScrollingDownward })
     }
@@ -84,17 +80,16 @@ class NamespaceDropdown extends Component {
 
   updateSelectedNamespace = (event) => {
     if(event.selectedItem.id == 'all'){
-        this.props.fetchLoadingSelectedNamespace('')
-      } else {
-        this.props.fetchLoadingSelectedNamespace(event.selectedItem.value)
-      }
+      this.props.fetchLoadingSelectedNamespace('')
+    } else {
+      this.props.fetchLoadingSelectedNamespace(event.selectedItem.value)
+    }
   }
 
   render() {
     //const { namespaces, selected_namespaces } = this.props
-    const namespaces = this.props.baseInfo.namespaces;
-    console.log("I m namespaces " + JSON.stringify(namespaces, null,4))
-    const selected_namespaces = this.props.baseInfo.selectedNamespace;
+    const namespaces = this.props.baseInfo.namespaces
+    const selected_namespaces = this.props.baseInfo.selectedNamespace
     const { isScrollingDownward } = this.state
     const hasMultipleNamespaces = namespaces && namespaces.length > 1
     let dropdownItems = Object.assign({}, namespaces)
@@ -107,7 +102,7 @@ class NamespaceDropdown extends Component {
     return <DropdownV2
       label={hasMultipleNamespaces ? msgs.get('namespaces.all', this.context.locale) : dropdownItems[0].label}
       ariaLabel={selected_namespaces.toString()}
-      className={`namespaces`}
+      className={`namespaces`} // eslint-disable-line quotes
       data-header-active={isScrollingDownward}
       //onChange={this.props.switchNamespace}
       onChange={(event) => this.updateSelectedNamespace(event)}
@@ -116,11 +111,18 @@ class NamespaceDropdown extends Component {
   }
 }
 
+NamespaceDropdown.propTypes = {
+  baseInfo: PropTypes.object,
+  fetchLoadingSelectedNamespace: PropTypes.func,
+  isScrollingDownward: PropTypes.bool,
+  namespaces: PropTypes.func
+}
+
 export default connect(
-    (state) => ({
-        baseInfo: state.baseInfo,
-    }),
-    {
-        fetchLoadingSelectedNamespace
-    }
-)(NamespaceDropdown);
+  (state) => ({
+    baseInfo: state.baseInfo,
+  }),
+  {
+    fetchLoadingSelectedNamespace
+  }
+)(NamespaceDropdown)

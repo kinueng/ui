@@ -5,9 +5,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,6 +22,7 @@ import React from 'react'
 import msgs from '../../../../nls/kappnav.properties'
 import NavModal, { withForm } from './NavModal'
 import { General, Labels, Namespace, MatchLabels, MatchExpressions, ComponentKinds } from '../common/ModalFormItems'
+import PropTypes from 'prop-types'
 
 const MENU_ITEMS = [
   'general',
@@ -56,7 +57,7 @@ const applicationMapping = {
 
 const formMapping = Object.assign(applicationMapping)
 
-const Selector = ({form, onChange}, context) =>
+const Selector = ({form, onChange}) =>
   <div>
     <MatchLabels
       type='matchLabels'
@@ -70,7 +71,12 @@ const Selector = ({form, onChange}, context) =>
       addLabel={msgs.get('formaction.addMatchExpression')} />
   </div>
 
-const KindSection = ({form, onChange}, context) =>
+Selector.propTypes = {
+  form: PropTypes.object,
+  onChange: PropTypes.func
+}
+
+const KindSection = ({form, onChange}) =>
   <div>
     <ComponentKinds
       type='componentKinds'
@@ -79,7 +85,12 @@ const KindSection = ({form, onChange}, context) =>
       addLabel={msgs.get('formaction.addKind')} />
   </div>
 
-const ApplicationModal = ({ createAction, namespaces, form, onChange, onJsonChange, json, onToggle }, context) =>
+KindSection.propTypes = {
+  form: PropTypes.object,
+  onChange: PropTypes.func
+}
+
+const ApplicationModal = ({ createAction, namespaces, form, onChange, onJsonChange, json, onToggle }) =>
   <NavModal
     form={form}
     buttonName={msgs.get('button.application.create')}
@@ -104,5 +115,15 @@ const ApplicationModal = ({ createAction, namespaces, form, onChange, onJsonChan
     <Selector form={form} />
     <KindSection form={form} />
   </NavModal>
+
+ApplicationModal.propTypes = {
+  createAction: PropTypes.func,
+  form: PropTypes.object,
+  json: PropTypes.string,
+  namespaces: PropTypes.array,
+  onChange: PropTypes.func,
+  onJsonChange: PropTypes.func,
+  onToggle: PropTypes.func
+}
 
 export default withForm(ApplicationModal, initialState)

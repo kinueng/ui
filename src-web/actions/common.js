@@ -5,9 +5,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -118,13 +118,16 @@ export const transform = (resource, key) => {
     return key.transformFunction(resource)
   } else if (key.type === 'tag') {
     var data = key.getData(resource)
+    // eslint-disable-next-line react/no-array-index-key
     return data ? data.map((tagText, index) => <Tag key={`tag-${index}`} style={{display: 'inline-block'}} type={'beta'} title={tagText.title}>{tagText.value ? `${tagText.name}:${tagText.value}` : tagText.name}</Tag>) : '-'
   } else if (key.type === 'expression') {
-    var data = key.getData(resource)
-    return data ? data.map((tagText, index) =><span className="bx--tag bx--tag--beta" title={tagText.title} style={{display: 'inline-block'}}>{tagText.name}<div className="expression">{tagText.operator}</div>{tagText.value}</span>) : '-'
+    var exp = key.getData(resource)
+    // eslint-disable-next-line react/no-array-index-key
+    return exp ? exp.map((tagText, index) =><span key={`resource-${index}`} className="bx--tag bx--tag--beta" title={tagText.title} style={{display: 'inline-block'}}>{tagText.name}<div className="expression">{tagText.operator}</div>{tagText.value}</span>) : '-'
   } else if (key.type === 'links') {
-    var data = key.getData(resource)
-    return data ? data.map((linkInfo, index) => <a style={{display: 'block'}} key={`link-${index}`} href={linkInfo.url} target="_blank" rel="noopener noreferrer" title={linkInfo.description}>{linkInfo.description}</a>) : '-'
+    var links = key.getData(resource)
+    // eslint-disable-next-line react/no-array-index-key
+    return links ? links.map((linkInfo, index) => <a style={{display: 'block'}} key={`link-${index}`} href={linkInfo.url} target="_blank" rel="noopener noreferrer" title={linkInfo.description}>{linkInfo.description}</a>) : '-'
   } else {
     return (value || value === 0) ? value : '-'
   }
@@ -147,21 +150,21 @@ var defaultTimestampKey = 'metadata.creationTimestamp'
 
 export const getAgeDifference = (createdTime) => {
   const difference = moment().diff(createdTime),
-    diffDuration = moment.duration(difference),
-    days = diffDuration.days(),
-    hours = diffDuration.hours(),
-    minutes = diffDuration.minutes()
+        diffDuration = moment.duration(difference),
+        days = diffDuration.days(),
+        hours = diffDuration.hours(),
+        minutes = diffDuration.minutes()
   return {'difference': difference, 'diffDuration': diffDuration, 'days': days, 'hours': hours, 'minutes' : minutes}
 }
 
 export const getCreationTime = (item, timestampKey) => {
   const key = timestampKey ? timestampKey : defaultTimestampKey
   const createdTime = lodash.get(item, key)
-  return createdTime;
+  return createdTime
 }
 
 export const getAge = (item, timestampKey) => {
-  const createdTime = getCreationTime(item, timestampKey);
+  const createdTime = getCreationTime(item, timestampKey)
   if (createdTime) {
     const diff = getAgeDifference(createdTime),
           days = diff.days,
@@ -182,10 +185,10 @@ export const getAge = (item, timestampKey) => {
 export const openModal = (operation, resource, application, applicationNamespace, cmd, cmdInput) => {
   const resourceType = resource.kind.toLowerCase()
   if(resourceType === 'job' && operation === 'remove') {
-    // The delete job logic is very different from the other 
+    // The delete job logic is very different from the other
     window.secondaryHeader.showRemoveResourceModal(
-      true, 
-      { primaryBtn: 'modal.button.' + operation, heading: 'modal.' + operation + '.heading' }, 
+      true,
+      { primaryBtn: 'modal.button.' + operation, heading: 'modal.' + operation + '.heading' },
       resource,
       '/kappnav/resource/command/' + encodeURIComponent(resource.metadata.name)
     )
@@ -199,7 +202,7 @@ export const openModal = (operation, resource, application, applicationNamespace
     if(application) {
       url = '/kappnav/resource/' + encodeURIComponent(application)+'/' + encodeURIComponent(resource.metadata.name)+'/'+resource.kind+'/execute/command/'+encodeURIComponent(cmd.name)+'?namespace='+encodeURIComponent(resource.metadata.namespace)+'&application-namespace='+applicationNamespace
     }
-      
+
     var input = undefined
     if(cmdInput && cmd[CONFIG_CONSTANTS.REQUIRES_INPUT]) {
       input = cmdInput[cmd[CONFIG_CONSTANTS.REQUIRES_INPUT]]
@@ -208,7 +211,7 @@ export const openModal = (operation, resource, application, applicationNamespace
     window.secondaryHeader.showActionResourceModal(true, {
       primaryBtn: 'modal.button.submit',
       heading: cmd.description
-    }, resource, url, input, cmd)  
+    }, resource, url, input, cmd)
   } else {
     window.secondaryHeader.showRemoveResourceModal(true, {
       primaryBtn: 'modal.button.'+operation,
@@ -232,12 +235,13 @@ export const performUrlAction = (urlPattern, openWindow, kind, name, namespace, 
         let url = result.action
 
         try {
-          let parsedURL = new URL(result.action)
+          const parsedURL = new URL(result.action)
           if(parsedURL && parsedURL.searchParams){
-            let searchParams = parsedURL.searchParams.entries()
+            const searchParams = parsedURL.searchParams.entries()
             let newURL = parsedURL.origin+parsedURL.pathname+parsedURL.hash
             //URL encode search params
             let first = true
+            // eslint-disable-next-line prefer-const
             for (let [key, value] of searchParams) {
               if (first === true) {
                 newURL = newURL + '?'
@@ -285,9 +289,9 @@ export const getHoverOverTextForStatus = (annotations) => {
   if(! annotations) {
     return ''
   }
-  let hoverOverNLS = annotations['kappnav.status.flyover.nls']
+  const hoverOverNLS = annotations['kappnav.status.flyover.nls']
   if(hoverOverNLS) {
-    let flyover = JSON.parse(hoverOverNLS)
+    const flyover = JSON.parse(hoverOverNLS)
     if(! Array.isArray(flyover)) {
       // Expect this to be a string like "unknown"
       return msgs.get(flyover.toLowerCase())
@@ -295,19 +299,19 @@ export const getHoverOverTextForStatus = (annotations) => {
 
     // splice will return index 0 and delete the element from the array
     // details array should be left with only arguments for the PII message e.g. {0} {1} ...
-    let indexToRemove = 0;
-    let howManyToRemoveFromArray = 1;
-    let msgKey = flyover.splice(indexToRemove, howManyToRemoveFromArray)
+    const indexToRemove = 0
+    const howManyToRemoveFromArray = 1
+    const msgKey = flyover.splice(indexToRemove, howManyToRemoveFromArray)
     return msgs.get(msgKey, flyover)
   }
-  let hoverOver_notNLS = annotations['kappnav.status.flyover']
+  const hoverOver_notNLS = annotations['kappnav.status.flyover']
   if(hoverOver_notNLS) {
     return hoverOver_notNLS
   }
   return ''
 }
 
-export const getStatus = (metadata, appNavConfigData) => { 
+export const getStatus = (metadata, appNavConfigData) => {
   const statusColorMapping = appNavConfigData && appNavConfigData.statuColorMapping
   const statusPrecedence = appNavConfigData && appNavConfigData.statusPrecedence ? appNavConfigData && appNavConfigData.statusPrecedence : []
   const statusUnknown = appNavConfigData && appNavConfigData.statusUnknown
@@ -321,10 +325,10 @@ export const getStatus = (metadata, appNavConfigData) => {
   let statusText = ''
   let sortTitle = ''
 
-  const name = metadata && metadata.name;
+  const name = metadata && metadata.name
   const value = annotations && annotations['kappnav.status.value'] ? annotations['kappnav.status.value'] : statusUnknown
   const sortIndex = statusPrecedence.findIndex(val => val === value)
-  
+
   if(statusColorMapping && value) {
     statusText = msgs.get(value.toLowerCase())
     const colorKey = statusColorMapping.values && statusColorMapping.values[value]
@@ -338,19 +342,19 @@ export const getStatus = (metadata, appNavConfigData) => {
   }
 
   return {
-    statusColor: statusColor, 
-    borderColor: STATUS_COLORS.BORDER_COLOR, 
-    statusMessage: statusMessage, 
-    statusText: statusText, 
+    statusColor: statusColor,
+    borderColor: STATUS_COLORS.BORDER_COLOR,
+    statusMessage: statusMessage,
+    statusText: statusText,
     sortTitle: sortTitle}
 }
 
 export const buildStatusHtml = (statusObj) => {
   return (
     <div className='statusCell' data-sorttitle={statusObj.sortTitle}>
-      <span className="bx--detail-page-header-status-icon" 
-            title={statusObj.statusMessage} 
-            style={{backgroundColor: statusObj.statusColor, borderColor: statusObj.borderColor}}>
+      <span className="bx--detail-page-header-status-icon"
+        title={statusObj.statusMessage}
+        style={{backgroundColor: statusObj.statusColor, borderColor: statusObj.borderColor}}>
       </span>
       <span className="bx--detail-page-header-status-text">{statusObj.statusText}</span>
     </div>
@@ -358,19 +362,19 @@ export const buildStatusHtml = (statusObj) => {
 }
 
 export const validateUrl = (url) => {
-  // Parse the user provided URL.  This is crude way to prevent XSS by 
+  // Parse the user provided URL.  This is crude way to prevent XSS by
   // sanity checking the user's input is actually a URL
 
-  var result = {href: "", text: ""}
+  var result = {href: '', text: ''}
   try {
     if(url && url.trim()) { // check for empty or non-existing string
-      let temp = new URL(url)
+      const temp = new URL(url)
       result.href = temp.href
       result.text = temp.href
     }
   } catch(err) {
-    // If URL cannot parse the string, that must mean the user input 
-    // is not in a URL format.  Let's be on the safeside and not display 
+    // If URL cannot parse the string, that must mean the user input
+    // is not in a URL format.  Let's be on the safeside and not display
     // the user's input (XSS) and display a reason why the URL is not shown
     result.text = msgs.get('description.title.urlError')
   }
@@ -399,58 +403,58 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
   var hasCmdActions = cmdActions && cmdActions.length && cmdActions.length>0
 
   if(hasStaticActions || hasUrlActions || hasCmdActions) {
-      var menu = <OverflowMenu floatingMenu flipped iconDescription={msgs.get('svg.description.overflowMenu')}>
-        {(() => {
-          if(hasStaticActions) {
-            return staticResourceData.actions.map((action, staticindex) => (
-              <OverflowMenuItem key={itemId + action}
-                primaryFocus={staticindex === 0}
-                itemText={msgs.get('table.actions.'+action)}
-                onClick={openModal.bind(this, action, cloneData)}
-                onFocus={(e) => {e.target.title = msgs.get('table.actions.'+action)}}
-                onMouseEnter={(e) => {e.target.title = msgs.get('table.actions.'+action)}} />
-            ))
-          }
-        })()}
-        {(() => {
-          if(urlActions) {
-            urlActions.forEach((action) => { //try to cache the links ahead of time
-              var kind = componentData && componentData.kind
-              var namespace = componentData && componentData.metadata && componentData.metadata.namespace
-              var name = componentData && componentData.metadata && componentData.metadata.name
-              performUrlAction(action['url-pattern'], action['open-window'], kind, name, namespace, undefined, false)
-            })
+    var menu = <OverflowMenu floatingMenu flipped iconDescription={msgs.get('svg.description.overflowMenu')}>
+      {(() => {
+        if(hasStaticActions) {
+          return staticResourceData.actions.map((action, staticindex) => (
+            <OverflowMenuItem key={itemId + action}
+              primaryFocus={staticindex === 0}
+              itemText={msgs.get('table.actions.'+action)}
+              onClick={openModal.bind(this, action, cloneData)}
+              onFocus={(e) => {e.target.title = msgs.get('table.actions.'+action)}}
+              onMouseEnter={(e) => {e.target.title = msgs.get('table.actions.'+action)}} />
+          ))
+        }
+      })()}
+      {(() => {
+        if(urlActions) {
+          urlActions.forEach((action) => { //try to cache the links ahead of time
+            var kind = componentData && componentData.kind
+            var namespace = componentData && componentData.metadata && componentData.metadata.namespace
+            var name = componentData && componentData.metadata && componentData.metadata.name
+            performUrlAction(action['url-pattern'], action['open-window'], kind, name, namespace, undefined, false)
+          })
 
-            return urlActions.map((action, urlindex) => {
-              let actionLabel = action['text.nls'] ? msgs.get(action['text.nls']) : action.text
-              let actionDesc = action['description.nls'] ? msgs.get(action['description.nls']) : action.description
-              return <OverflowMenuItem key={action.name}
-                primaryFocus={urlindex === 0 && !hasStaticActions}
-                itemText={actionLabel}
-                onClick={performUrlAction.bind(this, action['url-pattern'], action['open-window'], componentData && componentData.kind, componentData && componentData.metadata && componentData.metadata.name, componentData && componentData.metadata && componentData.metadata.namespace, undefined, true)}
-                onFocus={(e) => {
-                  if(actionDesc){ e.target.title = actionDesc }
-                }}
-                onMouseEnter={(e) => {
-                  if(actionDesc){ e.target.title = actionDesc }
-                }} />
-            })
-          }
-        })()}
-        {(() => {
-          if(cmdActions) {
-            return cmdActions.map((action, cmdindex) => (
-              <OverflowMenuItem key={action.name}
-                primaryFocus={cmdindex === 0 && !hasUrlActions && !hasStaticActions}
-                itemText={action.text ? action.text : action.description ? action.description : action.name}
-                onClick={openModal.bind(this, "action", cloneData, applicationName, applicationNamespace, action, cmdInputs)}
-                onFocus={(e) => {if(action.description) e.target.title = action.description}}
-                onMouseEnter={(e) => {if(action.description) e.target.title = action.description}} />
-            ))
-          }
-        })()}
-      </OverflowMenu>
+          return urlActions.map((action, urlindex) => {
+            const actionLabel = action['text.nls'] ? msgs.get(action['text.nls']) : action.text
+            const actionDesc = action['description.nls'] ? msgs.get(action['description.nls']) : action.description
+            return <OverflowMenuItem key={action.name}
+              primaryFocus={urlindex === 0 && !hasStaticActions}
+              itemText={actionLabel}
+              onClick={performUrlAction.bind(this, action['url-pattern'], action['open-window'], componentData && componentData.kind, componentData && componentData.metadata && componentData.metadata.name, componentData && componentData.metadata && componentData.metadata.namespace, undefined, true)}
+              onFocus={(e) => {
+                if(actionDesc){ e.target.title = actionDesc }
+              }}
+              onMouseEnter={(e) => {
+                if(actionDesc){ e.target.title = actionDesc }
+              }} />
+          })
+        }
+      })()}
+      {(() => {
+        if(cmdActions) {
+          return cmdActions.map((action, cmdindex) => (
+            <OverflowMenuItem key={action.name}
+              primaryFocus={cmdindex === 0 && !hasUrlActions && !hasStaticActions}
+              itemText={action.text ? action.text : action.description ? action.description : action.name}
+              onClick={openModal.bind(this, 'action', cloneData, applicationName, applicationNamespace, action, cmdInputs)}
+              onFocus={(e) => {if(action.description) e.target.title = action.description}}
+              onMouseEnter={(e) => {if(action.description) e.target.title = action.description}} />
+          ))
+        }
+      })()}
+    </OverflowMenu>
 
-      return menu
+    return menu
   }
 }

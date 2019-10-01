@@ -5,9 +5,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,6 +25,7 @@ import msgs from '../../../../nls/kappnav.properties'
 import { REQUEST_STATUS, RESOURCE_TYPES } from '../../../actions/constants'
 import jsYaml from 'js-yaml'
 import { translateKind, getToken } from '../../../actions/common'
+import PropTypes from 'prop-types'
 
 require('../../../../scss/modal.scss')
 
@@ -45,10 +46,11 @@ class IsomorphicEditor extends React.Component {
     this.state = { mounted: false }
   }
   componentDidMount() {
+    // eslint-disable-next-line react/no-did-mount-set-state
     this.setState({ mounted: true })
   }
   addAriaLabelToAceCursor() {
-    let element = document.querySelector('.ace_editor > textarea[class="ace_text-input"]')
+    const element = document.querySelector('.ace_editor > textarea[class="ace_text-input"]')
     element.setAttribute('aria-label', 'code editor cursor')
   }
   render() {
@@ -95,7 +97,7 @@ class ResourceModal extends React.PureComponent {
             cache: 'no-cache',
             headers: {
               'Content-Type': 'application/json; charset=utf-8',
-              "CSRF-Token": getToken()
+              'CSRF-Token': getToken()
             },
             body: JSON.stringify(resource),
           })
@@ -104,6 +106,7 @@ class ResourceModal extends React.PureComponent {
       } catch(e) {
         console.error(e) //eslint-disable-line no-console
         this.props.receivePostError(resourceType, {error: {message: e.message}})
+        // eslint-disable-next-line react/no-access-state-in-setstate
         this.setState({reqErrorMsg: [...this.state.reqErrorMsg, e.message]})
       }
     })
@@ -124,7 +127,7 @@ class ResourceModal extends React.PureComponent {
     this.setState({data: value})
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.data && this.props.data != nextProps.data) {
       if (nextProps.editorMode === 'json') {
         this.setState({data:JSON.stringify(nextProps.data, null, 2)})
@@ -134,6 +137,7 @@ class ResourceModal extends React.PureComponent {
       }
     }
     if (nextProps.reqStatus && nextProps.reqStatus === REQUEST_STATUS.ERROR) {
+      // eslint-disable-next-line react/no-access-state-in-setstate
       this.setState({ reqErrorMsg: [...this.state.reqErrorMsg, nextProps.reqErrorMsg]})
     }
     if (nextProps.reqCount === 0 && !nextProps.reqErrCount) {
@@ -144,16 +148,16 @@ class ResourceModal extends React.PureComponent {
   componentDidMount() {
 
     if (this.props.editorMode === 'json') {
+      // eslint-disable-next-line react/no-did-mount-set-state
       this.setState({data: JSON.stringify(this.props.data, null, 2)})
     } else {
+      // eslint-disable-next-line react/no-did-mount-set-state
       this.setState({data: jsYaml.dump(this.props.data)})
     }
   }
 
   render() {
     const { reqCount, open, label, editorMode } = this.props
-    let kindTranslated = translateKind(this.props.data.kind)
-
 
     let modalLabel, modalHeading
     let upperCaseKind = this.props.data.kind
@@ -195,6 +199,7 @@ class ResourceModal extends React.PureComponent {
           aria-label={modalHeading}>
           <div>
             {this.state.reqErrorMsg && this.state.reqErrorMsg.length > 0 &&
+              // eslint-disable-next-line react/no-array-index-key
               this.state.reqErrorMsg.map((err,key) => <InlineNotification key={key} kind='error' title='' subtitle={err} iconDescription={msgs.get('svg.description.error')} />)
             }
             <IsomorphicEditor
@@ -221,6 +226,21 @@ class ResourceModal extends React.PureComponent {
       </div>
     )
   }
+}
+
+ResourceModal.propTypes = {
+  data: PropTypes.object,
+  editorMode: PropTypes.string,
+  handleClose: PropTypes.func,
+  label: PropTypes.object,
+  open: PropTypes.bool,
+  receivePostError: PropTypes.func,
+  reqCount: PropTypes.object,
+  reqErrCount: PropTypes.bool,
+  reqErrorMsg: PropTypes.string,
+  reqStatus: PropTypes.string,
+  resourceType: PropTypes.object,
+  submitUrl: PropTypes.string
 }
 
 export default ResourceModal

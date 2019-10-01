@@ -5,9 +5,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,7 @@ import msgs from '../../../../nls/kappnav.properties'
 import { TextInput, Icon, Select, SelectItem, NumberInput } from 'carbon-components-react'
 import withMultiple from './ModalListItem'
 import { FieldWrapper } from './FormField'
+import PropTypes from 'prop-types'
 
 const transform = (field, handleChange, event) => {
   handleChange(field, event.target.value)
@@ -45,7 +46,18 @@ const NumberField = ({ onChange, labelText, content, field, id, value, invalid, 
       onChange={handleNumberFieldChange.bind(this, field, onChange)} />
   </FieldWrapper>
 
-const General = ({ form, onChange, children, error, labelName, labelContent }, context) => {
+NumberField.propTypes = {
+  content: PropTypes.object,
+  field: PropTypes.string,
+  id: PropTypes.string,
+  invalid: PropTypes.bool,
+  labelText: PropTypes.string,
+  onChange: PropTypes.func,
+  required: PropTypes.bool,
+  value: PropTypes.number
+}
+
+const General = ({ form, onChange, children, error, labelName, labelContent }) => {
   const addOns = React.Children.map(children, child => {
     return React.cloneElement(child, { form, onChange, error })
   })
@@ -65,7 +77,16 @@ const General = ({ form, onChange, children, error, labelName, labelContent }, c
   </div>
 }
 
-const Label = ({ id, item, onModify, onRemove }, context) =>
+General.propTypes = {
+  children: PropTypes.object,
+  error: PropTypes.object,
+  form: PropTypes.object,
+  labelContent: PropTypes.string,
+  labelName: PropTypes.string,
+  onChange: PropTypes.func
+}
+
+const Label = ({ id, item, onModify, onRemove }) =>
   <div className='field-row'>
     <FieldWrapper labelText={msgs.get('formfield.label')} content={msgs.get('formtip.common.label.label')}>
       <TextInput
@@ -88,7 +109,14 @@ const Label = ({ id, item, onModify, onRemove }, context) =>
     <RemoveIcon id={`labels-remove-${id}`} onRemove={onRemove} />
   </div>
 
-const MatchLabel = ({ id, item, onModify, onRemove }, context) =>
+Label.propTypes = {
+  id: PropTypes.number,
+  item: PropTypes.object,
+  onModify: PropTypes.func,
+  onRemove: PropTypes.func
+}
+
+const MatchLabel = ({ id, item, onModify, onRemove }) =>
   <div className='field-row'>
     <FieldWrapper labelText={msgs.get('formfield.label')} content={msgs.get('formtip.common.matchLabel')}>
       <TextInput
@@ -111,7 +139,14 @@ const MatchLabel = ({ id, item, onModify, onRemove }, context) =>
     <RemoveIcon id={`labels-remove-${id}`} onRemove={onRemove} />
   </div>
 
-const RemoveIcon = ({ id, onRemove }, context) =>
+MatchLabel.propTypes = {
+  id: PropTypes.number,
+  item: PropTypes.object,
+  onModify: PropTypes.func,
+  onRemove: PropTypes.func
+}
+
+const RemoveIcon = ({ id, onRemove }) =>
   <Icon
     id={id}
     tabIndex='0'
@@ -122,18 +157,32 @@ const RemoveIcon = ({ id, onRemove }, context) =>
     style={{ 'margin': 'auto', 'minWidth': '4.25rem' }}
     fill='#8c9ba5' />
 
-const NamespaceSelect = ({ form, namespaces, onChange, labelName, labelContent }, context) =>
+RemoveIcon.propTypes = {
+  id: PropTypes.string,
+  onRemove: PropTypes.func
+}
+
+const NamespaceSelect = ({ form, namespaces, onChange, labelName, labelContent }) =>
   <FieldWrapper labelText={labelName || msgs.get('formfield.namespace')} content={labelContent || msgs.get('formtip.common.namespace')} required={true}>
     <Select
       id='namespace-select'
       value={form.namespace}
       hideLabel
       onChange={transform.bind(null, 'namespace', onChange)}>
+      {/* eslint-disable react/no-array-index-key */}
       {namespaces.map((namespace, index) => <SelectItem key={index} text={namespace.Name} value={namespace.Name} />)}
     </Select>
   </FieldWrapper>
 
-  const MatchExpression = ({ id, item, onModify, onRemove }, context) =>
+NamespaceSelect.propTypes = {
+  form: PropTypes.object,
+  labelContent: PropTypes.string,
+  labelName: PropTypes.string,
+  namespaces: PropTypes.array,
+  onChange: PropTypes.func
+}
+
+const MatchExpression = ({ id, item, onModify, onRemove }) =>
   <div className='field-row'>
     <FieldWrapper labelText={msgs.get('formfield.key')} content={msgs.get('formtip.selectors.matchExpression.key')}>
       <TextInput
@@ -165,28 +214,42 @@ const NamespaceSelect = ({ form, namespaces, onChange, labelName, labelContent }
     <RemoveIcon id={`match-expression-remove-${id}`} onRemove={onRemove} />
   </div>
 
-  const Kind = ({ id, item, onModify, onRemove }, context) =>
-    <div className='field-row'>
-      <FieldWrapper labelText={msgs.get('formfield.group')} content={msgs.get('formtip.common.group')}>
-        <TextInput
-          id={`labels-group-${id}`}
-          value={item.group}
-          hideLabel
-          className='bx--text-input-override'
-          labelText={msgs.get('formfield.group') + ' ' + msgs.get('formtip.common.group')}
-          onChange={onModify.bind(null, 'group')} />
-      </FieldWrapper>
-      <FieldWrapper labelText={msgs.get('formfield.kind')} content={msgs.get('formtip.common.kind')}>
-        <TextInput
-          id={`labels-kind-${id}`}
-          value={item.kind}
-          hideLabel
-          className='bx--text-input-override'
-          labelText={msgs.get('formfield.kind') + ' ' + msgs.get('formtip.common.kind')}
-          onChange={onModify.bind(null, 'kind')} />
-      </FieldWrapper>
-      <RemoveIcon id={`labels-remove-${id}`} onRemove={onRemove} />
-    </div>
+MatchExpression.propTypes = {
+  id: PropTypes.number,
+  item: PropTypes.object,
+  onModify: PropTypes.func,
+  onRemove: PropTypes.func
+}
+
+const Kind = ({ id, item, onModify, onRemove }) =>
+  <div className='field-row'>
+    <FieldWrapper labelText={msgs.get('formfield.group')} content={msgs.get('formtip.common.group')}>
+      <TextInput
+        id={`labels-group-${id}`}
+        value={item.group}
+        hideLabel
+        className='bx--text-input-override'
+        labelText={msgs.get('formfield.group')}
+        onChange={onModify.bind(null, 'group')} />
+    </FieldWrapper>
+    <FieldWrapper labelText={msgs.get('formfield.kind')} content={msgs.get('formtip.common.kind')}>
+      <TextInput
+        id={`labels-kind-${id}`}
+        value={item.kind}
+        hideLabel
+        className='bx--text-input-override'
+        labelText={msgs.get('formfield.kind')}
+        onChange={onModify.bind(null, 'kind')} />
+    </FieldWrapper>
+    <RemoveIcon id={`labels-remove-${id}`} onRemove={onRemove} />
+  </div>
+
+Kind.propTypes = {
+  id: PropTypes.number,
+  item: PropTypes.object,
+  onModify: PropTypes.func,
+  onRemove: PropTypes.func
+}
 
 const MatchExpressions = withMultiple(MatchExpression, { key: '', operator: '', values: ''})
 

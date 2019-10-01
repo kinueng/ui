@@ -5,9 +5,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,6 +33,7 @@ import msgs from '../../../../nls/kappnav.properties'
 import {REQUEST_STATUS} from '../../../actions/constants'
 import lodash from 'lodash'
 import handleKeyboardEvent from '../../../util/accessibility'
+import PropTypes from 'prop-types'
 
 require('../../../../scss/modal.scss')
 
@@ -55,19 +56,23 @@ const withForm = (Component, initialForm) => {
 
       //These are hacks because I could not find a good way to initialize a Select input box's form value from a dynamic list. Only
       //can hard code it as a static string.
+      // eslint-disable-next-line react/prop-types
       if(!form.namespace && this.props.namespace) form.namespace = this.props.namespace
+      // eslint-disable-next-line react/prop-types
       if(!form.selectedSecret && this.props.existingSecrets && this.props.existingSecrets[0]) {
+        // eslint-disable-next-line react/prop-types
         form.selectedSecret = this.props.existingSecrets[0].Name
       }
 
-      return <Component {...this.props} onChange={this.onChange} form={form} onJsonChange={this.onJsonChange} onToggle={this.onToggle} json={json}/>
+      return <Component {...this.props} onChange={this.onChange} form={form} onJsonChange={this.onJsonChange} onToggle={this.onToggle} json={json} />
     }
 
     onChange(fields, values) {
       if (arguments.length == 0) {
         this.setState(lodash.cloneDeep(initialForm))
       } else {
-        let form = Object.assign({}, this.state.form)
+        // eslint-disable-next-line react/no-access-state-in-setstate
+        const form = Object.assign({}, this.state.form)
 
         if(Array.isArray(fields)) {
           for(var i=0; i<fields.length; i++)
@@ -75,7 +80,7 @@ const withForm = (Component, initialForm) => {
         } else {
           lodash.set(form, fields, values)
         }
-        
+
 
         this.setState({form})
       }
@@ -131,41 +136,41 @@ class NavModal extends React.PureComponent {
     const {open, jsonMode, selectedMenuItem, parsingError, validationErrors} = this.state
 
     return (<div>
-      <Button small icon={'add--glyph'} onClick={this.handleOpen.bind(this, true)} disabled={this.props.disabled} iconDescription={msgs.get('svg.description.plus')} id={`create-application`}>
+      <Button small icon={'add--glyph'} onClick={this.handleOpen.bind(this, true)} disabled={this.props.disabled} iconDescription={msgs.get('svg.description.plus')} id={'create-application'}>
         {this.props.buttonName}
       </Button>
       {
         open && <ComposedModal id='nav-modal' selectorPrimaryFocus='.bx--modal-close' className='modal nav-modal' role='region' aria-label={this.props.modalHeading} open={open} onClose={() => this.toggleModal(false)}>
-            <ModalHeader buttonOnClick={this.handleOpen.bind(this, false)} iconDescription={this.props.closeButtonLabel}>
-              <div>
-                <p className='bx--modal-header__label'>
-                  {this.props.modalLabel}
+          <ModalHeader buttonOnClick={this.handleOpen.bind(this, false)} iconDescription={this.props.closeButtonLabel}>
+            <div>
+              <p className='bx--modal-header__label'>
+                {this.props.modalLabel}
+              </p>
+              <p className='bx--modal-header__heading'>
+                {this.props.modalHeading}
+              </p>
+            </div>
+            {
+              !hideJsonEditor && <div className='toggle'>
+                <p>
+                  {msgs.get('mode.json')}
                 </p>
-                <p className='bx--modal-header__heading'>
-                  {this.props.modalHeading}
-                </p>
+                <Toggle id='json-toggle' onToggle={this.handleToggle} labelA={msgs.get('off')} labelB={msgs.get('on')} />
               </div>
-              {
-                !hideJsonEditor && <div className='toggle'>
-                    <p>
-                      {msgs.get('mode.json')}
-                    </p>
-                    <Toggle id='json-toggle' onToggle={this.handleToggle} labelA={msgs.get('off')} labelB={msgs.get('on')}/>
-                  </div>
-              }
-            </ModalHeader>
-            <ModalBody>
-              {
-                jsonMode
-                  ? <NavModalJsonEditor postStatus={this.state.postStatus} postErrorMsg={this.state.postErrorMsg} parsingError={parsingError} json={json} onJsonChange={onJsonChange}/>
-                  : <NavModalForm postStatus={this.state.postStatus} postErrorMsg={this.state.postErrorMsg} parsingError={parsingError} menuItems={menuItems} selectedMenuItem={selectedMenuItem} onMenuClick={this.onMenuClick} childComponents={children} validationErrors={validationErrors} onChange={onChange}/>
-              }
-            </ModalBody>
-            <ModalFooter primaryButtonDisabled={this.props.primaryButtonDisabled} primaryButtonText={msgs.get(
-                this.props.modalButtonName
-                ? this.props.modalButtonName
-                : 'modal.button.create')} secondaryButtonText={msgs.get('modal.button.cancel')} onRequestClose={this.handleOpen.bind(this, false)} onRequestSubmit={this.handleSubmit.bind(this)}/>
-          </ComposedModal>
+            }
+          </ModalHeader>
+          <ModalBody>
+            {
+              jsonMode
+                ? <NavModalJsonEditor postStatus={this.state.postStatus} postErrorMsg={this.state.postErrorMsg} parsingError={parsingError} json={json} onJsonChange={onJsonChange} />
+                : <NavModalForm postStatus={this.state.postStatus} postErrorMsg={this.state.postErrorMsg} parsingError={parsingError} menuItems={menuItems} selectedMenuItem={selectedMenuItem} onMenuClick={this.onMenuClick} childComponents={children} validationErrors={validationErrors} onChange={onChange} />
+            }
+          </ModalBody>
+          <ModalFooter primaryButtonDisabled={this.props.primaryButtonDisabled} primaryButtonText={msgs.get(
+            this.props.modalButtonName
+              ? this.props.modalButtonName
+              : 'modal.button.create')} secondaryButtonText={msgs.get('modal.button.cancel')} onRequestClose={this.handleOpen.bind(this, false)} onRequestSubmit={this.handleSubmit.bind(this)} />
+        </ComposedModal>
       }
     </div>)
   }
@@ -187,9 +192,9 @@ class NavModal extends React.PureComponent {
   }
 
   convertToForm() {
-    const {json, formMapping, onToggle, resourceType} = this.props
+    const {json, formMapping, onToggle} = this.props
     const jsonData = Object.assign({}, JSON.parse(json))
-    let formData = lodash.mapValues(formMapping, field => lodash.get(jsonData, field))
+    const formData = lodash.mapValues(formMapping, field => lodash.get(jsonData, field))
     // Empty array values should contain empty string for form
     const arrayVals = Object.keys(this.props.initialForm.form).filter(key => lodash.isArray(this.props.initialForm.form[key]) && KEY_VALUE_PAIRS.indexOf(key) === -1)
     arrayVals.forEach((key) => {
@@ -204,20 +209,20 @@ class NavModal extends React.PureComponent {
     keyValuePairs && keyValuePairs.forEach(pair => {
       const currentVal = formData[pair]
 
-        formData[pair] = lodash.isEmpty(currentVal)
-          ? [
-            {
-              name: '',
-              value: ''
-            }
-          ]
-          : Object.keys(currentVal).map(key => ({name: key, value: currentVal[key]}))
+      formData[pair] = lodash.isEmpty(currentVal)
+        ? [
+          {
+            name: '',
+            value: ''
+          }
+        ]
+        : Object.keys(currentVal).map(key => ({name: key, value: currentVal[key]}))
     })
 
     // Reformat componentKinds array
     if (lodash.has(formData, 'componentKinds')) {
       const componentKinds = formData.componentKinds
-      formData.componentKinds = componentKinds && componentKinds.map((kind, index) => {
+      formData.componentKinds = componentKinds && componentKinds.map((kind) => {
         return {
           group: kind.group,
           kind: kind.kind
@@ -261,7 +266,7 @@ class NavModal extends React.PureComponent {
   handleSubmit() {
     var errorCallback = function(error) {
       this.setState({postStatus: REQUEST_STATUS.ERROR, postErrorMsg: error})
-    }.bind(this);
+    }.bind(this)
 
     const {createAction, json, formMapping, hideJsonEditor} = this.props
     try {
@@ -286,7 +291,7 @@ class NavModal extends React.PureComponent {
 
   formatJson() {
     let mergedData
-    const {formMapping, json, form, resourceType} = this.props
+    const {formMapping, json, form} = this.props
     const templateName = form && form.kind && form.kind.toLowerCase()
     const jsonFormData = JSON.parse(this.parseTemplate(templateName, this.pruneFormData()))
 
@@ -318,8 +323,8 @@ class NavModal extends React.PureComponent {
   }
 
   pruneFormData() {
-    const {form, resourceType} = this.props
-    let formData = {}
+    const {form} = this.props
+    const formData = {}
     lodash.forIn(form, (value, formKey) => {
       if (lodash.isArray(value))
         if (formKey === 'matchExpressions') {
@@ -330,7 +335,7 @@ class NavModal extends React.PureComponent {
           })
         } else
           formData[formKey] = lodash.compact(value).filter(item => lodash.every(item, value => value !== ''))
-    else
+      else
         formData[formKey] = value
     })
     return formData
@@ -365,6 +370,29 @@ class NavModal extends React.PureComponent {
   }
 }
 
+NavModal.propTypes = {
+  buttonName: PropTypes.string,
+  children: PropTypes.array,
+  closeButtonLabel: PropTypes.string,
+  createAction: PropTypes.func,
+  disabled: PropTypes.object,
+  form: PropTypes.object,
+  formMapping: PropTypes.object,
+  hideJsonEditor: PropTypes.bool,
+  initialForm: PropTypes.object,
+  json: PropTypes.string,
+  menuItems: PropTypes.array,
+  modalButtonName: PropTypes.string,
+  modalHeading: PropTypes.string,
+  modalLabel: PropTypes.string,
+  onChange: PropTypes.func,
+  onJsonChange: PropTypes.func,
+  onToggle: PropTypes.func,
+  primaryButtonDisabled: PropTypes.object,
+  selectedNamespace: PropTypes.string,
+  validate: PropTypes.func
+}
+
 const AceEditor = (props) => {
   if (typeof window !== 'undefined') {
     const Ace = require('react-ace').default
@@ -377,19 +405,20 @@ const AceEditor = (props) => {
 
 class IsomorphicEditor extends React.Component {
   constructor (props){
-    super(props);
+    super(props)
     this.state = { mounted: false }
   }
   componentDidMount() {
+    // eslint-disable-next-line react/no-did-mount-set-state
     this.setState({ mounted: true })
   }
   render() {
     if(this.state.mounted){
-          return (
-            <AceEditor {...this.props} onLoad={this.addAriaLabelToAceCursor} setOptions={{showLineNumbers: false}}/>
-          )
+      return (
+        <AceEditor {...this.props} onLoad={this.addAriaLabelToAceCursor} setOptions={{showLineNumbers: false}} />
+      )
     }
-    return ( <div/>)
+    return ( <div />)
   }
 }
 
@@ -432,6 +461,7 @@ class NavModalForm extends React.PureComponent {
   getMenuItems() {
     const { menuItems, onMenuClick, validationErrors } = this.props
     return menuItems.map((item, index) =>
+      // eslint-disable-next-line react/no-array-index-key
       <li key={index} className={this.isActive(item)} id={item}>
         <a href="#" onClick={onMenuClick.bind(null, item)} className='menu-item' role='menuitem'>{msgs.get(`modal.nav.${item}`)}</a>
         {validationErrors.form && validationErrors[item] && !this.isActive(item) && <Icon className='modal-tab-error' name='icon--error--glyph' description={msgs.get('svg.description.error')} />}
@@ -451,6 +481,18 @@ class NavModalForm extends React.PureComponent {
 
     handleKeyboardEvent(e, data, 'nav-modal')
   }
+}
+
+NavModalForm.propTypes = {
+  childComponents: PropTypes.array,
+  menuItems: PropTypes.array,
+  onChange: PropTypes.func,
+  onMenuClick: PropTypes.func,
+  parsingError: PropTypes.bool,
+  postErrorMsg: PropTypes.string,
+  postStatus: PropTypes.string,
+  selectedMenuItem: PropTypes.string,
+  validationErrors: PropTypes.object
 }
 
 const NavModalJsonEditor = ({
@@ -488,6 +530,13 @@ const NavModalJsonEditor = ({
     />
   </div>
 
+NavModalJsonEditor.propTypes = {
+  json: PropTypes.string,
+  onJsonChange: PropTypes.func,
+  parsingError: PropTypes.bool,
+  postErrorMsg: PropTypes.string,
+  postStatus: PropTypes.string
+}
 export default NavModal
 export {
   withForm

@@ -5,9 +5,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,6 +24,7 @@ import msgs from '../../../../nls/kappnav.properties'
 import { FieldWrapper } from '../common/FormField'
 import { getToken } from '../../../actions/common'
 import lodash from 'lodash'
+import PropTypes from 'prop-types'
 
 const withForm = (Component, initialForm) => {
 
@@ -39,7 +40,7 @@ const withForm = (Component, initialForm) => {
 
     render() {
       const {form, reqErrorMsg} = this.state
-      return <Component {...this.props} onChange={this.onChange} clearForm={this.clearForm} submitForm={this.onSubmit} form={form} reqErrorMsg={reqErrorMsg}/>
+      return <Component {...this.props} onChange={this.onChange} clearForm={this.clearForm} submitForm={this.onSubmit} form={form} reqErrorMsg={reqErrorMsg} />
     }
 
     clearForm(){
@@ -52,7 +53,8 @@ const withForm = (Component, initialForm) => {
       if (arguments.length == 0) {
         this.setState(lodash.cloneDeep(initialForm))
       } else {
-        let form = Object.assign({}, this.state.form)
+        // eslint-disable-next-line react/no-access-state-in-setstate
+        const form = Object.assign({}, this.state.form)
         lodash.set(form, field, value)
         if(optional!=undefined && !optional && !value){
           lodash.set(form, ['error', field], true)
@@ -64,82 +66,90 @@ const withForm = (Component, initialForm) => {
     }
 
     onSubmit() {
-        var submitCallback = function(result){
-  
-          if(result == null && !this.props.submitNoInput) {
-            //The request failed.  If there are inputs, then the error message is on the modal, so we don't want to close it.
+      var submitCallback = function(result){
+
+        // eslint-disable-next-line react/prop-types
+        if(result == null && !this.props.submitNoInput) {
+          //The request failed.  If there are inputs, then the error message is on the modal, so we don't want to close it.
+          return
+        } else if(result!=null && result.error){
+          //Validation error
+          this.setState({reqErrorMsg: [result.error]})
+
+          // eslint-disable-next-line react/prop-types
+          if(!this.props.submitNoInput) {
+            //result is on the modal, don't close it
             return
-          } else if(result!=null && result.error){
-            //Validation error
-            this.setState({reqErrorMsg: [result.error]})
-
-            if(!this.props.submitNoInput) {
-              //result is on the modal, don't close it
-              return
-            }
-          }
-
-          this.props.handleClose()
-
-          //Open modal to display response
-          window.secondaryHeader.showActionMessageModal(true, result, this.state.reqErrorMsg && this.state.reqErrorMsg[0])
-          
-          //Clear everything out for next action
-          this.clearForm()    
-        }.bind(this);
-    
-        var data = {}
-        var input = this.props.input
-        if(input && input.fields) {
-          for(var fieldName in input.fields) {
-            if(this.state.form[fieldName] != undefined){
-              data[fieldName] = this.state.form[fieldName]
-            } else {
-              //The value isn't in the form because it wasn't changed.  I could not find a good way to 
-              //populate the form with the default values because the form initialization happens before we know what data belongs on the form
-              data[fieldName] = document.getElementById(fieldName).value
-            }
           }
         }
-          
-        document.getElementById("app").style.cursor = "wait"; 
-        fetch(this.props.submitUrl, {
-          method: 'POST',
-          headers: {
-            "Content-Type": "application/json",
-            "x-user": document.documentElement.getAttribute("user"),
-            "CSRF-Token": getToken()
-          },
-          body: JSON.stringify(data)
-        })
+
+        // eslint-disable-next-line react/prop-types
+        this.props.handleClose()
+
+        //Open modal to display response
+        window.secondaryHeader.showActionMessageModal(true, result, this.state.reqErrorMsg && this.state.reqErrorMsg[0])
+
+        //Clear everything out for next action
+        this.clearForm()
+      }.bind(this)
+
+      var data = {}
+      // eslint-disable-next-line react/prop-types
+      var input = this.props.input
+      // eslint-disable-next-line react/prop-types
+      if(input && input.fields) {
+        // eslint-disable-next-line react/prop-types
+        for(var fieldName in input.fields) {
+          if(this.state.form[fieldName] != undefined){
+            data[fieldName] = this.state.form[fieldName]
+          } else {
+            //The value isn't in the form because it wasn't changed.  I could not find a good way to
+            //populate the form with the default values because the form initialization happens before we know what data belongs on the form
+            data[fieldName] = document.getElementById(fieldName).value
+          }
+        }
+      }
+
+      document.getElementById('app').style.cursor = 'wait'
+      // eslint-disable-next-line react/prop-types
+      fetch(this.props.submitUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user': document.documentElement.getAttribute('user'),
+          'CSRF-Token': getToken()
+        },
+        body: JSON.stringify(data)
+      })
         .then(response => {
-          document.getElementById("app").style.cursor = "pointer"; 
+          document.getElementById('app').style.cursor = 'pointer'
           if (response.ok) {
             if(response.status === 207) {
               //Api Exception. One possible cause is that it failed to pull the image.
+              // eslint-disable-next-line react/prop-types
               this.setState({reqErrorMsg: [msgs.get('job.failure.207',[this.props.submitCmd.image, document.documentElement.getAttribute('appnavConfigmapNamespace')])]})
               return null
             }
-            return response.clone().json();
+            return response.clone().json()
           } else {
             if(response.status === 400 || response.status === 504) {
               this.setState({reqErrorMsg: [msgs.get('job.failure.400')]})
             } else if(response.status === 422 || response.status === 500) {
               //Error validating the inputs
-              return response.clone().json();
+              return response.clone().json()
             } else {
               this.setState({reqErrorMsg: [response.status + ' ' + response.statusText]})
             }
-            
+
             return null
           }
         })
         .then(result => submitCallback(result))
-      }
+    }
   }
 }
 
-const initialForm = { 
+const initialForm = {
   //This is basically empty because at creation time we don't know yet what fields belong to this form
   form: {
     error: {}
@@ -186,10 +196,10 @@ class ActionModal extends React.PureComponent {
     }
 
     if(submitNoInput) {
-      return ( <div/> )
+      return ( <div /> )
     } else {
       return (
-        <div> 
+        <div>
           <Modal
             id='submit-action-resource-modal'
             open={open}
@@ -205,50 +215,66 @@ class ActionModal extends React.PureComponent {
             selectorPrimaryFocus='.bx--modal-close'
             aria-label={msgs.get(label.heading)}>
             {reqErrorMsg && reqErrorMsg.length > 0 &&
+              // eslint-disable-next-line react/no-array-index-key
               reqErrorMsg.map((err,key) => <InlineNotification key={key} kind='error' title='' subtitle={err} iconDescription={msgs.get('svg.description.error')} />)
             }
             <div>
-            <Form>
-            {fields && fields.map((field, key) =>
-              {
-                if(field.type == "string") {
-                  return (
-                    <FieldWrapper key={'fw'+key} labelText={field.label} content={field.description} required={field.optional==false}>
-                      <TextInput
-                        id={field.name}
-                        hideLabel
-                        className='bx--text-input-override'
-                        labelText={field.label}
-                        value={form[field.name] != undefined ? form[field.name] : field.default}
-                        onChange={transform.bind(null, field.name, field.optional, onChange)}
-                        invalid={form.error && form.error[field.name]}
-                        invalidText={` ${msgs.get('formerror.required')}`} />
-                    </FieldWrapper>
-                  )
-                } else {
-                  return (
-                    <FieldWrapper key={'fw'+key} labelText={field.label} content={field.description} required={field.optional==false}>
-                      <Select
-                        id={field.name}
-                        value={form[field.name] != undefined ? form[field.name] : field.default ? field.default : field.values[0]}
-                        hideLabel
-                        onChange={transform.bind(null, field.name, field.optional, onChange)}
-                      >
-                        {field.values.map((value, index) => <SelectItem key={index} text={value} value={value} />)}
-                      </Select>
-                    </FieldWrapper>
-                  )
+              <Form>
+                {fields && fields.map((field, key) =>
+                {
+                  if(field.type == 'string') {
+                    return (
+                      <FieldWrapper key={'fw'+key} labelText={field.label} content={field.description} required={field.optional==false}> {/* eslint-disable-line react/no-array-index-key*/}
+                        <TextInput
+                          id={field.name}
+                          hideLabel
+                          className='bx--text-input-override'
+                          labelText={field.label}
+                          value={form[field.name] != undefined ? form[field.name] : field.default}
+                          onChange={transform.bind(null, field.name, field.optional, onChange)}
+                          invalid={form.error && form.error[field.name]}
+                          invalidText={` ${msgs.get('formerror.required')}`} />
+                      </FieldWrapper>
+                    )
+                  } else {
+                    return (
+                      <FieldWrapper key={'fw'+key} labelText={field.label} content={field.description} required={field.optional==false}> {/* eslint-disable-line react/no-array-index-key*/}
+                        <Select
+                          id={field.name}
+                          value={form[field.name] != undefined ? form[field.name] : field.default ? field.default : field.values[0]}
+                          hideLabel
+                          onChange={transform.bind(null, field.name, field.optional, onChange)}
+                        >
+                          {/* eslint-disable-next-line react/no-array-index-key */}
+                          {field.values.map((value, index) => <SelectItem key={index} text={value} value={value} />)}
+                        </Select>
+                      </FieldWrapper>
+                    )
+                  }
                 }
-              }
-            )}
+                )}
 
-            </Form>
+              </Form>
             </div>
           </Modal>
         </div>
       )
     }
   }
+}
+
+ActionModal.propTypes = {
+  clearForm: PropTypes.func,
+  data: PropTypes.object,
+  form: PropTypes.object,
+  handleClose: PropTypes.func,
+  input: PropTypes.object,
+  label: PropTypes.object,
+  onChange: PropTypes.func,
+  open: PropTypes.bool,
+  reqErrorMsg: PropTypes.array,
+  submitForm: PropTypes.func,
+  submitNoInput: PropTypes.bool
 }
 
 export default withForm(ActionModal, initialForm)

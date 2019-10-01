@@ -5,9 +5,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,6 +24,7 @@ import msgs from '../../../../nls/kappnav.properties'
 import { withRouter } from 'react-router-dom'
 import { REQUEST_STATUS, RESOURCE_TYPES } from '../../../actions/constants'
 import { translateKind, getToken } from '../../../actions/common'
+import PropTypes from 'prop-types'
 
 class RemoveResourceModal extends React.PureComponent {
 
@@ -38,25 +39,27 @@ class RemoveResourceModal extends React.PureComponent {
       if(response.ok) {
         this.props.handleClose(true)
       } else {
+        // eslint-disable-next-line react/no-unused-state
         this.setState({reqErrorMsg: [response.status + ' ' + response.statusText]})
       }
-    }.bind(this);
+    }.bind(this)
 
     fetch(this.props.submitUrl, {
       method: 'DELETE',
       headers: {
-        "CSRF-Token": getToken()
+        'CSRF-Token': getToken()
       }
     })
       .then(response => deleteCallback(response))
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (this.props.reqStatus === REQUEST_STATUS.IN_PROGRESS && nextProps.reqStatus === REQUEST_STATUS.DONE)
       this.props.handleClose()
   }
 
   render() {
+    // eslint-disable-next-line no-unused-vars
     const { reqStatus, reqErrorMsg, open, label, data } = this.props
 
     var name = (data.metadata && data.metadata.name) ? data.metadata.name : ''
@@ -101,6 +104,16 @@ class RemoveResourceModal extends React.PureComponent {
       </div>
     )
   }
+}
+
+RemoveResourceModal.propTypes = {
+  data: PropTypes.object,
+  handleClose: PropTypes.func,
+  label: PropTypes.object,
+  open: PropTypes.bool,
+  reqErrorMsg: PropTypes.string,
+  reqStatus: PropTypes.string,
+  submitUrl: PropTypes.string
 }
 
 export default withRouter(RemoveResourceModal)

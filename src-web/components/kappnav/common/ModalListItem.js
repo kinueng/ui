@@ -5,9 +5,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  *****************************************************************/
- 
+
 'use strict'
 
 import React from 'react'
@@ -37,6 +37,7 @@ const withMultiple = (Component, newInstance) => {
     }
 
     render() {
+      // eslint-disable-next-line react/prop-types
       return (
         <div>
           {this.getItems()}
@@ -45,6 +46,7 @@ const withMultiple = (Component, newInstance) => {
             icon="add--glyph"
             iconDescription={msgs.get('svg.description.plus')}
             onClick={this.onAdd} >
+            {/* eslint-disable-next-line react/prop-types */}
             {this.props.addLabel}
           </Button>
         </div>
@@ -52,9 +54,12 @@ const withMultiple = (Component, newInstance) => {
     }
 
     getItems() {
+      // eslint-disable-next-line react/prop-types
       const { items, type, error } = this.props
+      // eslint-disable-next-line react/prop-types
       return items.map((item, i) => {
         return <Component
+          // eslint-disable-next-line react/no-array-index-key
           key={`${type}-${i}`}
           item={item}
           id={i}
@@ -65,24 +70,32 @@ const withMultiple = (Component, newInstance) => {
     }
 
     onAdd() {
+      // eslint-disable-next-line react/prop-types
       const { items, type } = this.props
       const newItem = newInstance ? Object.assign({}, newInstance) : ''
+      // eslint-disable-next-line react/prop-types
       const newItems = items.concat(newItem)
+      // eslint-disable-next-line react/prop-types
       this.props.onChange(type, newItems)
     }
 
     onModify(index, field, event) {
+      // eslint-disable-next-line react/prop-types
       const { items, type } = this.props
       let replacement = items[index]
       field ? lodash.set(replacement, field, event.target.value) : replacement = event.target.value
-      let newItems = [...items]
+      const newItems = [...items]
       newItems.splice(index, 1, replacement)
+      // eslint-disable-next-line react/prop-types
       this.props.onChange(type, newItems)
     }
 
     onRemove(index) {
+      // eslint-disable-next-line react/prop-types
       const { items, type } = this.props
+      // eslint-disable-next-line react/prop-types
       const newItems = items.filter((_, i) => i !== parseInt(index))
+      // eslint-disable-next-line react/prop-types
       this.props.onChange(type, newItems)
     }
   }

@@ -5,9 +5,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,9 +25,9 @@ import ResourceModal from '../modals/ResourceModal'
 import RemoveResourceModal from '../modals/RemoveResourceModal'
 import ActionModal from '../modals/ActionModal'
 import ActionMessageModal from '../modals/ActionMessageModal'
-import {CONTEXT_PATH} from '../../../actions/constants';
 import msgs from '../../../../nls/kappnav.properties'
 import LeftNav from '../../LeftNav'
+import PropTypes from 'prop-types'
 
 require('../../../../scss/header.scss')
 require('../../../../scss/secondary-header.scss')
@@ -61,8 +61,8 @@ class SecondaryHeader extends React.Component {
       resourceModalSubmitUrl: '',
       resourceModalData: {
       }
-    };
-    window.secondaryHeader = this;
+    }
+    window.secondaryHeader = this
   }
 
   componentDidMount() {
@@ -79,89 +79,89 @@ class SecondaryHeader extends React.Component {
 
     // https://www.npmjs.com/package/hamburgers
     const hamburgerButton = (
-      <button className={'hamburger hamburger--slider ' + (leftNavOpen ? 'is-active' : '')} 
-              id='hamburger' aria-label={msgs.get('header.menu.label')} 
-              onClick={this.handleMenuClick} title={msgs.get('header.menu.label')}>
+      <button className={'hamburger hamburger--slider ' + (leftNavOpen ? 'is-active' : '')}
+        id='hamburger' aria-label={msgs.get('header.menu.label')}
+        onClick={this.handleMenuClick} title={msgs.get('header.menu.label')}>
 
         <span className="hamburger-box">
           <span className="hamburger-inner"></span>
         </span>
-        
       </button>
     )
 
     return (
       <div>
-        <LeftNav handleMenuClick={this.handleMenuClick} open={this.state.leftNavOpen}/>
+        <LeftNav handleMenuClick={this.handleMenuClick} open={this.state.leftNavOpen} />
         <div className="app-header app-header__container secondary" role="banner" aria-label={msgs.get('kappnav')}>
           <div className="app-menu-btn-container">
             {hamburgerButton}
           </div>
           {(() => {
-              return (
-                <div className='logo-container'>
-                  <div className='logo' style={{color: 'white', fontWeight:'bold'}}>
+            return (
+              <div className='logo-container'>
+                <div className='logo' style={{color: 'white', fontWeight:'bold'}}>
                     Kubernetes Application Navigator
-                  </div>
                 </div>
-              )
+              </div>
+            )
           })()}
           <div className="navigation-container"></div>
         </div>
-      {(() => {
-        if( (tabs && tabs.length > 0) || (breadcrumbItems && breadcrumbItems.length > 0) ) {
-          return (
-            <div className={'secondary-header-wrapper ' + primaryHeaderClasses} role='region' aria-label={title}>
-              <div className={`secondary-header ${simpleHeaderClasses}`} ref={div => this.secondaryHeader = div}>
-                {tabs && tabs.length > 0 ? (
-                  <DetailPageHeader hasTabs={true} role="" title={decodeURIComponent(title)} aria-label={`${title} ${msgs.get('secondaryHeader')}`}>
-                    <Breadcrumb>
-                      {breadcrumbItems && this.renderBreadCrumb()}
-                    </Breadcrumb>
-                    <Tabs selected={this.getSelectedTab() || 0} aria-label={`${title} ${msgs.get('tabs.label')}`}>
-                      {this.renderTabs()}
-                    </Tabs>
-                  </DetailPageHeader>
-                ) : (
-                  <DetailPageHeader hasTabs={true} statusColor={this.state.statusColor} statusText={this.state.statusText} title={decodeURIComponent(title)} aria-label={`${title} ${msgs.get('secondaryHeader')}`}>
-                    <Breadcrumb>
-                      {this.renderBreadCrumb()}
-                    </Breadcrumb>
-                    {this.state.actions}
-                  </DetailPageHeader>
-                )}
+        {(() => {
+          if( (tabs && tabs.length > 0) || (breadcrumbItems && breadcrumbItems.length > 0) ) {
+            return (
+              <div className={'secondary-header-wrapper ' + primaryHeaderClasses} role='region' aria-label={title}>
+                <div className={`secondary-header ${simpleHeaderClasses}`} ref={div => this.secondaryHeader = div}>
+                  {tabs && tabs.length > 0 ? (
+                    // eslint-disable-next-line jsx-a11y/aria-role
+                    <DetailPageHeader hasTabs={true} role="" title={decodeURIComponent(title)} aria-label={`${title} ${msgs.get('secondaryHeader')}`}>
+                      <Breadcrumb>
+                        {breadcrumbItems && this.renderBreadCrumb()}
+                      </Breadcrumb>
+                      <Tabs selected={this.getSelectedTab() || 0} aria-label={`${title} ${msgs.get('tabs.label')}`}>
+                        {this.renderTabs()}
+                      </Tabs>
+                    </DetailPageHeader>
+                  ) : (
+                    <DetailPageHeader hasTabs={true} statusColor={this.state.statusColor} statusText={this.state.statusText} title={decodeURIComponent(title)} aria-label={`${title} ${msgs.get('secondaryHeader')}`}>
+                      <Breadcrumb>
+                        {this.renderBreadCrumb()}
+                      </Breadcrumb>
+                      {this.state.actions}
+                    </DetailPageHeader>
+                  )}
+                </div>
               </div>
-            </div>
-          )
-        } else {
-          return (
-            <div className={'secondary-header-wrapper-min ' + primaryHeaderClasses} role='region' aria-label={`${title} ${msgs.get('secondaryHeader')}`}>
-              <div className={'secondary-header simple-header ' + simpleHeaderClasses}>
-                <h1 className='bx--detail-page-header-title'>{decodeURIComponent(title)}</h1>
+            )
+          } else {
+            return (
+              <div className={'secondary-header-wrapper-min ' + primaryHeaderClasses} role='region' aria-label={`${title} ${msgs.get('secondaryHeader')}`}>
+                <div className={'secondary-header simple-header ' + simpleHeaderClasses}>
+                  <h1 className='bx--detail-page-header-title'>{decodeURIComponent(title)}</h1>
+                </div>
               </div>
-            </div>
-          )
-        }
-      })()}
-      <ResourceModal open={this.state.resourceModalOpen}
-                     label={this.state.resourceModalLabel}
-                     editorMode='json'
-                     data={this.state.resourceModalData}
-                     submitUrl={this.state.resourceModalSubmitUrl}
-                     handleClose={(refresh, originalResource, newResource)=>{
-                       if(refresh===true && this.refreshCallback) { 
-                         this.refreshCallback({operation:"edit", originalResource:originalResource, newResource:newResource});
-                       }
-                       this.setState({resourceModalOpen:false})
-                     }}
-      />
+            )
+          }
+        })()}
+        <ResourceModal open={this.state.resourceModalOpen}
+          label={this.state.resourceModalLabel}
+          editorMode='json'
+          data={this.state.resourceModalData}
+          submitUrl={this.state.resourceModalSubmitUrl}
+          handleClose={(refresh, originalResource, newResource)=>{
+            if(refresh===true && this.refreshCallback) {
+              this.refreshCallback({operation:'edit', originalResource:originalResource, newResource:newResource})
+            }
+            this.setState({resourceModalOpen:false})
+          }}
+        />
         <RemoveResourceModal open={this.state.removeResourceModalOpen}
           label={this.state.resourceModalLabel}
           data={this.state.resourceModalData}
           submitUrl={this.state.resourceModalSubmitUrl}
           handleClose={(refresh) => {
             if (refresh === true && this.refreshCallback) {
-              this.refreshCallback({ operation: "delete", "name": this.state.resourceModalData.metadata.name });
+              this.refreshCallback({ operation: 'delete', 'name': this.state.resourceModalData.metadata.name })
             }
             this.setState({ removeResourceModalOpen: false })
           }}
@@ -185,7 +185,7 @@ class SecondaryHeader extends React.Component {
             this.setState({ actionMessageModalOpen: false })
           }}
         />
-    </div>
+      </div>
     )
   }
 
@@ -193,6 +193,7 @@ class SecondaryHeader extends React.Component {
     const { breadcrumbItems } = this.props
     return breadcrumbItems && breadcrumbItems.map((breadcrumb, index) => {
       return (
+        // eslint-disable-next-line react/no-array-index-key
         <div key={`${breadcrumb}-${index}`} className='bx--breadcrumb-item' title={decodeURIComponent(breadcrumb.label)}>
           <a href={breadcrumb.url} className='bx--link'>{decodeURIComponent(breadcrumb.label)}</a>
         </div>
@@ -220,9 +221,6 @@ class SecondaryHeader extends React.Component {
     return selectedTab[0] && selectedTab[0].index
   }
 
-  clickTab(url) {
-  }
-
   handleKeyDown(e) {
     e.persist()
     e.which === 32 && this.props.history.push(e.target.pathname)
@@ -234,31 +232,32 @@ class SecondaryHeader extends React.Component {
   }
 
   showResourceModal(open, label, data, submitUrl){
-    this.setState({resourceModalOpen:open, resourceModalLabel:label, resourceModalData:data, resourceModalSubmitUrl:submitUrl});
+    this.setState({resourceModalOpen:open, resourceModalLabel:label, resourceModalData:data, resourceModalSubmitUrl:submitUrl})
   }
 
   showRemoveResourceModal(open, label, data, submitUrl){
-    this.setState({removeResourceModalOpen:open, resourceModalLabel:label, resourceModalData:data, resourceModalSubmitUrl:submitUrl});
+    this.setState({removeResourceModalOpen:open, resourceModalLabel:label, resourceModalData:data, resourceModalSubmitUrl:submitUrl})
   }
 
   showActionResourceModal(open, label, data, submitUrl, input, cmd){
     var submitNoInput = true
     if(input && input.fields){
-      submitNoInput = false;
+      submitNoInput = false
     }
-    this.setState({actionModalOpen:open, resourceModalLabel:label, resourceModalData:data, resourceModalSubmitUrl:submitUrl, actionModalInput:input, submitNoInput:submitNoInput, submitCmd:cmd});
+    this.setState({actionModalOpen:open, resourceModalLabel:label, resourceModalData:data, resourceModalSubmitUrl:submitUrl, actionModalInput:input, submitNoInput:submitNoInput, submitCmd:cmd})
   }
 
   showActionMessageModal(open, result, error){
-    this.setState({actionMessageModalOpen:open, actionResult:result, actionError:error});
+    this.setState({actionMessageModalOpen:open, actionResult:result, actionError:error})
   }
 
   update(statusColor, statusText, actions){
-    this.setState({statusColor: statusColor, statusText: statusText, actions: actions});
+    this.setState({statusColor: statusColor, statusText: statusText, actions: actions})
   }
 
   handleMenuClick() {
     this.setState({
+      // eslint-disable-next-line react/no-access-state-in-setstate
       leftNavOpen: !this.state.leftNavOpen
     }, () => {
       if (this.state.leftNavOpen) {
@@ -277,6 +276,15 @@ class SecondaryHeader extends React.Component {
     document.removeEventListener('click', this.handleMouseClick)
   }
 
+}
+
+SecondaryHeader.propTypes = {
+  breadcrumbItems: PropTypes.array,
+  headerClasses: PropTypes.string,
+  history: PropTypes.object,
+  location: PropTypes.object,
+  tabs: PropTypes.array,
+  title: PropTypes.string
 }
 
 export default SecondaryHeader

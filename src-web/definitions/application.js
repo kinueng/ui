@@ -5,9 +5,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -339,8 +339,8 @@ export function getMatchExpressions(item) {
   })
 }
 
-export function getLink(itemName) {
-  return ``
+export function getLink() {
+  return ''
 }
 
 export function refreshApplication(appname, namespace, appNavConfigData, applicationResourceData) {
@@ -348,104 +348,104 @@ export function refreshApplication(appname, namespace, appNavConfigData, applica
     .then(response => {
       if (!response.ok) {
         // TODO: How do return a failure in a promise?
-        return null;
+        return null
       } else {
-        return response.json();
+        return response.json()
       }
     }).then(result => {
-      var metadata = result.metadata;
-      updateSecondaryHeader(getStatus(metadata, appNavConfigData).statusColor, getStatus(metadata, appNavConfigData).statusText, getOverflowMenu(result, undefined, applicationResourceData, undefined, undefined));
+      var metadata = result.metadata
+      updateSecondaryHeader(getStatus(metadata, appNavConfigData).statusColor, getStatus(metadata, appNavConfigData).statusText, getOverflowMenu(result, undefined, applicationResourceData, undefined, undefined))
       return result
-    });
+    })
 }
 
 export function refreshApplicationComponents(appname, namespace, appNavConfigData, applicationResourceData) {
   return fetch('/kappnav/components/' + encodeURIComponent(appname)+'?namespace='+encodeURIComponent(namespace))
-  .then(response => {
-    if (!response.ok) {
-      return null;
-    } else {
-      return response.json();
-    }
-  }).then(result => {
+    .then(response => {
+      if (!response.ok) {
+        return null
+      } else {
+        return response.json()
+      }
+    }).then(result => {
 
-    if (result) {
-      var rowArray = [];
-      result.components.forEach((item, index) => {
-        var component = item.component;
+      if (result) {
+        var rowArray = []
+        result.components.forEach((item, index) => {
+          var component = item.component
 
-        var metadata = component.metadata;
-        var annotations = metadata.annotations
-          ? metadata.annotations
-          : {};
-        var kind = component.kind;
-        var compositeKind = kind
-          ? kind
-          : '';
-        compositeKind = annotations && annotations[SUBKIND]
-          ? compositeKind + '.' + annotations[SUBKIND]
-          : compositeKind;
-        var platform = annotations[PLATFORM_KIND]
-          ? annotations[PLATFORM_KIND]
-          : 'Kube';
-        platform = platform && annotations[PLATFORM_NAME]
-          ? platform + '.' + annotations[PLATFORM_NAME]
-          : platform;
+          var metadata = component.metadata
+          var annotations = metadata.annotations
+            ? metadata.annotations
+            : {}
+          var kind = component.kind
+          var compositeKind = kind
+            ? kind
+            : ''
+          compositeKind = annotations && annotations[SUBKIND]
+            ? compositeKind + '.' + annotations[SUBKIND]
+            : compositeKind
+          var platform = annotations[PLATFORM_KIND]
+            ? annotations[PLATFORM_KIND]
+            : 'Kube'
+          platform = platform && annotations[PLATFORM_NAME]
+            ? platform + '.' + annotations[PLATFORM_NAME]
+            : platform
 
-        var itemObj = {};
-        var itemId = component.metadata.name + "_" + index;
-        itemObj.id = itemId;
-        itemObj.status = buildStatusHtml(getStatus(metadata, appNavConfigData));
+          var itemObj = {}
+          var itemId = component.metadata.name + '_' + index
+          itemObj.id = itemId
+          itemObj.status = buildStatusHtml(getStatus(metadata, appNavConfigData))
 
-        var resourceType = kind.toLocaleLowerCase();
+          var resourceType = kind.toLocaleLowerCase()
 
-        itemObj.compositeKind = compositeKind;
-        itemObj.kind = kind;
-        itemObj.namespace = component.metadata.namespace;
-        itemObj.platform = platform;
+          itemObj.compositeKind = compositeKind
+          itemObj.kind = kind
+          itemObj.namespace = component.metadata.namespace
+          itemObj.platform = platform
 
-        var actionMap = item["action-map"]
-        if (resourceType == "application") {  //known link to our detail panel and our custom resource types
-          itemObj.name = <a href="#" onClick={() => resourceType == "application" ? displayApp(metadata.name, metadata.namespace) : displayDetail(appname, resourceType, metadata.name, metadata.namespace)}>
-            {metadata.name}
-          </a>;
-          itemObj.menuAction = getOverflowMenu(component, actionMap, applicationResourceData, appname, namespace);
-        } else {
-          var urlActions = actionMap && actionMap["url-actions"];
-          var urlActions = urlActions && urlActions.filter(function (action) {
-            return action["name"]=="detail";
-          });
-
-          itemObj.menuAction = getOverflowMenu(component, actionMap, undefined, appname, namespace);  //custom actions
-
-          var link = urlActions && urlActions[0] && urlActions[0]["url-pattern"];
-          if(link) {
-            //Expand the link and modify the URL on the fly to match the expanded link
-            var linkId = kind+"_"+metadata.name+"link";
-            itemObj.name=<a id={linkId} href="#" onClick={performUrlAction.bind(this, link, urlActions[0]["open-window"], kind, metadata.name, metadata.namespace, undefined, true)}>
+          var actionMap = item['action-map']
+          if (resourceType == 'application') {  //known link to our detail panel and our custom resource types
+            itemObj.name = <a href="#" onClick={() => resourceType == 'application' ? displayApp(metadata.name, metadata.namespace) : displayDetail(appname, resourceType, metadata.name, metadata.namespace)}>
               {metadata.name}
-            </a>;
-            performUrlAction(link, urlActions[0]["open-window"], kind, metadata.name, metadata.namespace, linkId, false);  //update the link in place
+            </a>
+            itemObj.menuAction = getOverflowMenu(component, actionMap, applicationResourceData, appname, namespace)
           } else {
-              itemObj.name = metadata.name;
+            var urlActions = actionMap && actionMap['url-actions']
+            urlActions = urlActions && urlActions.filter((action) => {
+              return action['name']=='detail'
+            })
+
+            itemObj.menuAction = getOverflowMenu(component, actionMap, undefined, appname, namespace)  //custom actions
+
+            var link = urlActions && urlActions[0] && urlActions[0]['url-pattern']
+            if(link) {
+            //Expand the link and modify the URL on the fly to match the expanded link
+              var linkId = kind+'_'+metadata.name+'link'
+              itemObj.name=<a id={linkId} href="#" onClick={performUrlAction.bind(this, link, urlActions[0]['open-window'], kind, metadata.name, metadata.namespace, undefined, true)}>
+                {metadata.name}
+              </a>
+              performUrlAction(link, urlActions[0]['open-window'], kind, metadata.name, metadata.namespace, linkId, false)  //update the link in place
+            } else {
+              itemObj.name = metadata.name
+            }
           }
-        }
-        rowArray.push(itemObj);
-      });
-      return rowArray
-    }
-  });
+          rowArray.push(itemObj)
+        })
+        return rowArray
+      }
+    })
 } // end of refreshApplicationComponents(...)
 
 // display nested application
 function displayApp(appname, namespace) {
-  let url= location.protocol+'//'+location.host+ CONTEXT_PATH + '/applications/'+encodeURIComponent(appname)+'?namespace='+namespace
-  window.location.href = url;
+  const url= location.protocol+'//'+location.host+ CONTEXT_PATH + '/applications/'+encodeURIComponent(appname)+'?namespace='+namespace
+  window.location.href = url
 }
 
 // display details
 function displayDetail(appname, resourceType, name, namespace) {
   //applications and components are now in the same namespace
-  let url= location.protocol+'//'+location.host+ CONTEXT_PATH + '/applications/'+encodeURIComponent(appname)+'/'+resourceType+'/'+encodeURIComponent(name)+'?namespace='+encodeURIComponent(namespace)+'&parentnamespace='+encodeURIComponent(namespace)
-  window.location.href = url;
+  const url= location.protocol+'//'+location.host+ CONTEXT_PATH + '/applications/'+encodeURIComponent(appname)+'/'+resourceType+'/'+encodeURIComponent(name)+'?namespace='+encodeURIComponent(namespace)+'&parentnamespace='+encodeURIComponent(namespace)
+  window.location.href = url
 }

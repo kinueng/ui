@@ -289,7 +289,7 @@ class JobView extends Component {
           // Not every K8 platform has a URL for displaying K8 Job kind details
           itemObj.actionName = jobName
         }
-        
+
         var applicationName = metadataLabel['kappnav-job-application-name']
         if (applicationName && applicationName === 'kappnav.not.assigned') {
           itemObj.appName = msgs.get('not.assigned')

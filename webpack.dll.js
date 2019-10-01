@@ -5,9 +5,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,22 +31,22 @@ process.env.BABEL_ENV = 'client'
 module.exports = {
   entry: {
     'vendorappnav': [
-	  'babel-polyfill',
+      'babel-polyfill',
       'carbon-components-react',
       'loadable-components',
       'lodash',
       'moment',
-	  'node-libs-browser',
+      'node-libs-browser',
       'normalizr',
       'prop-types',
-	  "react-ace",
+      'react-ace',
       'react-dom',
       'react-dom/server',
       'react-router-dom',
       'react',
       'redux-logger',
       'redux-thunk',
-	  'react-transition-group',
+      'react-transition-group',
       'reselect'
     ]
   },

@@ -37,7 +37,6 @@ const withMultiple = (Component, newInstance) => {
     }
 
     render() {
-      // eslint-disable-next-line react/prop-types
       return (
         <div>
           {this.getItems()}

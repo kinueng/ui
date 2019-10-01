@@ -5,9 +5,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,16 +16,17 @@
  *
  *****************************************************************/
 
-var express = require('express');
+var express = require('express')
 
 module.exports = function(app) {
-  var router = express.Router();
+  var router = express.Router()
 
-  router.get('/', function (req, res, next) {
-    res.json({status: 'UP'});
-  });
+  // eslint-disable-next-line no-unused-vars
+  router.get('/', (req, res, next) => {
+    res.json({status: 'UP'})
+  })
 
-  app.use("/health", router);
+  app.use('/health', router)
 }
 
 

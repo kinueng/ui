@@ -88,6 +88,7 @@ class ComponentView extends Component {
     }
 
     const moduleTitle = msgs.get(resourceData.moduleKeys.title)
+    // eslint-disable-next-line no-unused-vars
     const moduleHeader =
     {/* esl failures for line between disable and enable: jsx-a11y/click-events-have-key-events and jsx-a11y/no-static-element-interactions */}
     {/* eslint-disable */}

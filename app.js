@@ -19,7 +19,6 @@
 const express = require('express'),
       config = require('./config/config-defaults.json'),
       path = require('path'),
-      fs = require('fs'),
       moment = require('moment'),
       i18n = require('node-i18n-util'),
       app = express(),
@@ -29,9 +28,7 @@ var log4js = require('log4js'),
     consolidate = require('consolidate'),
     cookieParser = require('cookie-parser'),
     csurf = require('csurf'),
-    proxy = require('http-proxy-middleware'),
-    https = require('https')
-
+    proxy = require('http-proxy-middleware')
 const logger = log4js.getLogger('server')
 var log4js_config = process.env.LOG4JS_CONFIG ? JSON.parse(process.env.LOG4JS_CONFIG) : undefined
 log4js.configure(log4js_config || 'config/log4js.json')
@@ -56,7 +53,7 @@ var exclude = function(path) {
 }
 
 //Redirect / to /kappnav-ui, (because the auth proxy sidecar redirects to /)
-app.all('/', (req, res, next) => {
+app.all('/', (req, res) => {
   res.redirect(CONTEXT_PATH)
 })
 

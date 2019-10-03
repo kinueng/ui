@@ -160,7 +160,7 @@ export const transform = (field, optional, handleChange, event) => {
   handleChange(field, optional, event.target.value)
 }
 
-class ActionModal extends React.PureComponent {
+class ActionModal extends React.Component {
 
   constructor (props){
     super(props)
@@ -215,8 +215,7 @@ class ActionModal extends React.PureComponent {
             selectorPrimaryFocus='.bx--modal-close'
             aria-label={msgs.get(label.heading)}>
             {reqErrorMsg && reqErrorMsg.length > 0 &&
-              // eslint-disable-next-line react/no-array-index-key
-              reqErrorMsg.map((err,key) => <InlineNotification key={key} kind='error' title='' subtitle={err} iconDescription={msgs.get('svg.description.error')} />)
+              reqErrorMsg.map((err) => <InlineNotification key={err.id} kind='error' title='' subtitle={err} iconDescription={msgs.get('svg.description.error')} />)
             }
             <div>
               <Form>
@@ -245,8 +244,7 @@ class ActionModal extends React.PureComponent {
                           hideLabel
                           onChange={transform.bind(null, field.name, field.optional, onChange)}
                         >
-                          {/* eslint-disable-next-line react/no-array-index-key */}
-                          {field.values.map((value, index) => <SelectItem key={index} text={value} value={value} />)}
+                          {field.values.map((value) => <SelectItem key={value.id} text={value} value={value} />)}
                         </Select>
                       </FieldWrapper>
                     )

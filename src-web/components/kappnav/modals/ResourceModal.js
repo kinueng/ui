@@ -199,8 +199,7 @@ class ResourceModal extends React.PureComponent {
           aria-label={modalHeading}>
           <div>
             {this.state.reqErrorMsg && this.state.reqErrorMsg.length > 0 &&
-              // eslint-disable-next-line react/no-array-index-key
-              this.state.reqErrorMsg.map((err,key) => <InlineNotification key={key} kind='error' title='' subtitle={err} iconDescription={msgs.get('svg.description.error')} />)
+              this.state.reqErrorMsg.map((err) => <InlineNotification key={err.id} kind='error' title='' subtitle={err} iconDescription={msgs.get('svg.description.error')} />)
             }
             <IsomorphicEditor
               theme='monokai'

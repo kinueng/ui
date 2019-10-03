@@ -68,9 +68,8 @@ class StructuredListModule extends React.PureComponent {
         <StructuredListWrapper className='bx--structured-list--condensed' ariaLabel={msgs.get(title, [data.kind])}>
           <StructuredListHead>
             <StructuredListRow head>
-              {headerRows.map((row, index) =>
-                // eslint-disable-next-line react/no-array-index-key
-                <StructuredListCell head key={index}>
+              {headerRows.map((row) =>
+                <StructuredListCell head key={msgs.get(row)}>
                   {msgs.get(row)}
                 </StructuredListCell>
               )}
@@ -80,9 +79,8 @@ class StructuredListModule extends React.PureComponent {
             {rows.map((row, index) =>
               // eslint-disable-next-line react/no-array-index-key
               <StructuredListRow key={index}>
-                {row.cells.map((cell, index) =>
-                  // eslint-disable-next-line react/no-array-index-key
-                  <StructuredListCell key={index}>
+                {row.cells.map((cell) =>
+                  <StructuredListCell key={transform(data, cell)}>
                     <p title={transform(data, cell)}>{cell.link && url ? <Link to={url} className='bx--link'>{transform(data, cell)}</Link> : transform(data, cell)}</p>
                   </StructuredListCell>
                 )}

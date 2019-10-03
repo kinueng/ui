@@ -18,14 +18,14 @@
 
 'use strict'
 
-import React from 'react'
+import React, {Component} from 'react'
 import { ComposedModal, ModalHeader, ModalBody, ModalFooter } from 'carbon-components-react'
 import {CONTEXT_PATH} from '../../../actions/constants'
 import { withRouter } from 'react-router-dom'
 import msgs from '../../../../nls/kappnav.properties'
 import PropTypes from 'prop-types'
 
-class ActionMessageModal extends React.PureComponent {
+class ActionMessageModal extends Component {
 
   constructor (props){
     super(props)

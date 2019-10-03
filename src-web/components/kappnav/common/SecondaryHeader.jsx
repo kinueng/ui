@@ -191,10 +191,9 @@ class SecondaryHeader extends React.Component {
 
   renderBreadCrumb() {
     const { breadcrumbItems } = this.props
-    return breadcrumbItems && breadcrumbItems.map((breadcrumb, index) => {
+    return breadcrumbItems && breadcrumbItems.map((breadcrumb) => {
       return (
-        // eslint-disable-next-line react/no-array-index-key
-        <div key={`${breadcrumb}-${index}`} className='bx--breadcrumb-item' title={decodeURIComponent(breadcrumb.label)}>
+        <div key={`${breadcrumb}-${breadcrumb.label}`} className='bx--breadcrumb-item' title={decodeURIComponent(breadcrumb.label)}>
           <a href={breadcrumb.url} className='bx--link'>{decodeURIComponent(breadcrumb.label)}</a>
         </div>
       )

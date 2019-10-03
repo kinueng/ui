@@ -118,16 +118,13 @@ export const transform = (resource, key) => {
     return key.transformFunction(resource)
   } else if (key.type === 'tag') {
     var data = key.getData(resource)
-    // eslint-disable-next-line react/no-array-index-key
-    return data ? data.map((tagText, index) => <Tag key={`tag-${index}`} style={{display: 'inline-block'}} type={'beta'} title={tagText.title}>{tagText.value ? `${tagText.name}:${tagText.value}` : tagText.name}</Tag>) : '-'
+    return data ? data.map((tagText) => <Tag key={`tag-${tagText}`} style={{display: 'inline-block'}} type={'beta'} title={tagText.title}>{tagText.value ? `${tagText.name}:${tagText.value}` : tagText.name}</Tag>) : '-'
   } else if (key.type === 'expression') {
     var exp = key.getData(resource)
-    // eslint-disable-next-line react/no-array-index-key
-    return exp ? exp.map((tagText, index) =><span key={`resource-${index}`} className="bx--tag bx--tag--beta" title={tagText.title} style={{display: 'inline-block'}}>{tagText.name}<div className="expression">{tagText.operator}</div>{tagText.value}</span>) : '-'
+    return exp ? exp.map((tagText) =><span key={`resource-${tagText.id}`} className="bx--tag bx--tag--beta" title={tagText.title} style={{display: 'inline-block'}}>{tagText.name}<div className="expression">{tagText.operator}</div>{tagText.value}</span>) : '-'
   } else if (key.type === 'links') {
     var links = key.getData(resource)
-    // eslint-disable-next-line react/no-array-index-key
-    return links ? links.map((linkInfo, index) => <a style={{display: 'block'}} key={`link-${index}`} href={linkInfo.url} target="_blank" rel="noopener noreferrer" title={linkInfo.description}>{linkInfo.description}</a>) : '-'
+    return links ? links.map((linkInfo) => <a style={{display: 'block'}} key={`link-${linkInfo.id}`} href={linkInfo.url} target="_blank" rel="noopener noreferrer" title={linkInfo.description}>{linkInfo.description}</a>) : '-'
   } else {
     return (value || value === 0) ? value : '-'
   }

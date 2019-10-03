@@ -460,9 +460,8 @@ class NavModalForm extends React.PureComponent {
 
   getMenuItems() {
     const { menuItems, onMenuClick, validationErrors } = this.props
-    return menuItems.map((item, index) =>
-      // eslint-disable-next-line react/no-array-index-key
-      <li key={index} className={this.isActive(item)} id={item}>
+    return menuItems.map((item) =>
+      <li key={`${item}-${item.id}`} className={this.isActive(item)} id={item}>
         <a href="#" onClick={onMenuClick.bind(null, item)} className='menu-item' role='menuitem'>{msgs.get(`modal.nav.${item}`)}</a>
         {validationErrors.form && validationErrors[item] && !this.isActive(item) && <Icon className='modal-tab-error' name='icon--error--glyph' description={msgs.get('svg.description.error')} />}
       </li>

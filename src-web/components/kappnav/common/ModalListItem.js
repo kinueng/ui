@@ -58,8 +58,7 @@ const withMultiple = (Component, newInstance) => {
       // eslint-disable-next-line react/prop-types
       return items.map((item, i) => {
         return <Component
-          // eslint-disable-next-line react/no-array-index-key
-          key={`${type}-${i}`}
+          key={`${type}-${item.id}`}
           item={item}
           id={i}
           error={error}
@@ -99,5 +98,7 @@ const withMultiple = (Component, newInstance) => {
     }
   }
 }
+
+
 
 export default withMultiple

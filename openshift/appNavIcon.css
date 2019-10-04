@@ -1,0 +1,13 @@
+.icon-appnav {
+    background-repeat: no-repeat;
+    background-image: url(${url}/graphics/KAppNavlogo.svg);
+    height: 20px;
+}
+
+.icon-kappnav-feature {
+    display: block;
+    background-repeat: no-repeat;
+    background-image: url(${url}/graphics/KAppNavlogo.svg);
+    height: 72px;
+    width: 72px;
+}

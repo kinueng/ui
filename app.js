@@ -101,7 +101,9 @@ app.all('*', (req, res, next) => {
       }
     })
   } else {
-    //not ICP, skip getting jwt
+    //not ICP, see if the user information is in the headers
+    req.user = req.headers['x-forwarded-user']
+
     next()
   }
 })

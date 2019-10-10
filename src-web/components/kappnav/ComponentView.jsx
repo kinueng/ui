@@ -47,7 +47,7 @@ class ComponentView extends Component {
       pageSize: PAGE_SIZES.DEFAULT,
       pageNumber: 1,
       search: undefined,
-      resourceType : RESOURCE_TYPES.APPLICATION,
+      resourceType : (location.pathname.split('/').filter(function(e){return e})[1] === 'applications')? RESOURCE_TYPES.APPLICATION : (location.pathname.split('/').filter(function(e){return e})[1] === 'was-nd-cells')? RESOURCE_TYPES.WASNDCELL : RESOURCE_TYPES.LIBERTYCOLLECTIVE,
       name : decodeURIComponent(location.pathname.split('/').filter(function (e) { return e })[2])
     };
 
@@ -56,16 +56,30 @@ class ComponentView extends Component {
   }
 
   render() {
-    const resourceType = this.state.resourceType
-    const resourceData = getResourceData(resourceType)
+    var paths = location.pathname.split('/').filter(function(e){return e})
     let title = msgs.get('page.applicationView.title') // default = application
     let titleUrl = CONTEXT_PATH + '/applications' // default = application
+    let resourceType = this.state.resourceType
+    const resourceData = getResourceData(resourceType)
+
+    if (paths[1] === 'was-nd-cells') {
+      // Change title to be WAS ND Cells
+      title = msgs.get('page.wasNdCellsView.title')
+      titleUrl = CONTEXT_PATH + '/was-nd-cells'
+    } else if (paths[1] === 'liberty-collectives') {
+      // Change title to be Liberty Collectives
+      title = msgs.get('page.libertyCollectiveView.title')
+      titleUrl = CONTEXT_PATH + '/liberty-collectives'
+    }
+
+
     let resourceName = this.state.name
     let breadcrumbItems = [
       {label : title, url : titleUrl},
       {label : resourceName}
       ]
 
+    console.log("resourceType " + JSON.stringify(this.state.resourceType, null, 4)+ " title " + title +" titleUrl " + titleUrl +" resourceName " + this.state.name)
     let basicDetailPane = <StructuredListModule
       title={resourceData.detailKeys.title}
       expanded={resourceData.detailKeys.expanded}
@@ -129,6 +143,7 @@ class ComponentView extends Component {
       </ModuleBody>
 
 console.log("viewTitle " + this.state.name + " breadcrumbItems " + breadcrumbItems  + "location " + location);
+console.log("appNavConfigData " + JSON.stringify(this.props.baseInfo.appNavConfigMap, null, 4) + " self.state.name " + this.state.name +" self.props.baseInfo.selectedNamespace " + this.props.baseInfo.selectedNamespace +" self.state.resourceType " + JSON.stringify(this.state.resourceType, null, 4))
     return (
       <div>
         <SecondaryHeader title={this.state.name} breadcrumbItems={breadcrumbItems} location={location}/>
@@ -191,12 +206,14 @@ console.log("viewTitle " + this.state.name + " breadcrumbItems " + breadcrumbIte
 
     var self = this;
     window.setInterval(function(){
+      console.log("I am going to refreshResource ")
       refreshResource(self.state.name, self.props.baseInfo.selectedNamespace, self.state.resourceType, self.props.baseInfo.appNavConfigMap).then(result => {
         self.setState({loading: false, data: result});
       });
     }, 10000);
 
     window.setInterval(function(){
+      console.log("I am going to refreshResourceComponent ")
       refreshResourceComponent(self.state.name, self.props.baseInfo.selectedNamespace, self.state.resourceType, self.props.baseInfo.appNavConfigMap).then(result => {
         if(result === null) {
           this.setState({loadingComponents: false});

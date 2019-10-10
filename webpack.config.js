@@ -56,8 +56,7 @@ module.exports = {
         enforce: 'pre',
         loader: 'eslint-loader',
         options: {
-          presets: ['env', 'react', 'es2015'],
-          plugins: ['transform-class-properties']
+          presets: ['env', 'react', 'es2015']
         }
       },
       {

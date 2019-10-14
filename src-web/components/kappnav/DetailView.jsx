@@ -24,6 +24,7 @@ import { Loading } from 'carbon-components-react'
 import StructuredListModule from './common/StructuredListModule'
 import {updateSecondaryHeader, getOverflowMenu, getStatus} from '../../actions/common'
 import SecondaryHeader from './common/SecondaryHeader.jsx'
+import getResourceData from '../../definitions/index';
 
 
 class DetailView extends Component {
@@ -33,7 +34,8 @@ class DetailView extends Component {
     this.state = {
       data: {},
       loading: true,
-      name : decodeURIComponent(location.pathname.split('/').filter(function (e) { return e })[4])
+      name : decodeURIComponent(location.pathname.split('/').filter(function (e) { return e })[4]),
+      staticResourceData: (location.pathname.split('/').filter(function(e){return e})[3] === 'was-traditional-app') ? getResourceData(RESOURCE_TYPES.WASTRADITIONALAPP) : (location.pathname.split('/').filter(function(e){return e})[3] === 'liberty-app') ? getResourceData(RESOURCE_TYPES.LIBERTYAPP) : getResourceData(RESOURCE_TYPES.WASNDCELL) 
     }
 
     this.fetchData = this.fetchData.bind(this)
@@ -42,7 +44,7 @@ class DetailView extends Component {
   render() {
     var paths = location.pathname.split('/')
     paths = paths.filter(function (e) { return e })
-    let title = msgs.get('page.applicationView.title')
+    let title = (paths[1] === 'applications') ? msgs.get('page.applicationView.title') : msgs.get('page.wasNdCellsView.title')
     let name = decodeURIComponent(paths[2])
     let parent_ns = decodeURIComponent(url.searchParams.get("parentnamespace"))
     let itemName = decodeURIComponent(paths[4])
@@ -60,9 +62,9 @@ class DetailView extends Component {
       <div className="page-content-container" role="main">
       
       <StructuredListModule
-        title={this.props.staticResourceData.detailKeys.title}
-        headerRows={this.props.staticResourceData.detailKeys.headerRows}
-        rows={this.props.staticResourceData.detailKeys.rows}
+        title={this.state.staticResourceData.detailKeys.title}
+        headerRows={this.state.staticResourceData.detailKeys.headerRows}
+        rows={this.state.staticResourceData.detailKeys.rows}
         id={this.state.name+'-overview-module'}
         data={this.state.data} />
         </div>
@@ -77,7 +79,7 @@ class DetailView extends Component {
       window.secondaryHeader.refreshCallback = function(result) {
         if(result && result.operation == 'delete' && result.name == this.state.name){
           const breadcrumbs = window.secondaryHeader.props.breadcrumbItems
-          let url= '/'+this.props.staticResourceData.resourceType+'s'
+          let url= '/'+this.state.staticResourceData.resourceType+'s'
           if(breadcrumbs) {
             url = breadcrumbs[breadcrumbs.length-2].url
           }
@@ -103,7 +105,7 @@ class DetailView extends Component {
   }
 
   refreshDetail(name, namespace) {
-    fetch(this.props.staticResourceData.link(name, namespace))
+    fetch(this.state.staticResourceData.link(name, namespace))
       .then(response => {
         if (!response.ok) {
           //TODO: error here
@@ -123,7 +125,7 @@ class DetailView extends Component {
                 //no error here because it just means that the action maps will not be populated
                 // try to populate at least the built in urlActions
                 var metadata = result.metadata
-                updateSecondaryHeader(getStatus(metadata, this.props.baseInfo.appNavConfigMap).statusColor, getStatus(metadata, this.props.baseInfo.appNavConfigMap).statusText, getOverflowMenu(result, undefined, this.props.staticResourceData, undefined, undefined))
+                updateSecondaryHeader(getStatus(metadata, this.props.baseInfo.appNavConfigMap).statusColor, getStatus(metadata, this.props.baseInfo.appNavConfigMap).statusText, getOverflowMenu(result, undefined, this.state.staticResourceData, undefined, undefined))
                 return null
               } else {
                 return response.json();
@@ -143,7 +145,7 @@ class DetailView extends Component {
                 }
 
                 var applicationNamespace = metadata.namespace
-                updateSecondaryHeader(getStatus(metadata, this.props.baseInfo.appNavConfigMap).statusColor, getStatus(metadata, this.props.baseInfo.appNavConfigMap).statusText, getOverflowMenu(result, actions, this.props.staticResourceData, applicationName, applicationNamespace))
+                updateSecondaryHeader(getStatus(metadata, this.props.baseInfo.appNavConfigMap).statusColor, getStatus(metadata, this.props.baseInfo.appNavConfigMap).statusText, getOverflowMenu(result, actions, this.state.staticResourceData, applicationName, applicationNamespace))
               }
             })
         }
@@ -151,10 +153,6 @@ class DetailView extends Component {
   }
 
 } // end of DetailView component
-
-DetailView.propTypes = {
-  staticResourceData: PropTypes.object.isRequired
-}
 
 export default connect(
   (state) => ({

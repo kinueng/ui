@@ -137,22 +137,11 @@ app.use('/kappnav-ui/openshift/appNavIcon.css', (req, res) => {
     if (!error && response.statusCode === 200) {
       var json = JSON.parse(body)
       var url = json.data['kappnav-url']
-      const appNavIcon =
-          `
-            .icon-appnav {
-              background-repeat: no-repeat;
-              background-image: url(${url}/graphics/KAppNavlogo.svg);
-              height: 20px;
-            }
- 
-           .icon-kappnav-feature {
-              display: block;
-              background-repeat: no-repeat;
-              background-image: url(${url}/graphics/KAppNavlogo.svg);
-              height: 72px;
-              width: 72px;
-            }
-          `
+
+      let fileContent = fs.readFileSync('./openshift/appNavIcon.css', 'utf8')
+      // Replace all `${url}` strings
+      const appNavIcon = fileContent.replace(/\$\{url\}/g, url)
+
       res.type('.css')
       res.send(appNavIcon)
     } else {
@@ -171,17 +160,11 @@ app.use('/kappnav-ui/openshift/featuredApp.js', (req, res) => {
     if (!error && response.statusCode === 200) {
       var json = JSON.parse(body)
       var url = json.data['kappnav-url']
-      const featuredApp =
-          `
-            (function() {
-              window.OPENSHIFT_CONSTANTS.SAAS_OFFERINGS = [{
-                  title: "kAppNav",                           // The text label
-                  icon: "icon-kappnav-feature",               // The icon you want to appear
-                  url: "${url}",      //  Where to go when this item is clicked
-                  description: "Kubernetes Application Navigator"      // Short description
-                }]
-            }())
-          `
+
+      let fileContent = fs.readFileSync('./openshift/featuredApp.js', 'utf8')
+      // Replace all `${url}` strings
+      const featuredApp = fileContent.replace(/\$\{url\}/g, url)
+
       res.type('.js')
       res.send(featuredApp)
     } else {
@@ -200,17 +183,11 @@ app.use('/kappnav-ui/openshift/appLauncher.js', (req, res) => {
     if (!error && response.statusCode === 200) {
       var json = JSON.parse(body)
       var url = json.data['kappnav-url']
-      const appLauncher =
-          `
-          (function() {
-            window.OPENSHIFT_CONSTANTS.APP_LAUNCHER_NAVIGATION = [{
-              title: "kAppNav",                            // The text label
-              iconClass: "icon-appnav",                    // The icon you want to appearl
-              href: "${url}",        // Where to go when this item is clicked
-              tooltip: "Kubernetes Application Navigator"             // Optional tooltip to display on hover
-            }]
-          }())
-          `
+
+      let fileContent = fs.readFileSync('./openshift/appLauncher.js', 'utf8')
+      // Replace all `${url}` strings
+      const appLauncher = fileContent.replace(/\$\{url\}/g, url)
+
       res.type('.js')
       res.send(appLauncher)
     } else {

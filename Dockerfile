@@ -28,6 +28,7 @@ COPY webpack.config.js /app/
 COPY webpack.dll.js /app/
 COPY version.ejs /app/
 COPY views /app/views
+COPY openshift /app/openshift
 
 RUN cd /app; npm run build:production; npm prune; rm -rf .git
 
@@ -61,6 +62,7 @@ COPY --from=buildapp --chown=1001:0 /app/package.json .
 COPY --from=buildapp --chown=1001:0 /app/public ./public
 COPY --from=buildapp --chown=1001:0 /app/templates ./templates
 COPY --from=buildapp --chown=1001:0 /app/views ./views
+COPY --from=buildapp --chown=1001:0 /app/openshift ./openshift
 
 USER 1001
 ENV PORT 3000

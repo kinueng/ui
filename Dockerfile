@@ -32,7 +32,7 @@ COPY views /app/views
 RUN cd /app; npm run build:production; npm prune; rm -rf .git
 
 # Stage 2: Run node server
-FROM registry.access.redhat.com/ubi7/nodejs-8:1-47
+FROM registry.access.redhat.com/ubi7/nodejs-8
 
 ARG VERSION
 ARG BUILD_DATE

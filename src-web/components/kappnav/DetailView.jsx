@@ -25,6 +25,8 @@ import StructuredListModule from './common/StructuredListModule'
 import {updateSecondaryHeader, getOverflowMenu, getStatus} from '../../actions/common'
 import SecondaryHeader from './common/SecondaryHeader.jsx'
 import getResourceData from '../../definitions/index';
+import { CONTEXT_PATH, RESOURCE_TYPES } from '../../actions/constants';
+import msgs from '../../../nls/kappnav.properties'
 
 
 class DetailView extends Component {
@@ -46,9 +48,10 @@ class DetailView extends Component {
     paths = paths.filter(function (e) { return e })
     let title = (paths[1] === 'applications') ? msgs.get('page.applicationView.title') : msgs.get('page.wasNdCellsView.title')
     let name = decodeURIComponent(paths[2])
-    let parent_ns = decodeURIComponent(url.searchParams.get("parentnamespace"))
+    let parent_ns = decodeURIComponent(new URL(window.location.href).searchParams.get("parentnamespace"))
     let itemName = decodeURIComponent(paths[4])
-    let ns = decodeURIComponent(url.searchParams.get("namespace"))
+    let ns = decodeURIComponent(new URL(window.location.href).searchParams.get("namespace"))
+    let resourceType = paths[3]
     
     let breadcrumbItems=[{label:title, url:CONTEXT_PATH+'/' + paths[1]},
                           {label:name, url:CONTEXT_PATH+'/'+paths[1]+'/'+encodeURIComponent(name)+'?namespace='+encodeURIComponent(parent_ns)},

@@ -439,14 +439,21 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
         })()}
         {(() => {
           if(cmdActions) {
-            return cmdActions.map((action, cmdindex) => (
-              <OverflowMenuItem key={action.name}
+            return cmdActions.map((action, cmdindex) => {
+              let actionLabel = action['text.nls'] ? msgs.get(action['text.nls']) : action.text
+              let actionDesc = action['description.nls'] ? msgs.get(action['description.nls']) : action.description
+              return <OverflowMenuItem key={action.name}
                 primaryFocus={cmdindex === 0 && !hasUrlActions && !hasStaticActions}
-                itemText={action.text ? action.text : action.description ? action.description : action.name}
+                itemText={actionLabel}
                 onClick={openModal.bind(this, "action", cloneData, applicationName, applicationNamespace, action, cmdInputs)}
-                onFocus={(e) => {if(action.description) e.target.title = action.description}}
-                onMouseEnter={(e) => {if(action.description) e.target.title = action.description}} />
-            ))
+                onFocus={(e) => {
+                  if(actionDesc){ e.target.title = actionDesc }
+                }}
+                onMouseEnter={(e) => {
+                  if(actionDesc){ e.target.title = actionDesc }
+                }} 
+              />
+            })
           }
         })()}
       </OverflowMenu>

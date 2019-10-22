@@ -418,7 +418,7 @@ class NavModalForm extends React.PureComponent {
             </ul>
           </div>}
         <div className='modal-inner-content'>
-          {validationErrors.form && <InlineNotification kind='error' title='' subtitle={msgs.get('formerror.missing')} />}
+          {validationErrors.form && <InlineNotification kind='error' title='' iconDescription={msgs.get('modal.button.close')} subtitle={msgs.get('formerror.missing')} />}
           {(postStatus === REQUEST_STATUS.ERROR || parsingError) &&
             <InlineNotification
               kind='error'

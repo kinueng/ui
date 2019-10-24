@@ -24,6 +24,8 @@ import { TextInput, Icon, Select, SelectItem, NumberInput } from 'carbon-compone
 import withMultiple from './ModalListItem'
 import { FieldWrapper } from './FormField'
 
+const translateWithId = (locale, id) => msgs.get(id)
+
 const transform = (field, handleChange, event) => {
   handleChange(field, event.target.value)
 }
@@ -42,7 +44,9 @@ const NumberField = ({ onChange, labelText, content, field, id, value, invalid, 
       invalid={invalid}
       hideLabel
       invalidText={` ${msgs.get('formerror.required', locale)}`}
-      onChange={handleNumberFieldChange.bind(this, field, onChange)} />
+      onChange={handleNumberFieldChange.bind(this, field, onChange)}
+      translateWithId={translateWithId.bind(null, document.documentElement.lang)}
+    />
   </FieldWrapper>
 
 const General = ({ form, onChange, children, error, labelName, labelContent }, context) => {

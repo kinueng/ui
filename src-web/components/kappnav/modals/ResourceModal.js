@@ -117,7 +117,7 @@ class ResourceModal extends React.PureComponent {
   escapeEditor(e) {
     e.persist()
     const button = document.querySelector('.bx--btn--secondary')
-    e.shiftKey && e.ctrlKey && e.which === 81 && button.focus()
+    e.shiftKey && (e.ctrlKey || e.altKey) && e.which === 81 && button.focus()
   }
 
   onChange(value) {
@@ -170,14 +170,23 @@ class ResourceModal extends React.PureComponent {
       modalHeading = msgs.get(label.heading, [modalLabel])
     }
 
+    let ariaLabelForEscapingEditor = msgs.get('a11y.editor.escape')
+    if(navigator.platform.toUpperCase().indexOf('WIN')>=0) {
+      ariaLabelForEscapingEditor = msgs.get('a11y.editor.escape.win')
+    }
+
     return (
-      <div id='resource-modal-container' ref={div => this.resourceModal = div} tabIndex='-1' role='region' onKeyDown={this.escapeEditor} aria-label={msgs.get('a11y.editor.escape')}> {/* eslint-disable-line jsx-a11y/no-noninteractive-element-interactions */}
+      <div id='resource-modal-container' ref={div => this.resourceModal = div} tabIndex='-1' role='region' onKeyDown={this.escapeEditor} aria-label={ariaLabelForEscapingEditor}> {/* eslint-disable-line jsx-a11y/no-noninteractive-element-interactions */}
         {reqCount && reqCount > 0 && <Loading />}
         <Modal
+          // https://github.com/carbon-design-system/carbon/issues/4036
+          // Carbon Modal a11y focus workaround
+          focusTrap={false}
           id='resource-modal'
           iconDescription={msgs.get('modal.button.close.the.modal')}
           className='modal'
           open={open}
+          selectorPrimaryFocus='.bx--modal-close'
           primaryButtonText={msgs.get(label.primaryBtn)}
           secondaryButtonText={msgs.get('modal.button.cancel')}
           modalLabel={modalLabel}

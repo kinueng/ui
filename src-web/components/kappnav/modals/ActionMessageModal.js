@@ -55,9 +55,13 @@ class ActionMessageModal extends React.PureComponent {
       //In this case there is no dialog to display errors on, so we will show the error here.
       return (
         <ComposedModal
+          // https://github.com/carbon-design-system/carbon/issues/4036
+          // Carbon Modal a11y focus workaround
+          focusTrap={false}
           className='bx--modal--danger'
           id='submit-action-message-dialog'
           role='region'
+          selectorPrimaryFocus='.bx--modal-close'
           aria-label={'Label'}
           open={open}>
            <ModalHeader buttonOnClick={handleClose}>
@@ -75,13 +79,17 @@ class ActionMessageModal extends React.PureComponent {
     } else if(result) {
       return (
         <ComposedModal
+          // https://github.com/carbon-design-system/carbon/issues/4036
+          // Carbon Modal a11y focus workaround
+          focusTrap={false}
           id='submit-action-message-dialog'
           role='region'
+          selectorPrimaryFocus='.bx--modal-close'
           aria-label={'Label'}
           open={open}>
           <ModalHeader buttonOnClick={handleClose}>
-            <h4 className="bx--modal-header__label">{result.metadata.labels['app-nav-job-component-name']}</h4>
-            <h2 className="bx--modal-header__heading">{result.metadata.annotations['app-nav-job-action-text']}</h2>
+            <h4 className="bx--modal-header__label">{result.metadata.labels['kappnav-job-component-name']}</h4>
+            <h2 className="bx--modal-header__heading">{result.metadata.annotations['kappnav-job-action-text']}</h2>
           </ModalHeader>
           <ModalBody>
             {msgs.get('job.success')}

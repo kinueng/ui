@@ -80,8 +80,12 @@ class RemoveResourceModal extends React.PureComponent {
       <div>
         {reqStatus === REQUEST_STATUS.IN_PROGRESS && <Loading />}
         <Modal
+          // https://github.com/carbon-design-system/carbon/issues/4036
+          // Carbon Modal a11y focus workaround
+          focusTrap={false}
           danger
           id='remove-resource-modal'
+          selectorPrimaryFocus='.bx--modal-close'
           iconDescription={msgs.get('modal.button.close.the.modal')}
           open={open}
           primaryButtonText={msgs.get(label.primaryBtn)}

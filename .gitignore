@@ -3,5 +3,5 @@ set_build_env.sh
 dll/
 public/
 node_modules/
-
+.vscode/
 ui_scan-results/

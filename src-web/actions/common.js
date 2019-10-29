@@ -179,7 +179,16 @@ export const getAge = (item, timestampKey) => {
   return '-'
 }
 
-export const openModal = (operation, resource, application, applicationNamespace, cmd, cmdInput) => {
+export const openModal = (...args) => {
+  // https://github.com/carbon-design-system/carbon/issues/4036
+  // Carbon Modal a11y focus workaround
+  setTimeout(
+    () => openModal_internal(...args), 
+    25 // milliseconds
+  )
+}
+
+const openModal_internal = (operation, resource, application, applicationNamespace, cmd, cmdInput) => {
   const resourceType = resource.kind.toLowerCase()
   if(resourceType === 'job' && operation === 'remove') {
     // The delete job logic is very different from the other 
@@ -399,17 +408,18 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
   var hasCmdActions = cmdActions && cmdActions.length && cmdActions.length>0
 
   if(hasStaticActions || hasUrlActions || hasCmdActions) {
-    return (
-      <OverflowMenu floatingMenu flipped iconDescription={msgs.get('svg.description.overflowMenu')}>
+      var menu = <OverflowMenu floatingMenu flipped iconDescription={msgs.get('svg.description.overflowMenu')}>
         {(() => {
-          if(hasStaticActions)
-            return staticResourceData.actions.map(action => (
+          if(hasStaticActions) {
+            return staticResourceData.actions.map((action, staticindex) => (
               <OverflowMenuItem key={itemId + action}
+                primaryFocus={staticindex === 0}
                 itemText={msgs.get('table.actions.'+action)}
                 onClick={openModal.bind(this, action, cloneData)}
                 onFocus={(e) => {e.target.title = msgs.get('table.actions.'+action)}}
                 onMouseEnter={(e) => {e.target.title = msgs.get('table.actions.'+action)}} />
             ))
+          }
         })()}
         {(() => {
           if(urlActions) {
@@ -420,10 +430,11 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
               performUrlAction(action['url-pattern'], action['open-window'], kind, name, namespace, undefined, false)
             })
 
-            return urlActions.map(action => {
+            return urlActions.map((action, urlindex) => {
               let actionLabel = action['text.nls'] ? msgs.get(action['text.nls']) : action.text
               let actionDesc = action['description.nls'] ? msgs.get(action['description.nls']) : action.description
               return <OverflowMenuItem key={action.name}
+                primaryFocus={urlindex === 0 && !hasStaticActions}
                 itemText={actionLabel}
                 onClick={performUrlAction.bind(this, action['url-pattern'], action['open-window'], componentData && componentData.kind, componentData && componentData.metadata && componentData.metadata.name, componentData && componentData.metadata && componentData.metadata.namespace, undefined, true)}
                 onFocus={(e) => {
@@ -437,8 +448,9 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
         })()}
         {(() => {
           if(cmdActions) {
-            return cmdActions.map(action => (
+            return cmdActions.map((action, cmdindex) => (
               <OverflowMenuItem key={action.name}
+                primaryFocus={cmdindex === 0 && !hasUrlActions && !hasStaticActions}
                 itemText={action.text ? action.text : action.description ? action.description : action.name}
                 onClick={openModal.bind(this, "action", cloneData, applicationName, applicationNamespace, action, cmdInputs)}
                 onFocus={(e) => {if(action.description) e.target.title = action.description}}
@@ -447,6 +459,7 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
           }
         })()}
       </OverflowMenu>
-    )
+
+      return menu
   }
 }

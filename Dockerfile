@@ -105,6 +105,7 @@ RUN microdnf update -y \
   && microdnf clean all
 
 RUN mkdir -p /opt/ibm/app-nav-ui/app && chown -R 1001:0 /opt/ibm
+COPY --chown=1001:0 licenses/ /licenses/
 WORKDIR /opt/ibm/app-nav-ui/app
 
 COPY --from=buildapp --chown=1001:0 /app/app.js .

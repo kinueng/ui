@@ -179,7 +179,16 @@ export const getAge = (item, timestampKey) => {
   return '-'
 }
 
-export const openModal = (operation, resource, application, applicationNamespace, cmd, cmdInput) => {
+export const openModal = (...args) => {
+  // https://github.com/carbon-design-system/carbon/issues/4036
+  // Carbon Modal a11y focus workaround
+  setTimeout(
+    () => openModal_internal(...args), 
+    25 // milliseconds
+  )
+}
+
+const openModal_internal = (operation, resource, application, applicationNamespace, cmd, cmdInput) => {
   const resourceType = resource.kind.toLowerCase()
   if(resourceType === 'job' && operation === 'remove') {
     // The delete job logic is very different from the other 
@@ -377,9 +386,52 @@ export const validateUrl = (url) => {
   return result
 }
 
+/**
+ * Determine if an action is enabled for a resource
+ * @param {*} resourceLabels - a resource's labels
+ * @param {*} action - an action's data
+ */
+function isActionEnabled(resourceLabels, action) {
+  let enablementLabel = action[CONFIG_CONSTANTS.ENABLEMENT_LABEL]
+  if(! enablementLabel) {
+    // If enablement-label is missing, assume the action is enabled for the resource
+    return true
+  }
+
+  const isEnabled = resourceLabels[enablementLabel]
+  if(isEnabled) {
+    // The action's enablement-label has value X and 
+    // the resource has a label of X.  This means the
+    // action is enabled for this particular resource
+    return true
+  }
+
+  return false
+}
+
+/**
+ * Return a list containing only enabled actions for a resource
+ * @param {*} resourceLabels - an object of a resource's labels
+ * @param {*} actions - list of actions for the resource
+ */
+function removeDisabledActions(resourceLabels, actions) {
+  // Loop from end to beginning to ensure each element is processed
+  // even if elements are being removed in the loop
+  for(let index = actions.length - 1; index >= 0; index--) {
+    // Remove any disabled command actions
+    const one_action = actions[index]
+    const isDisabled = ! isActionEnabled(resourceLabels, one_action)
+    if(isDisabled) {
+      actions.splice(index, 1)
+    }
+  }
+  return actions
+}
+
 export const getOverflowMenu = (componentData, actionMap, staticResourceData, applicationName, applicationNamespace) => {
   const cloneData = lodash.cloneDeep(componentData)
   var itemId = cloneData.metadata.uid
+  const resourceLabels = cloneData.metadata.labels
 
   //remove fields that should not show up on an editor
   delete cloneData.metadata.creationTimestamp
@@ -414,6 +466,9 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
         })()}
         {(() => {
           if(urlActions) {
+
+            urlActions = removeDisabledActions(resourceLabels, urlActions)
+
             urlActions.forEach((action) => { //try to cache the links ahead of time
               var kind = componentData && componentData.kind
               var namespace = componentData && componentData.metadata && componentData.metadata.namespace
@@ -439,6 +494,9 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
         })()}
         {(() => {
           if(cmdActions) {
+
+            cmdActions = removeDisabledActions(resourceLabels, cmdActions)
+
             return cmdActions.map((action, cmdindex) => {
               let actionLabel = action['text.nls'] ? msgs.get(action['text.nls']) : action.text
               let actionDesc = action['description.nls'] ? msgs.get(action['description.nls']) : action.description

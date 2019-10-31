@@ -179,7 +179,16 @@ export const getAge = (item, timestampKey) => {
   return '-'
 }
 
-export const openModal = (operation, resource, application, applicationNamespace, cmd, cmdInput) => {
+export const openModal = (...args) => {
+  // https://github.com/carbon-design-system/carbon/issues/4036
+  // Carbon Modal a11y focus workaround
+  setTimeout(
+    () => openModal_internal(...args), 
+    25 // milliseconds
+  )
+}
+
+const openModal_internal = (operation, resource, application, applicationNamespace, cmd, cmdInput) => {
   const resourceType = resource.kind.toLowerCase()
   if(resourceType === 'job' && operation === 'remove') {
     // The delete job logic is very different from the other 

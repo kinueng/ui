@@ -191,6 +191,9 @@ class ActionModal extends React.PureComponent {
       return (
         <div> 
           <Modal
+            // https://github.com/carbon-design-system/carbon/issues/4036
+            // Carbon Modal a11y focus workaround
+            focusTrap={false}
             id='submit-action-resource-modal'
             open={open}
             iconDescription={msgs.get('modal.button.close.the.modal')}

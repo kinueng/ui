@@ -224,12 +224,6 @@ class ResourceTable extends React.Component {
 							<div className ="annotationsOrLabels">
 							{msgs.get('description.title.annotations')}
 							</div>
-							{/* <div style={{ float: 'left', width: '10px' }}>
-								&nbsp;&nbsp;
-							</div>
-							<div style={{ fontFamily: 'IBM Plex Sans', fontSize: '14px', fontWeight: "600" }}>
-								Value
-							</div> */}
 						</div>
 						<div className="marginBetweenAnnotationsOrLabelsAndSectionData">
 							{annotationsArray.map(annotationsArrayKeyValue =>

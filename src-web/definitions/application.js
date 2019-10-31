@@ -243,7 +243,13 @@ export default {
       {key: 'compositeKind', header: msgs.get('table.header.kind')},
       {key: 'namespace', header: msgs.get('table.header.namespace')},
       {key: 'platform', header: msgs.get('table.header.platform')},
-      {key: 'menuAction', header: msgs.get('table.header.action')}
+      {key: 'menuAction', header: msgs.get('table.header.action')},
+      {key: 'title', header: msgs.get('table.header.title')},
+      {key: 'description', header: msgs.get('table.header.description')},
+      {key: 'enablement_label', header: msgs.get('table.header.enablement_label')},
+      {key: 'section_data', header: msgs.get('table.header.section_data')},
+      {key: 'section_map', header: msgs.get('table.header.section_map')}
+
     ]
   },
   link: getLink,
@@ -403,6 +409,15 @@ export function refreshApplicationComponents(appname, namespace, appNavConfigDat
         itemObj.kind = kind;
         itemObj.namespace = component.metadata.namespace;
         itemObj.platform = platform;
+        if(item.hasOwnProperty("section-map")){
+          itemObj.section_map = item["section-map"];
+          if(itemObj.section_map.hasOwnProperty('sections')){
+            itemObj.title = item["section-map"].sections[0].title;
+            itemObj.description = item["section-map"].sections[0].description;
+            itemObj.enablement_label = item["section-map"].sections[0]["enablement-label"];
+            itemObj.section_data = item["section-map"]["section-data"][0].data;
+          }
+        }
 
         var actionMap = item["action-map"]
         if (resourceType == "application") {  //known link to our detail panel and our custom resource types
@@ -432,6 +447,7 @@ export function refreshApplicationComponents(appname, namespace, appNavConfigDat
         }
         rowArray.push(itemObj);
       });
+      console.log("rowArray " + JSON.stringify(rowArray, null, 4))
       return rowArray
     }
   });

@@ -244,11 +244,10 @@ export default {
       {key: 'namespace', header: msgs.get('table.header.namespace')},
       {key: 'platform', header: msgs.get('table.header.platform')},
       {key: 'menuAction', header: msgs.get('table.header.action')},
-      {key: 'title', header: msgs.get('table.header.title')},
-      {key: 'description', header: msgs.get('table.header.description')},
-      {key: 'enablement_label', header: msgs.get('table.header.enablement_label')},
-      {key: 'section_data', header: msgs.get('table.header.section_data')},
-      {key: 'section_map', header: msgs.get('table.header.section_map')}
+      {key: 'title', header: 'Title'},
+      {key: 'description', header: 'Description'},
+      {key: 'section_data', header: 'section_data'},
+      {key: 'section_map', header: 'section_map'}
 
     ]
   },
@@ -414,7 +413,6 @@ export function refreshApplicationComponents(appname, namespace, appNavConfigDat
           if(itemObj.section_map.hasOwnProperty('sections')){
             itemObj.title = item["section-map"].sections[0].title;
             itemObj.description = item["section-map"].sections[0].description;
-            itemObj.enablement_label = item["section-map"].sections[0]["enablement-label"];
             itemObj.section_data = item["section-map"]["section-data"][0].data;
           }
         }
@@ -447,7 +445,6 @@ export function refreshApplicationComponents(appname, namespace, appNavConfigDat
         }
         rowArray.push(itemObj);
       });
-      console.log("rowArray " + JSON.stringify(rowArray, null, 4))
       return rowArray
     }
   });

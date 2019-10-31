@@ -50,11 +50,10 @@ class AppView extends React.Component {
         {key: 'appName', header: msgs.get('table.header.applicationName')},
         {key: 'namespace', header: msgs.get('table.header.namespace')},
         {key: 'menuAction', header: msgs.get('table.header.action')},
-        {key: 'title', header: msgs.get('table.header.title')},
-        {key: 'description', header: msgs.get('table.header.description')},
-        {key: 'enablement_label', header: msgs.get('table.header.enablement_label')},
-        {key: 'section_data', header: msgs.get('table.header.section_data')},
-        {key: 'section_map', header: msgs.get('table.header.section_map')}
+        {key: 'title', header: 'Title'},
+        {key: 'description', header: 'Description'},
+        {key: 'section_data', header: 'section_data'},
+        {key: 'section_map', header: 'section_map'}
       ]
     };
 
@@ -257,7 +256,6 @@ class AppView extends React.Component {
           if(itemObj.section_map.hasOwnProperty('sections')){
             itemObj.title = application["section-map"].sections[0].title;
             itemObj.description = application["section-map"].sections[0].description;
-            itemObj.enablement_label = application["section-map"].sections[0]["enablement-label"];
             itemObj.section_data = application["section-map"]["section-data"][0].data;
           }
         }

@@ -75,6 +75,11 @@ class ResourceTable extends React.Component {
 							element.style.visibility = 'hidden';
 						}
 					}
+				} else{
+					var element = document.querySelector("[aria-label=" + CSS.escape(row.id) + "]");
+					if(typeof(element) !== 'undefined' && element !== null){
+						element.style.visibility = 'hidden';
+					}
 				}
 			}
 		}
@@ -100,6 +105,11 @@ class ResourceTable extends React.Component {
 						if(typeof(element) !== 'undefined' && element !== null){
 							element.style.visibility = 'hidden';
 						}
+					}
+				} else{
+					var element = document.querySelector("[aria-label=" + CSS.escape(row.id) + "]");
+					if(typeof(element) !== 'undefined' && element !== null){
+						element.style.visibility = 'hidden';
 					}
 				}
 			}
@@ -288,7 +298,7 @@ class ResourceTable extends React.Component {
 		});
 
 		let c;
-		if (Object.keys(sectionmapCell).length !== 0 &&  typeof(titleCell.value) !== 'undefined' && typeof(descriptionCell.value) !== 'undefined' &&  typeof(sectionDataCell.value) !== 'undefined') {
+		if (typeof(sectionmapCell) !== 'undefined' && typeof(titleCell) !== 'undefined'&& typeof(descriptionCell) !== 'undefined' && typeof(sectionDataCell) !== 'undefined' && Object.keys(sectionmapCell).length !== 0 &&  typeof(titleCell.value) !== 'undefined' && typeof(descriptionCell.value) !== 'undefined' &&  typeof(sectionDataCell.value) !== 'undefined') {
 			c =
 				<div className ="scrollingSection">
 					<div className="bx--row">

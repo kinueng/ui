@@ -52,11 +52,15 @@ class ResourceTable extends React.Component {
 
 	toggleExpandCollapse(row) {
 		var element = document.querySelector("[aria-label=" + CSS.escape(row) + "]");
-		var child = element.childNodes[0];
-		if (child.childNodes[0].textContent === msgs.get('collapse')) {
-			child.childNodes[0].textContent = msgs.get('expand')
-		} else {
-			child.childNodes[0].textContent = msgs.get('collapse')
+		if(typeof (element) !== 'undefined' && element.childNodes.length !== 0){
+			var child = element.childNodes[0];
+			if(child.childNodes.length !==0){
+				if (child.childNodes[0].textContent === msgs.get('collapse')) {
+					child.childNodes[0].textContent = msgs.get('expand')
+				} else {
+					child.childNodes[0].textContent = msgs.get('collapse')
+				}
+			}
 		}
 	}
 
@@ -64,9 +68,13 @@ class ResourceTable extends React.Component {
 		if (this.props.rows.length !== 0) {
 			for (var i = 0; i < this.props.rows.length; i++) {
 				var row = this.props.rows[i]
-				if (!row["section_map"].hasOwnProperty('sections')) {
-					var element = document.querySelector("[aria-label=" + CSS.escape(row.id) + "]");
-					element.style.visibility = 'hidden';
+				if(row.hasOwnProperty('section_map')){
+					if (!row["section_map"].hasOwnProperty('sections')) {
+						var element = document.querySelector("[aria-label=" + CSS.escape(row.id) + "]");
+						if(typeof(element) !== 'undefined' && element !== null){
+							element.style.visibility = 'hidden';
+						}
+					}
 				}
 			}
 		}
@@ -77,16 +85,22 @@ class ResourceTable extends React.Component {
 			for (var i = 0; i < this.props.rows.length; i++) {
 				var row = this.props.rows[i]
 				var element = document.querySelector("[aria-label=" + CSS.escape(row.id) + "]");
-				element.style.visibility = 'visible';
+				if(typeof(element) !== 'undefined' && element !== null){
+					element.style.visibility = 'visible';
+				}
 			}
 		}
 
 		if (this.props.rows.length !== 0) {
 			for (var i = 0; i < this.props.rows.length; i++) {
 				var row = this.props.rows[i]
-				if (!row["section_map"].hasOwnProperty('sections')) {
-					var element = document.querySelector("[aria-label=" + CSS.escape(row.id) + "]");
-					element.style.visibility = 'hidden';
+				if(row.hasOwnProperty('section_map')){
+					if (!row["section_map"].hasOwnProperty('sections')) {
+						var element = document.querySelector("[aria-label=" + CSS.escape(row.id) + "]");
+						if(typeof(element) !== 'undefined' && element !== null){
+							element.style.visibility = 'hidden';
+						}
+					}
 				}
 			}
 		}
@@ -264,16 +278,6 @@ class ResourceTable extends React.Component {
 		let sectionDataCell;
 		let sectionmapCell;
 
-		var title = {
-			color: '#black',
-			marginTop: '17px',
-			fontFamily: 'IBM Plex Sans',
-			fontSize: '18px',
-			fontWeight: "600",
-			float: 'left',
-			lineHeight: '15px'
-		}
-
 		row.cells.forEach((cell) => {
 			if (cell.id === row.id + ':section_data') {
 				sectionDataCell = cell
@@ -284,7 +288,7 @@ class ResourceTable extends React.Component {
 		});
 
 		let c;
-		if (Object.keys(sectionmapCell).length !== 0) {
+		if (Object.keys(sectionmapCell).length !== 0 &&  typeof(titleCell.value) !== 'undefined' && typeof(descriptionCell.value) !== 'undefined' &&  typeof(sectionDataCell.value) !== 'undefined') {
 			c =
 				<div className ="scrollingSection">
 					<div className="bx--row">

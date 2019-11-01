@@ -411,9 +411,13 @@ export function refreshApplicationComponents(appname, namespace, appNavConfigDat
         if(item.hasOwnProperty("section-map")){
           itemObj.section_map = item["section-map"];
           if(itemObj.section_map.hasOwnProperty('sections')){
-            itemObj.title = item["section-map"].sections[0].title;
-            itemObj.description = item["section-map"].sections[0].description;
-            itemObj.section_data = item["section-map"]["section-data"][0].data;
+            if (item["section-map"].sections.length !== 0) {
+              itemObj.title = item["section-map"].sections[0].title;
+              itemObj.description = item["section-map"].sections[0].description;
+            }
+            if (item["section-map"]["section-data"].length !== 0) {
+              itemObj.section_data = item["section-map"]["section-data"][0].data;
+            }
           }
         }
 

@@ -254,12 +254,15 @@ class AppView extends React.Component {
         if(application.hasOwnProperty("section-map")){
           itemObj.section_map = application["section-map"]
           if(itemObj.section_map.hasOwnProperty('sections')){
-            itemObj.title = application["section-map"].sections[0].title;
-            itemObj.description = application["section-map"].sections[0].description;
-            itemObj.section_data = application["section-map"]["section-data"][0].data;
+            if (application["section-map"].sections.length !== 0) {
+              itemObj.title = application["section-map"].sections[0].title;
+              itemObj.description = application["section-map"].sections[0].description;
+            }
+            if (application["section-map"]["section-data"].length !== 0) {
+              itemObj.section_data = application["section-map"]["section-data"][0].data;
+            }
           }
         }
-        
         rowArray.push(itemObj)
       });
 

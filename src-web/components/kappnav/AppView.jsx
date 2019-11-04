@@ -49,7 +49,11 @@ class AppView extends React.Component {
         {key: 'status', header: msgs.get('table.header.status')},
         {key: 'appName', header: msgs.get('table.header.applicationName')},
         {key: 'namespace', header: msgs.get('table.header.namespace')},
-        {key: 'menuAction', header: msgs.get('table.header.action')}
+        {key: 'menuAction', header: msgs.get('table.header.action')},
+        {key: 'title', header: 'Title'},
+        {key: 'description', header: 'Description'},
+        {key: 'section_data', header: 'section_data'},
+        {key: 'section_map', header: 'section_map'}
       ]
     };
 
@@ -247,6 +251,18 @@ class AppView extends React.Component {
         itemObj.appName = <a href={location.protocol + '//' + location.host + CONTEXT_PATH + '/applications/' + encodeURIComponent(item.metadata.name) + '?namespace=' + item.metadata.namespace}>{item.metadata.name}</a>
         itemObj.namespace = item.metadata.namespace
         itemObj.menuAction = getOverflowMenu(item, application["action-map"], applicationResourceData, undefined, undefined)
+        if(application.hasOwnProperty("section-map")){
+          itemObj.section_map = application["section-map"]
+          if(itemObj.section_map.hasOwnProperty('sections')){
+            if (application["section-map"].sections.length !== 0) {
+              itemObj.title = application["section-map"].sections[0].title;
+              itemObj.description = application["section-map"].sections[0].description;
+            }
+            if (application["section-map"]["section-data"].length !== 0) {
+              itemObj.section_data = application["section-map"]["section-data"][0].data;
+            }
+          }
+        }
         rowArray.push(itemObj)
       });
 

@@ -48,6 +48,8 @@ class ResourceTable extends React.Component {
 		this.state = {
 		};
 		this.toggleExpandCollapse = this.toggleExpandCollapse.bind(this)
+		this.hiddingOrVisibleElement = this.hiddingOrVisibleElement.bind(this)
+		this.renderingLablesOrAnnotations = this.renderingLablesOrAnnotations.bind(this)
 	}
 
 	toggleExpandCollapse(row) {
@@ -64,35 +66,42 @@ class ResourceTable extends React.Component {
 		}
 	}
 
+	// This function is to hide/expose the expandable icon from the DataTable Carbon Components
+	hiddingOrVisibleElement(element, hideorVisible){
+		if(typeof(element) !== 'undefined' && element !== null){
+			element.style.visibility = hideorVisible;
+		}
+	}
+
+	/* This function is hidding the expandable icon from the DataTable Carbon Components only for
+	   those resources which doesn't have the "section-map" attribute or if the "section-map" 
+	   attribute is empty*/
 	componentDidMount() {
 		if (this.props.rows.length !== 0) {
 			for (var i = 0; i < this.props.rows.length; i++) {
 				var row = this.props.rows[i]
 				if(row.hasOwnProperty('section_map')){
-					if (!row["section_map"].hasOwnProperty('sections')) {
+					if (!row["section_map"].hasOwnProperty('sections') || row["section_map"]["section-data"].length === 0 || row["section_map"]["sections"].length === 0) {
 						var element = document.querySelector("[aria-label=" + CSS.escape(row.id) + "]");
-						if(typeof(element) !== 'undefined' && element !== null){
-							element.style.visibility = 'hidden';
-						}
+						this.hiddingOrVisibleElement(element, 'hidden')
 					}
 				} else{
 					var element = document.querySelector("[aria-label=" + CSS.escape(row.id) + "]");
-					if(typeof(element) !== 'undefined' && element !== null){
-						element.style.visibility = 'hidden';
-					}
+					this.hiddingOrVisibleElement(element, 'hidden')
 				}
 			}
 		}
 	}
 
+	/* This function is hidding the expandable icon from the DataTable Carbon Components only for
+	   those resources which doesn't have the "section-map" attribute or if the "section-map" 
+	   attribute is empty by first making expandable icon visible on every rows of the DataTable*/
 	componentDidUpdate() {
 		if (this.props.rows.length !== 0) {
 			for (var i = 0; i < this.props.rows.length; i++) {
 				var row = this.props.rows[i]
 				var element = document.querySelector("[aria-label=" + CSS.escape(row.id) + "]");
-				if(typeof(element) !== 'undefined' && element !== null){
-					element.style.visibility = 'visible';
-				}
+				this.hiddingOrVisibleElement(element, 'visible')
 			}
 		}
 
@@ -100,20 +109,100 @@ class ResourceTable extends React.Component {
 			for (var i = 0; i < this.props.rows.length; i++) {
 				var row = this.props.rows[i]
 				if(row.hasOwnProperty('section_map')){
-					if (!row["section_map"].hasOwnProperty('sections')) {
+					if (!row["section_map"].hasOwnProperty('sections') || row["section_map"]["section-data"].length === 0 || row["section_map"]["sections"].length === 0) {
 						var element = document.querySelector("[aria-label=" + CSS.escape(row.id) + "]");
-						if(typeof(element) !== 'undefined' && element !== null){
-							element.style.visibility = 'hidden';
-						}
+						this.hiddingOrVisibleElement(element, 'hidden')
 					}
 				} else{
 					var element = document.querySelector("[aria-label=" + CSS.escape(row.id) + "]");
-					if(typeof(element) !== 'undefined' && element !== null){
-						element.style.visibility = 'hidden';
-					}
+					this.hiddingOrVisibleElement(element, 'hidden')
 				}
 			}
 		}
+	}
+
+	renderingLablesOrAnnotations(array, labelOrAnnotation) {
+		var translatedMessage;
+		if (labelOrAnnotation === 'labels') {
+			translatedMessage = msgs.get('description.title.labels')
+		} else {
+			translatedMessage = msgs.get('description.title.annotations')
+		}
+
+		return (
+			<div >
+				<div>
+					<div className="annotationsOrLabels">
+						{translatedMessage}
+					</div>
+				</div>
+				<div className="marginBetweenAnnotationsOrLabelsAndSectionData">
+					{array.map(arrayKeyValue =>
+						<div>
+							{(() => {
+								if (labelOrAnnotation === 'labels') {
+									if (arrayKeyValue.label.length === 0) {
+										return (
+											<div>
+												&nbsp;
+											</div>
+										)
+									} else {
+										return (
+											<div className="sectionDataKey">
+												{arrayKeyValue.label} &nbsp;&nbsp;
+											</div>
+										)
+									}
+								} else {
+									if (arrayKeyValue.annotation.length === 0) {
+										return (
+											<div>
+												&nbsp;
+											</div>
+										)
+									} else {
+										return (
+											<div className="sectionDataKey">
+												{arrayKeyValue.annotation} &nbsp;&nbsp;
+											</div>
+										)
+									}
+								}
+							})()}
+							<div className="sectionDataKeyValueGap">
+								:&nbsp;&nbsp;
+							</div>
+							<div className="sectionDataKeyValue">
+								{(() => {
+									if (arrayKeyValue.value.includes('https') || arrayKeyValue.value.includes('http')) {
+										return (
+											<a href={arrayKeyValue.value}>{arrayKeyValue.value}</a>
+										)
+									} else {
+										{
+											if (arrayKeyValue.value.length === 0) {
+												return (
+													<div>
+														&nbsp;
+													</div>
+												)
+											} else {
+												return (
+													<div>
+														{arrayKeyValue.value}
+													</div>
+												)
+											}
+										}
+									}
+								})()}
+							</div>
+						</div>
+					)}
+				</div>
+			</div>
+		)
 	}
 
 	renderingSectionData(sectionDataCell) {
@@ -131,38 +220,7 @@ class ResourceTable extends React.Component {
 		if (lablesArray.length !== 0 && annotationsArray.length === 0) {
 			return (
 				<div className="widthOfSectionDataKeyAndValue">
-					<div>
-						<div className ="annotationsOrLabels">
-							{msgs.get('description.title.labels')}
-							</div>
-					</div>
-					<div className="marginBetweenAnnotationsOrLabelsAndSectionData">
-						{lablesArray.map(lablesArrayKeyValue =>
-							<div>
-								<div className="sectionDataKey">
-									{lablesArrayKeyValue.label} &nbsp;&nbsp;
-							</div>
-								<div className="sectionDataKeyValueGap">
-									:&nbsp;&nbsp;
-							</div>
-								<div className="sectionDataKeyValue">
-									{(() => {
-										if (lablesArrayKeyValue.value.includes('https') || lablesArrayKeyValue.value.includes('http')) {
-											return (
-												<a href={lablesArrayKeyValue.value}>{lablesArrayKeyValue.value}</a>
-											)
-										} else {
-											return (
-												<div>
-													{lablesArrayKeyValue.value}
-												</div>
-											)
-										}
-									})()}
-								</div>
-							</div>
-						)}
-					</div>
+					{this.renderingLablesOrAnnotations(lablesArray, 'labels')}
 				</div>
 			)
 		}
@@ -170,38 +228,7 @@ class ResourceTable extends React.Component {
 		if (annotationsArray.length !== 0 && lablesArray.length === 0) {
 			return (
 				<div className="widthOfSectionDataKeyAndValue">
-					<div>
-						<div className ="annotationsOrLabels">
-						{msgs.get('description.title.annotations')}
-							</div>
-					</div>
-					<div className="marginBetweenAnnotationsOrLabelsAndSectionData">
-						{annotationsArray.map(annotationsArrayKeyValue =>
-							<div >
-								<div className="sectionDataKey">
-									{annotationsArrayKeyValue.annotation} &nbsp;&nbsp;
-							</div>
-								<div className="sectionDataKeyValueGap">
-									:&nbsp;&nbsp;
-							</div>
-								<div className="sectionDataKeyValue">
-									{(() => {
-										if (annotationsArrayKeyValue.value.includes('https') || annotationsArrayKeyValue.value.includes('http')) {
-											return (
-												<a href={annotationsArrayKeyValue.value}>{annotationsArrayKeyValue.value}</a>
-											)
-										} else {
-											return (
-												<div>
-													{annotationsArrayKeyValue.value}
-												</div>
-											)
-										}
-									})()}
-								</div>
-							</div>
-						)}
-					</div>
+					{this.renderingLablesOrAnnotations(annotationsArray, 'annotations')}
 				</div>
 			)
 		}
@@ -209,73 +236,9 @@ class ResourceTable extends React.Component {
 		if (lablesArray.length !== 0 && annotationsArray.length !== 0) {
 			return (
 				<div className="widthOfSectionDataKeyAndValue">
-					<div>
-						<div>
-							<div className ="annotationsOrLabels">
-							{msgs.get('description.title.labels')}
-							</div>
-						</div>
-						<div className="marginBetweenAnnotationsOrLabelsAndSectionData">
-							{lablesArray.map(lablesArrayKeyValue =>
-								<div >
-									<div className="sectionDataKey">
-										{lablesArrayKeyValue.label} &nbsp;&nbsp;
-							</div>
-									<div className="sectionDataKeyValueGap">
-										:&nbsp;&nbsp;
-							</div>
-									<div className="sectionDataKeyValue">
-										{(() => {
-											if (lablesArrayKeyValue.value.includes('https') || lablesArrayKeyValue.value.includes('http')) {
-												return (
-													<a href={lablesArrayKeyValue.value}>{lablesArrayKeyValue.value}</a>
-												)
-											} else {
-												return (
-													<div>
-														{lablesArrayKeyValue.value}
-													</div>
-												)
-											}
-										})()}
-									</div>
-								</div>
-							)}
-						</div>
-					</div>
+					{this.renderingLablesOrAnnotations(lablesArray, 'labels')}
 					<div className="gapBetweenLabelandAnnotation">
-						<div>
-							<div className ="annotationsOrLabels">
-							{msgs.get('description.title.annotations')}
-							</div>
-						</div>
-						<div className="marginBetweenAnnotationsOrLabelsAndSectionData">
-							{annotationsArray.map(annotationsArrayKeyValue =>
-								<div >
-									<div className="sectionDataKey">
-										{annotationsArrayKeyValue.annotation} &nbsp;&nbsp;
-							</div>
-									<div className="sectionDataKeyValueGap">
-										:&nbsp;&nbsp;
-							</div>
-									<div className="sectionDataKeyValue">
-										{(() => {
-											if (annotationsArrayKeyValue.value.includes('https') || annotationsArrayKeyValue.value.includes('http')) {
-												return (
-													<a href={annotationsArrayKeyValue.value}>{annotationsArrayKeyValue.value}</a>
-												)
-											} else {
-												return (
-													<div>
-														{annotationsArrayKeyValue.value}
-													</div>
-												)
-											}
-										})()}
-									</div>
-								</div>
-							)}
-						</div>
+						{this.renderingLablesOrAnnotations(annotationsArray, 'annotations')}
 					</div>
 				</div>
 			)

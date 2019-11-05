@@ -129,12 +129,6 @@ class ResourceTable extends React.Component {
 			translatedMessage = msgs.get('description.title.annotations')
 		}
 
-		for (var i = 0; i < array.length; i++) {
-			var arrayKeyValue = array[i]
-			if (arrayKeyValue.value.length == 0) {
-
-			}
-		}
 		return (
 			<div >
 				<div>

@@ -141,9 +141,9 @@ class ResourceTable extends React.Component {
 						<div>
 							{(() => {
 								if (labelOrAnnotation === 'labels') {
-									if (arrayKeyValue.label.length === 0) {
+									if (!arrayKeyValue || !arrayKeyValue.label || arrayKeyValue.label.length === 0) {
 										return (
-											<div>
+											<div className="sectionDataKey">
 												&nbsp;
 											</div>
 										)
@@ -155,9 +155,9 @@ class ResourceTable extends React.Component {
 										)
 									}
 								} else {
-									if (arrayKeyValue.annotation.length === 0) {
+									if (!arrayKeyValue || !arrayKeyValue.annotation || arrayKeyValue.annotation.length === 0) {
 										return (
-											<div>
+											<div className="sectionDataKey">
 												&nbsp;
 											</div>
 										)
@@ -175,13 +175,13 @@ class ResourceTable extends React.Component {
 							</div>
 							<div className="sectionDataKeyValue">
 								{(() => {
-									if (arrayKeyValue.value.includes('https') || arrayKeyValue.value.includes('http')) {
+									if (arrayKeyValue && arrayKeyValue.value && (arrayKeyValue.value.startsWith('https') || arrayKeyValue.value.startsWith('http'))) {
 										return (
 											<a href={arrayKeyValue.value}>{arrayKeyValue.value}</a>
 										)
 									} else {
 										{
-											if (arrayKeyValue.value.length === 0) {
+											if (!arrayKeyValue || !arrayKeyValue.value || arrayKeyValue.value.length === 0) {
 												return (
 													<div>
 														&nbsp;

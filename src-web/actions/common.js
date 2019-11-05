@@ -428,6 +428,15 @@ function removeDisabledActions(resourceLabels, actions) {
   return actions
 }
 
+function createMenuItems(actions) {
+  if(! actions || actions.length === 0) {
+    return null
+  }
+
+  let listOfItems = null // TODO: add the map that creates the components
+  return listOfItems
+}
+
 export const getOverflowMenu = (componentData, actionMap, staticResourceData, applicationName, applicationNamespace) => {
   const cloneData = lodash.cloneDeep(componentData)
   var itemId = cloneData.metadata.uid
@@ -468,6 +477,10 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
           if(urlActions) {
 
             urlActions = removeDisabledActions(resourceLabels, urlActions)
+            if(urlActions.length === 0) {
+              // No enabled actions, do not create any url actions
+              return null
+            }
 
             urlActions.forEach((action) => { //try to cache the links ahead of time
               var kind = componentData && componentData.kind
@@ -496,6 +509,10 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
           if(cmdActions) {
 
             cmdActions = removeDisabledActions(resourceLabels, cmdActions)
+            if(cmdActions.length === 0) {
+              // No enabled actions, do not create any command actions
+              return null
+            }
 
             return cmdActions.map((action, cmdindex) => {
               let actionLabel = action['text.nls'] ? msgs.get(action['text.nls']) : action.text

@@ -23,7 +23,6 @@ export const fetchExistingSecrets = () => {
                 itemObj.Name = ns.metadata.name
                 existingSecretsArray.push(itemObj)
             });
-            console.log("I am here too" + JSON.stringify(existingSecretsArray, null,4 ))
             return existingSecretsArray
         });
 }

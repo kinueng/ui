@@ -106,7 +106,7 @@ app.all('*', (req, res, next) => {
     if(req.user && req.user !== ''){
       req.user = req.user.replace(/:/g,'')
     } else{
-      req.user = 'minishift'
+      req.user = KUBE_ENV
     }
     next()
   }

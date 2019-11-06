@@ -93,7 +93,6 @@ class NamespaceDropdown extends Component {
   render() {
     //const { namespaces, selected_namespaces } = this.props
     const namespaces = this.props.baseInfo.namespaces;
-    console.log("I m namespaces " + JSON.stringify(namespaces, null,4))
     const selected_namespaces = this.props.baseInfo.selectedNamespace;
     const { isScrollingDownward } = this.state
     const hasMultipleNamespaces = namespaces && namespaces.length > 1

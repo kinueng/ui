@@ -33,7 +33,6 @@ class ViewContainer extends Component {
         }
 
         if (this.props.baseInfo.secrets.length === 0) {
-            console.log("I am here")
             this.props.fetchLoadingSecrets();
         }
 

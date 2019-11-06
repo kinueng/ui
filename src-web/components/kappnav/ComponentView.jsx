@@ -79,7 +79,6 @@ class ComponentView extends Component {
       {label : resourceName}
       ]
 
-    console.log("resourceType " + JSON.stringify(this.state.resourceType, null, 4)+ " title " + title +" titleUrl " + titleUrl +" resourceName " + this.state.name)
     let basicDetailPane = <StructuredListModule
       title={resourceData.detailKeys.title}
       expanded={resourceData.detailKeys.expanded}
@@ -142,8 +141,6 @@ class ComponentView extends Component {
         })()}
       </ModuleBody>
 
-console.log("viewTitle " + this.state.name + " breadcrumbItems " + breadcrumbItems  + "location " + location);
-console.log("appNavConfigData " + JSON.stringify(this.props.baseInfo.appNavConfigMap, null, 4) + " self.state.name " + this.state.name +" self.props.baseInfo.selectedNamespace " + this.props.baseInfo.selectedNamespace +" self.state.resourceType " + JSON.stringify(this.state.resourceType, null, 4))
     return (
       <div>
         <SecondaryHeader title={this.state.name} breadcrumbItems={breadcrumbItems} location={location}/>
@@ -180,7 +177,6 @@ console.log("appNavConfigData " + JSON.stringify(this.props.baseInfo.appNavConfi
     this.fetchData(this.state.name);
     if(window.secondaryHeader !== undefined){
     if (!window.secondaryHeader.refreshCallback) {
-      console.log("I am here finally in componentDidMount")
       window.secondaryHeader.refreshCallback = function(result) {
         if(result && result.operation == "delete" && result.name == this.state.name) {
           //we just deleted the RESOURCE_TYPE that we are currently displaying. Go back to the RESOURCE_TYPE list.
@@ -206,14 +202,12 @@ console.log("appNavConfigData " + JSON.stringify(this.props.baseInfo.appNavConfi
 
     var self = this;
     window.setInterval(function(){
-      console.log("I am going to refreshResource ")
       refreshResource(self.state.name, self.props.baseInfo.selectedNamespace, self.state.resourceType, self.props.baseInfo.appNavConfigMap).then(result => {
         self.setState({loading: false, data: result});
       });
     }, 10000);
 
     window.setInterval(function(){
-      console.log("I am going to refreshResourceComponent ")
       refreshResourceComponent(self.state.name, self.props.baseInfo.selectedNamespace, self.state.resourceType, self.props.baseInfo.appNavConfigMap).then(result => {
         if(result === null) {
           this.setState({loadingComponents: false});

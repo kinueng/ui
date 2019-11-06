@@ -16,8 +16,9 @@
 # limitations under the License.
 ###############################################################################
 set -Eeo pipefail
+
+. ../build/version.sh
 IMAGE=kappnav-ui
-VERSION=0.1.2
 
 echo "Building ${IMAGE} ${VERSION}"
 

@@ -31,11 +31,6 @@ const translateWithId = (locale, id) => msgs.get(id)
 
 class NamespaceDropdown extends Component {
 
-  //state = {
-  //  isScrollingDownward: this.props.isScrollingDownward || false,
-  //  lastPosition: 0,
-  //}
-
   constructor(props) {
     super(props);
     this.state = {
@@ -91,7 +86,6 @@ class NamespaceDropdown extends Component {
   }
 
   render() {
-    //const { namespaces, selected_namespaces } = this.props
     const namespaces = this.props.baseInfo.namespaces;
     const selected_namespaces = this.props.baseInfo.selectedNamespace;
     const { isScrollingDownward } = this.state
@@ -108,7 +102,6 @@ class NamespaceDropdown extends Component {
       ariaLabel={selected_namespaces.toString()}
       className={`namespaces`}
       data-header-active={isScrollingDownward}
-      //onChange={this.props.switchNamespace}
       onChange={(event) => this.updateSelectedNamespace(event)}
       translateWithId={translateWithId.bind(null, document.documentElement.lang)}
       items={dropdownItems} />

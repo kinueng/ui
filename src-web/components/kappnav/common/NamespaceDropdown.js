@@ -94,12 +94,22 @@ class NamespaceDropdown extends Component {
     dropdownItems = namespaces.map((namespace, index) => ({id: `${namespace.Name}-${index}`, label: namespace.Name, value: namespace.Name }))
 
     if (hasMultipleNamespaces) {
-      dropdownItems.unshift({id: 'all', label: msgs.get('namespaces.all', this.context.locale), value: namespaces.map(namespace => namespace.Name).toString() })
+      dropdownItems.unshift(
+        { id: 'all', 
+          label: msgs.get('namespaces.all', this.context.locale), 
+          value: namespaces.map(namespace => namespace.Name).toString() 
+        }
+      )
+    }
+
+    let ariaLabelForDropdownMenu = hasMultipleNamespaces ? msgs.get('namespaces.all', this.context.locale) : dropdownItems[0].label
+    if(selected_namespaces) {
+      ariaLabelForDropdownMenu = selected_namespaces.toString()
     }
 
     return <DropdownV2
       label={hasMultipleNamespaces ? msgs.get('namespaces.all', this.context.locale) : dropdownItems[0].label}
-      ariaLabel={selected_namespaces.toString()}
+      ariaLabel={ariaLabelForDropdownMenu}
       className={`namespaces`}
       data-header-active={isScrollingDownward}
       onChange={(event) => this.updateSelectedNamespace(event)}

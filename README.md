@@ -1,3 +1,4 @@
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/kappnav/ui/blob/master/licenses/LICENSE)
 [![Build Status](https://travis-ci.com/kappnav/ui.svg?branch=master)](https://travis-ci.com/kappnav/ui)
 
 ## kAppNav Application Viewer

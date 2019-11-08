@@ -55,6 +55,9 @@ class ActionMessageModal extends React.PureComponent {
       //In this case there is no dialog to display errors on, so we will show the error here.
       return (
         <ComposedModal
+          // https://github.com/carbon-design-system/carbon/issues/4036
+          // Carbon Modal a11y focus workaround
+          focusTrap={false}
           className='bx--modal--danger'
           id='submit-action-message-dialog'
           role='region'
@@ -76,6 +79,9 @@ class ActionMessageModal extends React.PureComponent {
     } else if(result) {
       return (
         <ComposedModal
+          // https://github.com/carbon-design-system/carbon/issues/4036
+          // Carbon Modal a11y focus workaround
+          focusTrap={false}
           id='submit-action-message-dialog'
           role='region'
           selectorPrimaryFocus='.bx--modal-close'

@@ -178,7 +178,7 @@ class ComponentView extends Component {
     if(window.secondaryHeader !== undefined){
     if (!window.secondaryHeader.refreshCallback) {
       window.secondaryHeader.refreshCallback = function(result) {
-        if(result && result.operation == "delete" && result.name == this.state.name) {
+        if(result && result.operation === "delete" && result.name === this.state.name) {
           //we just deleted the RESOURCE_TYPE that we are currently displaying. Go back to the RESOURCE_TYPE list.
           let url= location.protocol+'//'+location.host + CONTEXT_PATH + '/' + this.getResourcePageUrl(this.state.resourceType);
           window.location.href = url;

@@ -17,7 +17,7 @@
  *****************************************************************/
 
 import 'carbon-components/scss/globals/scss/styles.scss'
-import React, {Component} from 'react';
+import React, {Component} from 'react'
 import { connect } from 'react-redux'
 import {Loading} from 'carbon-components-react'
 import {CONTEXT_PATH, PAGE_SIZES, SORT_DIRECTION_ASCENDING, RESOURCE_TYPES, STATUS_COLORS} from '../../actions/constants'
@@ -36,7 +36,7 @@ class JobView extends Component {
   
 
   constructor(props) {
-    super(props);
+    super(props)
 
     this.state = {
       loading: true,
@@ -56,13 +56,13 @@ class JobView extends Component {
         {key: 'age', header: msgs.get('table.header.age')},
         {key: 'menuAction', header: msgs.get('table.header.action')}
       ]
-    };
+    }
 
     // make 'this' visible to class methods
-    this.fetchData = this.fetchData.bind(this);
+    this.fetchData = this.fetchData.bind(this)
   }
   render() {
-    let viewTitle = msgs.get('page.jobsView.title');
+    let viewTitle = msgs.get('page.jobsView.title')
     if (this.state.loading)
       return <Loading withOverlay={false} className='content-spinner'/>
     else
@@ -301,7 +301,7 @@ class JobView extends Component {
           </a>
         }
 
-        const createdTime = getCreationTime(job);
+        const createdTime = getCreationTime(job)
         const howOldInMilliseconds = getAgeDifference(createdTime).diffDuration + ''
         itemObj.age = <div data-sorttitle={howOldInMilliseconds}>{getAge(job)}</div>
         itemObj.component = metadataLabel['kappnav-job-component-namespace'] + '/' + metadataLabel['kappnav-job-component-name']
@@ -319,4 +319,4 @@ export default connect(
   }),
   {
   }
-)(JobView);
+)(JobView)

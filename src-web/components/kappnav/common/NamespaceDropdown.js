@@ -18,12 +18,12 @@
  
 'use strict'
 
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import lodash from 'lodash'
 import { DropdownV2 } from 'carbon-components-react'
-import msgs from '../../../../nls/kappnav.properties';
-import { fetchLoadingSelectedNamespace } from '../../../reducers/BaseServiceReducer';
+import msgs from '../../../../nls/kappnav.properties'
+import { fetchLoadingSelectedNamespace } from '../../../reducers/BaseServiceReducer'
 
 require('../../../../scss/namespace-dropdown.scss')
 
@@ -32,7 +32,7 @@ const translateWithId = (locale, id) => msgs.get(id)
 class NamespaceDropdown extends Component {
 
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       isScrollingDownward: false,
       lastPosition: 0
@@ -86,8 +86,8 @@ class NamespaceDropdown extends Component {
   }
 
   render() {
-    const namespaces = this.props.baseInfo.namespaces;
-    const selected_namespaces = this.props.baseInfo.selectedNamespace;
+    const namespaces = this.props.baseInfo.namespaces
+    const selected_namespaces = this.props.baseInfo.selectedNamespace
     const { isScrollingDownward } = this.state
     const hasMultipleNamespaces = namespaces && namespaces.length > 1
     let dropdownItems = Object.assign({}, namespaces)
@@ -115,4 +115,4 @@ export default connect(
     {
         fetchLoadingSelectedNamespace
     }
-)(NamespaceDropdown);
+)(NamespaceDropdown)

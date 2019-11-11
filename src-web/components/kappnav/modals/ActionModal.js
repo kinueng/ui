@@ -119,7 +119,7 @@ const withForm = (Component, initialForm) => {
               var that= this;
               response.json()
               .then(function(data) {
-                //Api Exception. printing the exception.
+                //Api Exception. One possible cause is that it failed to pull the image.
                 that.setState({reqErrorMsg: [msgs.get('job.failure.207',[data.status + ": "+ data.message])]})
                 return null
               })

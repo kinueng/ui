@@ -17,11 +17,26 @@
  *****************************************************************/
 import { fetchNamespaces, fetchExistingSecrets, fetchAppNavConfigMap } from "../lib/BaseService";
 
+/**
+ * @return {string} The namespace query parameter, else empty string
+ */
+function getSelectedNamespace() {
+    let currentURL = new URL(location.href)
+    let namespace = currentURL.searchParams.get('namespace')
+    if(namespace === null) {
+        // namespace parameter did not exist
+        return ''
+    }
+    return namespace
+}
+
+const _selectedNamespace = getSelectedNamespace()
+
 const initState = {
     namespaces: [],
     secrets: [],
     appNavConfigMap: {},
-    selectedNamespace: (decodeURIComponent(new URL(location.href).searchParams.get("namespace")) === "null") ? '' : decodeURIComponent(new URL(location.href).searchParams.get("namespace"))
+    selectedNamespace: _selectedNamespace
 }
 
 const BASESERVICE_LOADING_NAMESPACES = 'BASESERVICE_LOADING_NAMESPACES';

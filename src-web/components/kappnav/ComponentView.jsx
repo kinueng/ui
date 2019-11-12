@@ -31,7 +31,69 @@ import getResourceData, { refreshResource, refreshResourceComponent } from '../.
 import msgs from '../../../nls/kappnav.properties'
 
 class ComponentView extends Component {
-  constructor (props){
+
+  /**
+   * @return {RESOURCE_TYPES} the current resource type 
+   */
+  getResourceType() {
+    if(location.pathname === '/') {
+      // There is no url path, error case
+      return undefined
+    }
+    
+    let tokenized_url = this.getTokenizedURLPath()
+
+    // Assuming there is always an index 1 because ComponentView is only 
+    // used with URLs that contain the resourcetype at index 1
+    const resourceTypeInURL = tokenized_url[1].toLowerCase()
+    if(resourceTypeInURL === 'applications') {
+      return RESOURCE_TYPES.APPLICATION
+    } else if (resourceTypeInURL === 'was-nd-cells') {
+      return RESOURCE_TYPES.WASNDCELL
+    } else {
+      return RESOURCE_TYPES.LIBERTYCOLLECTIVE
+    }
+  }
+
+  /**
+   * Removes starting '/', if it exists
+   * @param {string} url_path 
+   */
+  removeAnyStartingSlashes(url_path) {
+    if(url_path && url_path.length > 0 && url_path.indexOf('/') === 0) {
+      return url_path.substring(1)
+    } else {
+      return url_path
+    }   
+  }
+
+  /**
+   * Return a tokenized array of the URL path.  This method will try
+   * to avoid having any array elements that are empty strings.  The idea
+   * is to return an array that maps like the example below.
+   * 
+   * '/applications/my_applications' -> ['applications', 'my_applications']
+   * 
+   * @return {array} of strings from the URL path
+   */
+  getTokenizedURLPath() {
+    // Remove the starting '/' so the split() does not
+    // have indexes with empty strings
+    let tokenized_url = this.removeAnyStartingSlashes(location.pathname)
+    tokenized_url = tokenized_url.split('/')
+    return tokenized_url
+  }
+
+  /**
+   * @return {string} The name of the resource
+   */
+  getName() {
+    let tokenized_url = this.getTokenizedURLPath()
+    let result = decodeURIComponent(tokenized_url[2])
+    return result
+  }
+
+  constructor (props) {
     super(props);
 
     this.state = {
@@ -47,8 +109,8 @@ class ComponentView extends Component {
       pageSize: PAGE_SIZES.DEFAULT,
       pageNumber: 1,
       search: undefined,
-      resourceType : (location.pathname.split('/').filter(function(e){return e})[1] === 'applications')? RESOURCE_TYPES.APPLICATION : (location.pathname.split('/').filter(function(e){return e})[1] === 'was-nd-cells')? RESOURCE_TYPES.WASNDCELL : RESOURCE_TYPES.LIBERTYCOLLECTIVE,
-      name : decodeURIComponent(location.pathname.split('/').filter(function (e) { return e })[2])
+      resourceType : this.getResourceType(),
+      name : this.getName()
     };
 
     this.fetchData = this.fetchData.bind(this);
@@ -56,7 +118,7 @@ class ComponentView extends Component {
   }
 
   render() {
-    var paths = location.pathname.split('/').filter(function(e){return e})
+    var paths = this.getTokenizedURLPath()
     let title = msgs.get('page.applicationView.title') // default = application
     let titleUrl = CONTEXT_PATH + '/applications' // default = application
     let resourceType = this.state.resourceType

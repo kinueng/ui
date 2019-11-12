@@ -212,7 +212,7 @@ class ResourceTable extends React.Component {
 		sectionDataCell.value.map(sectionDataKeyValue => {
 			if (sectionDataKeyValue.hasOwnProperty('label')) {
 				lablesArray.push(sectionDataKeyValue);
-			} else {
+			} else if(sectionDataKeyValue.hasOwnProperty('annotation')) {
 				annotationsArray.push(sectionDataKeyValue)
 			}
 		})

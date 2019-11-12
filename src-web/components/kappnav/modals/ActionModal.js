@@ -116,11 +116,16 @@ const withForm = (Component, initialForm) => {
           document.getElementById("app").style.cursor = "pointer"; 
           if (response.ok) {
             if(response.status === 207) {
-              //Api Exception. One possible cause is that it failed to pull the image.
-              this.setState({reqErrorMsg: [msgs.get('job.failure.207',[this.props.submitCmd.image, document.documentElement.getAttribute('appnavConfigmapNamespace')])]})
-              return null
+              var that= this;
+              response.json()
+              .then(function(data) {
+                //Api Exception. One possible cause is that it failed to pull the image.
+                that.setState({reqErrorMsg: [msgs.get('job.failure.207',[data.status + ": "+ data.message])]})
+                return null
+              })
+            } else{
+              return response.clone().json();
             }
-            return response.clone().json();
           } else {
             if(response.status === 400 || response.status === 504) {
               this.setState({reqErrorMsg: [msgs.get('job.failure.400')]})

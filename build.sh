@@ -16,8 +16,14 @@
 # limitations under the License.
 ###############################################################################
 set -Eeo pipefail
+
+# Travis builds won't have a peer build dir
+VERSION=x.x.x
+if [ -e ../build/version.sh ]; then
+    . ../build/version.sh
+fi
+
 IMAGE=kappnav-ui
-VERSION=0.1.2
 
 echo "Building ${IMAGE} ${VERSION}"
 

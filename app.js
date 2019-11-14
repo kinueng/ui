@@ -103,7 +103,11 @@ app.all('*', (req, res, next) => {
   } else {
     //not ICP, see if the user information is in the headers
     req.user = req.headers['x-forwarded-user']
-
+    if(req.user && req.user !== ''){
+      req.user = req.user.replace(/:/g,'')
+    } else{
+      req.user = KUBE_ENV
+    }
     next()
   }
 })

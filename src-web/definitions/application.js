@@ -243,7 +243,12 @@ export default {
       {key: 'compositeKind', header: msgs.get('table.header.kind')},
       {key: 'namespace', header: msgs.get('table.header.namespace')},
       {key: 'platform', header: msgs.get('table.header.platform')},
-      {key: 'menuAction', header: msgs.get('table.header.action')}
+      {key: 'menuAction', header: msgs.get('table.header.action')},
+      {key: 'title', header: 'Title'},
+      {key: 'description', header: 'Description'},
+      {key: 'section_data', header: 'section_data'},
+      {key: 'section_map', header: 'section_map'}
+
     ]
   },
   link: getLink,
@@ -403,6 +408,18 @@ export function refreshApplicationComponents(appname, namespace, appNavConfigDat
         itemObj.kind = kind;
         itemObj.namespace = component.metadata.namespace;
         itemObj.platform = platform;
+        if(item.hasOwnProperty("section-map")){
+          itemObj.section_map = item["section-map"];
+          if(itemObj.section_map.hasOwnProperty('sections')){
+            if (item["section-map"].sections.length !== 0) {
+              itemObj.title = item["section-map"].sections[0].title;
+              itemObj.description = item["section-map"].sections[0].description;
+            }
+            if (item["section-map"]["section-data"].length !== 0) {
+              itemObj.section_data = item["section-map"]["section-data"][0].data;
+            }
+          }
+        }
 
         var actionMap = item["action-map"]
         if (resourceType == "application") {  //known link to our detail panel and our custom resource types

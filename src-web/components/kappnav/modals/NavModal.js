@@ -135,7 +135,19 @@ class NavModal extends React.PureComponent {
         {this.props.buttonName}
       </Button>
       {
-        open && <ComposedModal id='nav-modal' selectorPrimaryFocus='.bx--modal-close' className='modal nav-modal' role='region' aria-label={this.props.modalHeading} open={open} onClose={() => this.toggleModal(false)}>
+        open && 
+          <ComposedModal 
+            // https://github.com/carbon-design-system/carbon/issues/4036
+            // Carbon Modal a11y focus workaround
+            focusTrap={false}
+            id='nav-modal' 
+            selectorPrimaryFocus='.bx--modal-close' 
+            className='modal nav-modal' 
+            role='region' 
+            aria-label={this.props.modalHeading} 
+            open={open} 
+            onClose={() => this.toggleModal(false)}>
+
             <ModalHeader buttonOnClick={this.handleOpen.bind(this, false)} iconDescription={this.props.closeButtonLabel}>
               <div>
                 <p className='bx--modal-header__label'>
@@ -406,7 +418,7 @@ class NavModalForm extends React.PureComponent {
             </ul>
           </div>}
         <div className='modal-inner-content'>
-          {validationErrors.form && <InlineNotification kind='error' title='' subtitle={msgs.get('formerror.missing')} />}
+          {validationErrors.form && <InlineNotification kind='error' title='' iconDescription={msgs.get('modal.button.close')} subtitle={msgs.get('formerror.missing')} />}
           {(postStatus === REQUEST_STATUS.ERROR || parsingError) &&
             <InlineNotification
               kind='error'

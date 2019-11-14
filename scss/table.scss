@@ -80,3 +80,62 @@
 .bx--data-table-v2 td .statusCell {
   white-space: nowrap;
 }
+
+.title {
+  color: black;
+  margin-top: 17px;
+  font-family: IBM Plex Sans;
+  font-size: 18px;
+  font-weight: 600;
+  float: left;
+  line-height: 15px;
+}
+
+.scrollingSection{
+  overflow-y: scroll;
+  height: 200px;
+}
+
+.marginBetweenTitleAndSectionData{
+  margin-top: 15px;
+}
+
+.marginBetweenAnnotationsOrLabelsAndSectionData{
+  margin-top: 20px;
+}
+
+.annotationsOrLabels{
+  width: 282px;
+  font-family:IBM Plex Sans;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.sectionDataKey{
+  float: left;
+  width: 282px;
+  padding-bottom: 7px;
+}
+
+.sectionDataKeyValueGap{
+  float: left;
+  width: 10px;
+  padding-bottom: 7px;
+}
+
+.sectionDataKeyValue{
+  font-family: IBM Plex Sans;
+  font-size: 15px;
+  font-weight: 600;
+  padding-bottom: 7px;
+}
+
+.gapBetweenLabelandAnnotation{
+  margin-top: 30px;
+  width: 1000px;
+}
+
+.widthOfSectionDataKeyAndValue{
+  width: 1000px;
+}

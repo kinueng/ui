@@ -78,12 +78,38 @@ class NamespaceDropdown extends Component {
   }
 
   updateSelectedNamespace = (event) => {
-    if(event.selectedItem.id == 'all'){
-        this.props.fetchLoadingSelectedNamespace('')
-      } else {
-        this.props.fetchLoadingSelectedNamespace(event.selectedItem.value)
-      }
+    let namespace = event.selectedItem.value
+    if(namespace === 'all') {
+      namespace = ''
+    }
+    this.props.fetchLoadingSelectedNamespace(namespace)
   }
+
+  /**
+   * Determine what the label should be for the dropdown menu based on
+   * whether the user has selected a namespace.  Factor in the number of
+   * namespaces avaliable to choose from when returning a default selected
+   * namespace.
+   * @return {string} - i18n value when possible of the selected namespace
+   */
+  _getSelectedNamespaceLabel(selected_namespaces, hasMultipleNamespaces, dropdownItems) {
+    if(selected_namespaces) {
+      // No way to provide an i18n version of the namespace
+      // because the namespace is user defined text.
+      return selected_namespaces
+    } else {
+      // Return the default namespace
+      if(hasMultipleNamespaces) {
+        // When there are multiple namespaces to choose from,
+        // the default is to show all the namespaces
+        return msgs.get('namespaces.all', this.context.locale)
+      } else {
+        // When only one namespace to choose from,
+        // return the only namespace choice
+        return dropdownItems[0].label
+      }
+    }
+  } // end of _getSelectedNamespaceLabel(...)
 
   render() {
     const namespaces = this.props.baseInfo.namespaces
@@ -107,15 +133,17 @@ class NamespaceDropdown extends Component {
       ariaLabelForDropdownMenu = selected_namespaces.toString()
     }
 
+    const selected_namespaces_label = this._getSelectedNamespaceLabel(selected_namespaces, hasMultipleNamespaces, dropdownItems)
+
     return <DropdownV2
-      label={hasMultipleNamespaces ? msgs.get('namespaces.all', this.context.locale) : dropdownItems[0].label}
+      label={selected_namespaces_label}
       ariaLabel={ariaLabelForDropdownMenu}
       className={`namespaces`}
       data-header-active={isScrollingDownward}
       onChange={(event) => this.updateSelectedNamespace(event)}
       translateWithId={translateWithId.bind(null, document.documentElement.lang)}
       items={dropdownItems} />
-  }
+  } // end of render()
 }
 
 export default connect(

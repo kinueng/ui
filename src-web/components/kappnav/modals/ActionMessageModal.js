@@ -19,12 +19,14 @@
 'use strict'
 
 import React from 'react'
-import { ComposedModal, ModalHeader, ModalBody, ModalFooter } from 'carbon-components-react'
+import { ComposedModal, ModalHeader, ModalBody, ToastNotification } from 'carbon-components-react'
 import {CONTEXT_PATH} from '../../../actions/constants'
 import { withRouter } from 'react-router-dom'
 import msgs from '../../../../nls/kappnav.properties'
+import moment from 'moment';
+import { Launch24 } from '@carbon/icons-react';
 
-
+require('../../../../scss/modal.scss')
 class ActionMessageModal extends React.PureComponent {
 
   constructor (props){
@@ -78,26 +80,33 @@ class ActionMessageModal extends React.PureComponent {
       )
     } else if(result) {
       return (
-        <ComposedModal
-          // https://github.com/carbon-design-system/carbon/issues/4036
-          // Carbon Modal a11y focus workaround
-          focusTrap={false}
-          id='submit-action-message-dialog'
-          role='region'
-          selectorPrimaryFocus='.bx--modal-close'
-          aria-label={'Label'}
-          open={open}>
-          <ModalHeader buttonOnClick={handleClose}>
-            <h4 className="bx--modal-header__label">{result.metadata.labels['kappnav-job-component-name']}</h4>
-            <h2 className="bx--modal-header__heading">{result.metadata.annotations['kappnav-job-action-text']}</h2>
-          </ModalHeader>
-          <ModalBody>
-            {msgs.get('job.success')}
-          </ModalBody>
-          <ModalFooter>
-            <div><a href={location.protocol+'//'+location.host + CONTEXT_PATH + '/jobs'}>{msgs.get('view.result')}</a></div>
-          </ModalFooter>
-        </ComposedModal>
+        <ToastNotification
+          caption={
+            <div>
+              {new moment().format('HH:mm:ss   LL')}
+              <button className="button-style">
+                <a href={location.protocol + '//' + location.host + CONTEXT_PATH + '/jobs'}>
+                  <Launch24 aria-label="Add" className="launch-icon" />
+                </a>
+              </button>
+            </div>
+          }
+          hideCloseButton={false}
+          iconDescription={msgs.get('modal.button.close.the.modal')}
+          kind="info"
+          notificationType="toast"
+          role="alert"
+          className='toaster-style'
+          subtitle={
+            <div>
+              <h3 >{result.metadata.annotations['kappnav-job-action-text']} {msgs.get('toaster.action.subtitle')}</h3>
+              <h3 className="job-component-name">{result.metadata.labels['kappnav-job-component-name']} </h3>
+              <br />
+            </div>
+          }
+          timeout={0}
+          title={msgs.get('toaster.action.success')}
+        />
       )
     } else {
       return (<div/>)

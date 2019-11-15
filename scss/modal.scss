@@ -224,3 +224,59 @@
     }
   }
 }
+
+.toaster-style {
+  margin-bottom: .5rem;
+  min-width: 30rem;
+  background-color: rgb(51, 51, 51);
+  margin-top: 3rem;
+  top: 0;
+  right: 0;
+  margin-right: 0;
+  color: #fff;
+  position: absolute;
+  z-index: 10;
+}
+.bx--toast-notification__subtitle{
+  color: #fff;
+}
+.bx--toast-notification__caption{
+  color: #fff;
+}
+
+.bx--toast-notification__title{
+  font-size: 1.2rem;
+}
+.bx--toast-notification__caption{
+  font-size: 1rem;
+}
+
+.job-component-name{
+  font-weight: bold;
+}
+
+svg.launch-icon {
+  fill: white;
+  background-color: rgb(51, 51, 51);
+  border:0px;
+  padding: 0px;
+}
+
+.button-style {
+  background-color: rgb(51, 51, 51);
+  border:0px;
+  margin-left: 191px;
+  padding: 0px;
+  cursor: pointer;
+}
+
+.bx--toast-notification__close-button{
+  fill: white;
+  background-color: rgb(51, 51, 51);
+  border:0px;
+  padding: 0px;
+}
+
+.bx--toast-notification__close-icon, .bx--toast-notification__icon{
+  fill: white;
+}

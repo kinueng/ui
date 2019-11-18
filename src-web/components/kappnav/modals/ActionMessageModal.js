@@ -86,7 +86,7 @@ class ActionMessageModal extends React.PureComponent {
               {new moment().format('HH:mm:ss   LL')}
               <button className="button-style">
                 <a href={location.protocol + '//' + location.host + CONTEXT_PATH + '/jobs'}>
-                  <Launch24 aria-label="Add" className="launch-icon" />
+                  <Launch24 aria-label={msgs.get('toaster.action.caption')} className="launch-icon" />
                 </a>
               </button>
             </div>

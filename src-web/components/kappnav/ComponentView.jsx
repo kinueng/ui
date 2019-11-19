@@ -33,29 +33,6 @@ import msgs from '../../../nls/kappnav.properties'
 class ComponentView extends Component {
 
   /**
-   * @return {RESOURCE_TYPES} the current resource type 
-   */
-  getResourceType() {
-    if(location.pathname === '/') {
-      // There is no url path, error case
-      return undefined
-    }
-    
-    let tokenized_url = this.getTokenizedURLPath()
-
-    // Assuming there is always an index 1 because ComponentView is only 
-    // used with URLs that contain the resourcetype at index 1
-    const resourceTypeInURL = tokenized_url[1].toLowerCase()
-    if(resourceTypeInURL === 'applications') {
-      return RESOURCE_TYPES.APPLICATION
-    } else if (resourceTypeInURL === 'was-nd-cells') {
-      return RESOURCE_TYPES.WASNDCELL
-    } else {
-      return RESOURCE_TYPES.LIBERTYCOLLECTIVE
-    }
-  }
-
-  /**
    * Removes starting '/', if it exists
    * @param {string} url_path 
    */
@@ -84,17 +61,11 @@ class ComponentView extends Component {
     return tokenized_url
   }
 
-  /**
-   * @return {string} The name of the resource
-   */
-  getName() {
-    let tokenized_url = this.getTokenizedURLPath()
-    let result = decodeURIComponent(tokenized_url[2])
-    return result
-  }
-
   constructor (props) {
     super(props);
+
+    // match comes from react-router-dom
+    const { match: { params } } = this.props;
 
     this.state = {
       expanded: true,
@@ -109,8 +80,7 @@ class ComponentView extends Component {
       pageSize: PAGE_SIZES.DEFAULT,
       pageNumber: 1,
       search: undefined,
-      resourceType : this.getResourceType(),
-      name : this.getName()
+      name : params.resourceName
     };
 
     this.fetchData = this.fetchData.bind(this);
@@ -118,35 +88,27 @@ class ComponentView extends Component {
   }
 
   render() {
+    const {title, resourceType} = this.props
+    const {name} = this.state
+
+    // Remove the last directory in the URL path
     var paths = this.getTokenizedURLPath()
-    let title = msgs.get('page.applicationView.title') // default = application
-    let titleUrl = CONTEXT_PATH + '/applications' // default = application
-    let resourceType = this.state.resourceType
-    const resourceData = getResourceData(resourceType)
+    paths.pop()
+    let titleUrl = '/' + paths.join('/') 
 
-    if (paths[1] === 'was-nd-cells') {
-      // Change title to be WAS ND Cells
-      title = msgs.get('page.wasNdCellsView.title')
-      titleUrl = CONTEXT_PATH + '/was-nd-cells'
-    } else if (paths[1] === 'liberty-collectives') {
-      // Change title to be Liberty Collectives
-      title = msgs.get('page.libertyCollectiveView.title')
-      titleUrl = CONTEXT_PATH + '/liberty-collectives'
-    }
-
-
-    let resourceName = this.state.name
     let breadcrumbItems = [
       {label : title, url : titleUrl},
-      {label : resourceName}
-      ]
+      {label : name}
+    ]
+
+    let resourceData = getResourceData(resourceType)
 
     let basicDetailPane = <StructuredListModule
       title={resourceData.detailKeys.title}
       expanded={resourceData.detailKeys.expanded}
       headerRows={resourceData.detailKeys.headerRows}
       rows={resourceData.detailKeys.rows}
-      id={this.state.name+'-overview-module'}
+      id={name+'-overview-module'}
       data={this.state.data} />
 
     let additionalDetailPane;
@@ -158,7 +120,7 @@ class ComponentView extends Component {
         expanded={resourceData.additionalDetailKeys.expanded}
         headerRows={resourceData.additionalDetailKeys.headerRows}
         rows={resourceData.additionalDetailKeys.rows}
-        id={this.state.name+'additional-details-overview-module'}
+        id={name+'additional-details-overview-module'}
         data={this.state.data} />
     }
 
@@ -167,7 +129,7 @@ class ComponentView extends Component {
       <div className='bx--module__header' style={{justifyContent: 'space-between'}} onClick={(e)=>{this.toggleExpandCollapse()}}>
         <ul data-accordion className="bx--accordion">
           <li data-accordion-item className="bx--accordion__item" className={this.state.expanded ? 'bx--accordion__item--active' : '' }>
-            <button className="bx--accordion__heading" aria-expanded={this.state.expanded} aria-controls={this.state.name+"modulePane"} title={this.state.expanded ? msgs.get('collapse') : msgs.get('expand') }>
+            <button className="bx--accordion__heading" aria-expanded={this.state.expanded} aria-controls={name+"modulePane"} title={this.state.expanded ? msgs.get('collapse') : msgs.get('expand') }>
               <svg className="bx--accordion__arrow" width="7" height="12" viewBox="0 0 7 12">
                 <path fillRule="nonzero" d="M5.569 5.994L0 .726.687 0l6.336 5.994-6.335 6.002L0 11.27z" />
               </svg>
@@ -178,7 +140,7 @@ class ComponentView extends Component {
       </div>
 
     let moduleBody = 
-      <ModuleBody id={this.state.name+"modulePane"} className={this.state.expanded ? '' : 'collapsed'}>
+      <ModuleBody id={name+"modulePane"} className={this.state.expanded ? '' : 'collapsed'}>
         {(() => {
           if(this.state.loadingComponents) {
             return <Loading withOverlay={false} className='module-spinner' />
@@ -205,7 +167,7 @@ class ComponentView extends Component {
 
     return (
       <div>
-        <SecondaryHeader title={this.state.name} breadcrumbItems={breadcrumbItems} location={location}/>
+        <SecondaryHeader title={name} breadcrumbItems={breadcrumbItems} location={location}/>
       
       
       <div className="page-content-container overview-content" role="main">
@@ -221,7 +183,7 @@ class ComponentView extends Component {
           }
         })()}
 
-        <Module className={this.state.expanded ? '' : 'collapsedModule' } id={this.state.name+'-component-module'}>
+        <Module className={this.state.expanded ? '' : 'collapsedModule' } id={name+'-component-module'}>
           { moduleHeader }
           { moduleBody }
         </Module>
@@ -242,7 +204,7 @@ class ComponentView extends Component {
       window.secondaryHeader.refreshCallback = function(result) {
         if(result && result.operation === "delete" && result.name === this.state.name) {
           //we just deleted the RESOURCE_TYPE that we are currently displaying. Go back to the RESOURCE_TYPE list.
-          let url= location.protocol+'//'+location.host + CONTEXT_PATH + '/' + this.getResourcePageUrl(this.state.resourceType);
+          let url= location.protocol+'//'+location.host + CONTEXT_PATH + '/' + this.getResourcePageUrl(this.props.resourceType);
           window.location.href = url;
         } else {
           var skipComponentReload = true;
@@ -352,13 +314,13 @@ class ComponentView extends Component {
 fetchData(name, skipComponentReload) {
   this.setState({loading: true, loadingComponents: !skipComponentReload});
 
-  refreshResource(name, this.props.baseInfo.selectedNamespace, this.state.resourceType, this.props.baseInfo.appNavConfigMap).then(result => {
+  refreshResource(name, this.props.baseInfo.selectedNamespace, this.props.resourceType, this.props.baseInfo.appNavConfigMap).then(result => {
     this.setState({loading: false, data: result})
   });
 
   var self = this;
   if(!skipComponentReload) {
-    refreshResourceComponent(name, this.props.baseInfo.selectedNamespace, this.state.resourceType, this.props.baseInfo.appNavConfigMap).then(result => {
+    refreshResourceComponent(name, this.props.baseInfo.selectedNamespace, this.props.resourceType, this.props.baseInfo.appNavConfigMap).then(result => {
       self.setState({loadingComponents: false});
       self.filterTable(self.state.search, this.state.pageNumber, this.state.pageSize, result)
     });

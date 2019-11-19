@@ -79,7 +79,8 @@ class NamespaceDropdown extends Component {
 
   updateSelectedNamespace = (event) => {
     let namespace = event.selectedItem.value
-    if(namespace === 'all') {
+    if(event.selectedItem.id === 'all') {
+      // Look for a special case of "all" in the id
       namespace = ''
     }
     this.props.fetchLoadingSelectedNamespace(namespace)

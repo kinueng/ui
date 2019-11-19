@@ -37,16 +37,18 @@ class DetailView extends Component {
       data: {},
       loading: true,
       name : decodeURIComponent(location.pathname.split('/').filter(function (e) { return e })[4]),
-      staticResourceData: (location.pathname.split('/').filter(function(e){return e})[3] === 'was-traditional-app') ? getResourceData(RESOURCE_TYPES.WASTRADITIONALAPP) : (location.pathname.split('/').filter(function(e){return e})[3] === 'liberty-app') ? getResourceData(RESOURCE_TYPES.LIBERTYAPP) : getResourceData(RESOURCE_TYPES.WASNDCELL) 
+      staticResourceData: getResourceData(props.resourceType)
     }
 
     this.fetchData = this.fetchData.bind(this)
   }
 
   render() {
+
+    const {title} = this.props
+
     var paths = location.pathname.split('/')
-    paths = paths.filter(function (e) { return e })
-    let title = (paths[1] === 'applications') ? msgs.get('page.applicationView.title') : msgs.get('page.wasNdCellsView.title')
+    paths = paths.filter(function (e) { return e }) // Removes empty string array elements
     let name = decodeURIComponent(paths[2])
     let parent_ns = decodeURIComponent(new URL(window.location.href).searchParams.get("parentnamespace"))
     let itemName = decodeURIComponent(paths[4])

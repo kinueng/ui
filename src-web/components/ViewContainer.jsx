@@ -18,12 +18,14 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import msgs from '../../nls/kappnav.properties';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { fetchLoadingNamespaces, fetchLoadingSecrets, fetchLoadingAppNavConfigMaps } from '../reducers/BaseServiceReducer';
 import AppView from './kappnav/AppView.jsx';
 import ComponentView from './kappnav/ComponentView.jsx';
 import DetailView from './kappnav/DetailView.jsx';
 import JobView from './kappnav/JobView.jsx';
+import { RESOURCE_TYPES } from '../actions/constants';
 
 class ViewContainer extends Component {
 
@@ -57,9 +59,11 @@ class ViewContainer extends Component {
 
                             <Route exact path="/kappnav-ui/jobs" component={JobView} />
 
-                            <Route exact path="/kappnav-ui/applications/:applicationName" component={ComponentView} />
-
-                            <Route exact path="/kappnav-ui/was-nd-cells/:cellName/was-traditional-app/:applicationName" component={DetailView} />
+                            <Route exact path="/kappnav-ui/applications/:resourceName" 
+                                component={(props) => 
+                                    <ComponentView {...props}
+                                                   title={msgs.get('page.applicationView.title')}
+                                                   resourceType={RESOURCE_TYPES.APPLICATION}/>}/>
                         </Switch>
                     </Router>
                 </main>

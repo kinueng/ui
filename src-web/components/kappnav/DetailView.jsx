@@ -33,10 +33,13 @@ class DetailView extends Component {
   constructor (props){
     super(props)
 
+    // match comes from react-router-dom
+    const { match: { params } } = this.props;
+
     this.state = {
       data: {},
       loading: true,
-      name : decodeURIComponent(location.pathname.split('/').filter(function (e) { return e })[4]),
+      name : params.applicationName,
       staticResourceData: getResourceData(props.resourceType)
     }
 
@@ -45,14 +48,15 @@ class DetailView extends Component {
 
   render() {
 
-    const {title} = this.props
+    // match comes from react-router-dom
+    const {match: { params }, title} = this.props
+    const {name} = this.state
 
-    var paths = location.pathname.split('/')
+    let paths = location.pathname.split('/')
     paths = paths.filter(function (e) { return e }) // Removes empty string array elements
-    let name = decodeURIComponent(paths[2])
-    let parent_ns = decodeURIComponent(new URL(window.location.href).searchParams.get("parentnamespace"))
-    let itemName = decodeURIComponent(paths[4])
-    let ns = decodeURIComponent(new URL(window.location.href).searchParams.get("namespace"))
+    const parent_ns = decodeURIComponent(new URL(window.location.href).searchParams.get("parentnamespace"))
+    const itemName = params.applicationName
+    const ns = decodeURIComponent(new URL(window.location.href).searchParams.get("namespace"))
     let resourceType = paths[3]
     
     let breadcrumbItems=[{label:title, url:CONTEXT_PATH+'/' + paths[1]},

@@ -107,7 +107,6 @@ const withForm = (Component, initialForm) => {
           method: 'POST',
           headers: {
             "Content-Type": "application/json",
-            "x-user": document.documentElement.getAttribute("user"),
             "CSRF-Token": getToken()
           },
           body: JSON.stringify(data)

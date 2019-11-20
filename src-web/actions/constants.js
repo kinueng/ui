@@ -50,7 +50,8 @@ export const CONFIG_CONSTANTS = {
   MENU_ITEM: 'menu-item',
   REQUIRES_INPUT: 'requires-input',
   URL_ACTIONS: 'url-actions',
-  ENABLEMENT_LABEL: 'enablement-label'
+  ENABLEMENT_LABEL: 'enablement-label',
+  ENABLEMENT_ANNOTATION: 'enablement-annotation'
 }
 
 export const STATUS_COLORS = {

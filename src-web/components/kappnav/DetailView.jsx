@@ -25,8 +25,7 @@ import StructuredListModule from './common/StructuredListModule'
 import {updateSecondaryHeader, getOverflowMenu, getStatus} from '../../actions/common'
 import SecondaryHeader from './common/SecondaryHeader.jsx'
 import getResourceData from '../../definitions/index';
-import { CONTEXT_PATH, RESOURCE_TYPES } from '../../actions/constants';
-import msgs from '../../../nls/kappnav.properties'
+import { CONTEXT_PATH } from '../../actions/constants';
 
 
 class DetailView extends Component {
@@ -39,7 +38,8 @@ class DetailView extends Component {
     this.state = {
       data: {},
       loading: true,
-      name : params.applicationName,
+      resourceParentName: params.resourceParentName,
+      resourceName : params.resourceName,
       staticResourceData: getResourceData(props.resourceType)
     }
 
@@ -47,46 +47,45 @@ class DetailView extends Component {
   }
 
   render() {
-
-    // match comes from react-router-dom
-    const {match: { params }, title} = this.props
-    const {name} = this.state
+    const {loading, data, staticResourceData, resourceParentName, resourceName} = this.state
+    const {title} = this.props
 
     let paths = location.pathname.split('/')
     paths = paths.filter(function (e) { return e }) // Removes empty string array elements
     const parent_ns = decodeURIComponent(new URL(window.location.href).searchParams.get("parentnamespace"))
-    const itemName = params.applicationName
     const ns = decodeURIComponent(new URL(window.location.href).searchParams.get("namespace"))
-    let resourceType = paths[3]
+    const resourceType = paths[3]
     
     let breadcrumbItems=[{label:title, url:CONTEXT_PATH+'/' + paths[1]},
-                          {label:name, url:CONTEXT_PATH+'/'+paths[1]+'/'+encodeURIComponent(name)+'?namespace='+encodeURIComponent(parent_ns)},
-                          {label:itemName, url:CONTEXT_PATH+'/'+paths[1]+'/'+encodeURIComponent(name)+'/'+resourceType+'/'+encodeURIComponent(itemName)+'?namespace='+encodeURIComponent(ns)+'&parentnamespace='+encodeURIComponent(parent_ns)} ]
+                          {label:resourceParentName, url:CONTEXT_PATH+'/'+paths[1]+'/'+encodeURIComponent(resourceParentName)+'?namespace='+encodeURIComponent(parent_ns)},
+                          {label:resourceName, url:CONTEXT_PATH+'/'+paths[1]+'/'+encodeURIComponent(resourceParentName)+'/'+resourceType+'/'+encodeURIComponent(resourceName)+'?namespace='+encodeURIComponent(ns)+'&parentnamespace='+encodeURIComponent(parent_ns)} ]
 
-    if (this.state.loading)
+    if (loading) {
       return <Loading withOverlay={false} className='content-spinner' />
-    else return (
-      <div>
-        <SecondaryHeader title={this.state.name} breadcrumbItems={breadcrumbItems} location={location}/>
-      <div className="page-content-container" role="main">
-      
-      <StructuredListModule
-        title={this.state.staticResourceData.detailKeys.title}
-        headerRows={this.state.staticResourceData.detailKeys.headerRows}
-        rows={this.state.staticResourceData.detailKeys.rows}
-        id={this.state.name+'-overview-module'}
-        data={this.state.data} />
+    } else {
+      return (
+        <div>
+          <SecondaryHeader title={resourceName} breadcrumbItems={breadcrumbItems} location={location}/>
+          <div className="page-content-container" role="main">
+          <StructuredListModule
+            title={staticResourceData.detailKeys.title}
+            headerRows={staticResourceData.detailKeys.headerRows}
+            rows={staticResourceData.detailKeys.rows}
+            id={resourceName+'-overview-module'}
+            data={data} />
+          </div>
         </div>
-        </div>
-    )
+      )
+    }
+
   }
 
-  componentDidMount(){
-    this.fetchData(this.state.name, this.props.baseInfo.selectedNamespace)
+  componentDidMount() {
+    this.fetchData(this.state.resourceName, this.props.baseInfo.selectedNamespace)
     if(window.secondaryHeader !== undefined){
     if (!window.secondaryHeader.refreshCallback) {
       window.secondaryHeader.refreshCallback = function(result) {
-        if(result && result.operation == 'delete' && result.name == this.state.name){
+        if(result && result.operation === 'delete' && result.name === this.state.resourceName){
           const breadcrumbs = window.secondaryHeader.props.breadcrumbItems
           let url= '/'+this.state.staticResourceData.resourceType+'s'
           if(breadcrumbs) {
@@ -95,7 +94,7 @@ class DetailView extends Component {
           window.location.href = location.protocol+'//'+location.host+url
         } else {
           //Update Table
-          this.fetchData(this.state.name, this.props.baseInfo.selectedNamespace)
+          this.fetchData(this.state.resourceName, this.props.baseInfo.selectedNamespace)
         }
       }.bind(this)
     }
@@ -103,7 +102,7 @@ class DetailView extends Component {
 
     var self = this
     window.setInterval(() => {
-      self.refreshDetail(self.state.name, self.props.baseInfo.selectedNamespace)
+      self.refreshDetail(self.state.resourceName, self.props.baseInfo.selectedNamespace)
     }, 30000)
   }
 

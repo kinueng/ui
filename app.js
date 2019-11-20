@@ -108,6 +108,12 @@ app.all('*', (req, res, next) => {
     } else{
       req.user = KUBE_ENV
     }
+    const cookieConfig = {
+      httpOnly: true, // to disable accessing cookie via client side js
+      secure: true, // to force https (if you use it)
+      maxAge: 1000000000, // ttl in ms (remove this option and cookie will die when browser is closed)
+    };
+    res.cookie('kappnav-user', req.user, cookieConfig);
     next()
   }
 })
@@ -241,7 +247,6 @@ app.get('*', (req, res) => {
     kube: KUBE_ENV,
     appnavConfigmapNamespace: APPNAV_CONFIGMAP_NAMESPACE,
     contextPath: CONTEXT_PATH,
-    user: req.user,
     title: 'Application Navigator',
     csrfToken: req.csrfToken()
   })

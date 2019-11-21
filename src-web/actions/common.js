@@ -389,24 +389,38 @@ export const validateUrl = (url) => {
 /**
  * Determine if an action is enabled for a resource
  * @param {*} resourceLabels - a resource's labels
+ * @param {*} resourceAnnotations - a resource's annotations
  * @param {*} action - an action's data
+ * 
+ * Rule:  if action specifies enablement-label or enablement-annotation AND resource specifies matching
+ *        label or annotation, then action is enabled else action is enabled 
  */
-function isActionEnabled(resourceLabels, action) {
+function isActionEnabled(resourceLabels, resourceAnnotations, action) {
   let enablementLabel = action[CONFIG_CONSTANTS.ENABLEMENT_LABEL]
-  if(! enablementLabel) {
-    // If enablement-label is missing, assume the action is enabled for the resource
-    return true
+  let enablementAnnotation = action[CONFIG_CONSTANTS.ENABLEMENT_ANNOTATION]
+  
+  if (!enablementLabel && !enablementAnnotation) {
+    // If both enablement-label and enablement-annotation are missing, assume the action is enabled for the resource
+    return true;
   }
 
-  const isEnabled = resourceLabels[enablementLabel]
-  if(isEnabled) {
+  let isEnabled = resourceLabels[enablementLabel];
+  if (isEnabled) {
     // The action's enablement-label has value X and 
     // the resource has a label of X.  This means the
     // action is enabled for this particular resource
-    return true
+    return true;
+  }
+ 
+  isEnabled = resourceAnnotations[enablementAnnotation];
+  if (isEnabled) {
+    // The action's enablement-annotation has value X and 
+    // the resource has a annotation of X.  This means the
+    // action is enabled for this particular resource
+    return true;
   }
 
-  return false
+  return false;
 }
 
 /**
@@ -414,13 +428,13 @@ function isActionEnabled(resourceLabels, action) {
  * @param {*} resourceLabels - an object of a resource's labels
  * @param {*} actions - list of actions for the resource
  */
-function removeDisabledActions(resourceLabels, actions) {
+function removeDisabledActions(resourceLabels, resourceAnnotations, actions) {
   // Loop from end to beginning to ensure each element is processed
   // even if elements are being removed in the loop
   for(let index = actions.length - 1; index >= 0; index--) {
     // Remove any disabled command actions
     const one_action = actions[index]
-    const isDisabled = ! isActionEnabled(resourceLabels, one_action)
+    const isDisabled = ! isActionEnabled(resourceLabels, resourceAnnotations, one_action)
     if(isDisabled) {
       actions.splice(index, 1)
     }
@@ -432,6 +446,7 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
   const cloneData = lodash.cloneDeep(componentData)
   var itemId = cloneData.metadata.uid
   const resourceLabels = cloneData.metadata.labels
+  const resourceAnnotations = cloneData.metadata.annotations
 
   //remove fields that should not show up on an editor
   delete cloneData.metadata.creationTimestamp
@@ -467,7 +482,7 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
         {(() => {
           if(urlActions) {
 
-            urlActions = removeDisabledActions(resourceLabels, urlActions)
+            urlActions = removeDisabledActions(resourceLabels, resourceAnnotations, urlActions)
 
             urlActions.forEach((action) => { //try to cache the links ahead of time
               var kind = componentData && componentData.kind
@@ -495,7 +510,7 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
         {(() => {
           if(cmdActions) {
 
-            cmdActions = removeDisabledActions(resourceLabels, cmdActions)
+            cmdActions = removeDisabledActions(resourceLabels, resourceAnnotations, cmdActions)
 
             return cmdActions.map((action, cmdindex) => {
               let actionLabel = action['text.nls'] ? msgs.get(action['text.nls']) : action.text

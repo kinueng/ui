@@ -45,6 +45,7 @@ export const REQUEST_STATUS = {
 }
 
 export const CONFIG_CONSTANTS = {
+  ACTION_MAP: 'action-map',
   CMD_ACTIONS: 'cmd-actions',
   INPUTS: 'inputs',
   MENU_ITEM: 'menu-item',

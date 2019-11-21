@@ -19,7 +19,7 @@
 import 'carbon-components/scss/globals/scss/styles.scss'
 import React from 'react'
 import {Loading} from 'carbon-components-react'
-import {CONTEXT_PATH, PAGE_SIZES, SORT_DIRECTION_ASCENDING, RESOURCE_TYPES, STATUS_COLORS} from '../../actions/constants'
+import {CONTEXT_PATH, PAGE_SIZES, SORT_DIRECTION_ASCENDING, RESOURCE_TYPES, STATUS_COLORS, CONFIG_CONSTANTS} from '../../actions/constants'
 import {getRowSlice, sort, sortColumn, getOverflowMenu, buildStatusHtml, getAge, getAgeDifference, getCreationTime, performUrlAction} from '../../actions/common'
 import msgs from '../../../nls/kappnav.properties'
 import ResourceTable from './common/ResourceTable.js'
@@ -88,8 +88,6 @@ class JobView extends React.Component {
   componentDidMount() {
     this.fetchData(this.props.namespace, this.state.search, this.props.appNavConfigData)
 
-    this.fetchJobUrlPattern()
-
     var self = this
     window.setInterval(() => {
       self.refreshData(self.props.namespace, self.state.search, self.props.appNavConfigData)
@@ -111,26 +109,6 @@ class JobView extends React.Component {
 
   searchInputChange(e) {
     this.filterTable(e.target.value, 1, this.state.pageSize, this.state.totalRows)
-  }
-
-  // We need to fetch the url pattern that is used to build the link between app nav and ICP/minikube/etc
-  fetchJobUrlPattern() {
-    fetch('/kappnav/configmap/kappnav.actions.job?namespace='+document.documentElement.getAttribute('appnavConfigmapNamespace'))
-      .then(result => result.json())
-      .then(result => {
-        var data = result.data
-        let urlWithVariables = undefined
-        let urlActions = JSON.parse(data['url-actions'])
-        if(urlActions.length === 0) {
-          urlWithVariables = ''
-        } else {
-          urlWithVariables = urlActions[0]
-        }
-
-        this.setState({
-          urlActions: urlWithVariables
-        })
-      })
   }
 
   filterTable(searchValue, pageNumber, pageSize, totalRows){
@@ -258,6 +236,7 @@ class JobView extends React.Component {
   refreshData(namespace, search, appNavConfigData) {
     fetch('/kappnav/resource/commands').then(result => result.json()).then(result => {
       const rowArray = []
+      const actionMap = result[CONFIG_CONSTANTS.ACTION_MAP]
       result.commands.forEach((job) => {
 
         const metadata = job.metadata
@@ -269,13 +248,13 @@ class JobView extends React.Component {
         itemObj.id = metadata.uid+'-job'
         itemObj.status = buildStatusHtml(this.getStatus(job, appNavConfigData))
 
-        const urlActions = this.state.urlActions
-
-        if(urlActions) {
+        const urlActions = actionMap ? actionMap[CONFIG_CONSTANTS.URL_ACTIONS] : ''
+        if(urlActions && urlActions[0]) {
+          const detailAction = urlActions[0]
           const kind = 'Job'
           const linkId = kind+'_'+metadata.name+'link'
-          itemObj.actionName = <a rel="noreferrer" id={linkId} href='#' onClick={performUrlAction.bind(this, urlActions['url-pattern'], urlActions['open-window'], kind, appUuid, metadata.namespace, undefined, true)}>{jobName}</a>
-          performUrlAction(urlActions['url-pattern'], urlActions['open-window'], kind, appUuid, metadata.namespace, linkId, false)  //update the link in place
+          itemObj.actionName = <a rel="noreferrer" id={linkId} href='#' onClick={performUrlAction.bind(this, detailAction['url-pattern'], detailAction['open-window'], kind, appUuid, metadata.namespace, undefined, true)}>{jobName}</a>
+          performUrlAction(detailAction['url-pattern'], detailAction['open-window'], kind, appUuid, metadata.namespace, linkId, false)  //update the link in place
         } else {
           // Not every K8 platform has a URL for displaying K8 Job kind details
           itemObj.actionName = jobName
@@ -294,7 +273,7 @@ class JobView extends React.Component {
         const howOldInMilliseconds = getAgeDifference(createdTime).diffDuration + ''
         itemObj.age = <div data-sorttitle={howOldInMilliseconds}>{getAge(job)}</div>
         itemObj.component = metadataLabel['kappnav-job-component-namespace'] + '/' + metadataLabel['kappnav-job-component-name']
-        itemObj.menuAction = getOverflowMenu(job, job['action-map'], jobResourceData)
+        itemObj.menuAction = getOverflowMenu(job, actionMap, jobResourceData)
         rowArray.push(itemObj)
       })
       this.filterTable(search, this.state.pageNumber, this.state.pageSize, rowArray)

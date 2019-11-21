@@ -19,12 +19,11 @@
 'use strict'
 
 import React from 'react'
-import { ComposedModal, ModalHeader, ModalBody, ToastNotification } from 'carbon-components-react'
+import { ComposedModal, ModalHeader, ModalBody, ToastNotification, Icon } from 'carbon-components-react'
 import {CONTEXT_PATH} from '../../../actions/constants'
 import { withRouter } from 'react-router-dom'
 import msgs from '../../../../nls/kappnav.properties'
 import moment from 'moment';
-import { Launch24 } from '@carbon/icons-react';
 
 require('../../../../scss/modal.scss')
 class ActionMessageModal extends React.PureComponent {
@@ -78,36 +77,44 @@ class ActionMessageModal extends React.PureComponent {
           </ModalBody>
         </ComposedModal>
       )
-    } else if(result) {
-      return (
-        <ToastNotification
-          caption={
-            <div>
-              {new moment().format('HH:mm:ss   LL')}
-              <button className="button-style">
+    } else if (result) {
+      //  We are keeping the toaster code here as of now but in the future interation, we will be moving the 
+      //  Toaster component to a different React class Component.
+      if (open) {
+        return (
+          <ToastNotification
+            caption={
+              <div>
+                {new moment().format('HH:mm:ss   LL')}
                 <a href={location.protocol + '//' + location.host + CONTEXT_PATH + '/jobs'}>
-                  <Launch24 aria-label={msgs.get('toaster.action.caption')} className="launch-icon" />
+                  <Icon
+                    className="launch-icon"
+                    name='launch'
+                    description={msgs.get('toaster.action.caption')} />
                 </a>
-              </button>
-            </div>
-          }
-          hideCloseButton={false}
-          iconDescription={msgs.get('modal.button.close.the.modal')}
-          kind="info"
-          notificationType="toast"
-          role="alert"
-          className='toaster-style'
-          subtitle={
-            <div>
-              <h3 >{result.metadata.annotations['kappnav-job-action-text']} {msgs.get('toaster.action.subtitle')}</h3>
-              <h3 className="job-component-name">{result.metadata.labels['kappnav-job-component-name']} </h3>
-              <br />
-            </div>
-          }
-          timeout={0}
-          title={msgs.get('toaster.action.success')}
-        />
-      )
+              </div>
+            }
+            hideCloseButton={false}
+            iconDescription={msgs.get('modal.button.close.the.modal')}
+            onCloseButtonClick={handleClose}
+            kind="info"
+            notificationType="toast"
+            role="alert"
+            className='toaster-style'
+            subtitle={
+              <div>
+                <h3> {msgs.get('toaster.action.subtitle', [result.metadata.annotations['kappnav-job-action-text'], result.metadata.labels['kappnav-job-component-name']])}</h3>
+                <br />
+              </div>
+            }
+            timeout={5000}
+            title={msgs.get('toaster.action.success')}
+          />
+        )
+      }
+      else {
+        return (<div />)
+      }
     } else {
       return (<div/>)
     }

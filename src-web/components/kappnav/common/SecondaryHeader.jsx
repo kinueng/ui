@@ -108,6 +108,14 @@ class SecondaryHeader extends React.Component {
           })()}
           <div className="navigation-container"></div>
         </div>
+        <ActionMessageModal open={this.state.actionMessageModalOpen}
+          label={this.state.resourceModalLabel}
+          result={this.state.actionResult}
+          error={this.state.actionError}
+          handleClose={() => {
+            this.setState({ actionMessageModalOpen: false })
+          }}
+        />
       {(() => {
         if( (tabs && tabs.length > 0) || (breadcrumbItems && breadcrumbItems.length > 0) ) {
           return (
@@ -175,14 +183,6 @@ class SecondaryHeader extends React.Component {
           submitUrl={this.state.resourceModalSubmitUrl}
           handleClose={() => {
             this.setState({ actionModalOpen: false })
-          }}
-        />
-        <ActionMessageModal open={this.state.actionMessageModalOpen}
-          label={this.state.resourceModalLabel}
-          result={this.state.actionResult}
-          error={this.state.actionError}
-          handleClose={() => {
-            this.setState({ actionMessageModalOpen: false })
           }}
         />
     </div>

@@ -224,3 +224,22 @@
     }
   }
 }
+
+.toaster-style {
+  min-width: 30rem;
+  margin: 3rem 0 0 0;
+  right: 0;
+  position: absolute;
+  z-index: 10;
+}
+
+.bx--toast-notification__title{
+  font-size: 1.1rem;
+}
+.bx--toast-notification__caption{
+  font-size: 1rem;
+}
+
+svg.launch-icon {
+  margin-left: 197px;
+}

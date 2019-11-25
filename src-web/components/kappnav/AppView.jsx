@@ -17,20 +17,23 @@
  *****************************************************************/
 
 import 'carbon-components/scss/globals/scss/styles.scss'
-import React, {Component} from 'react'
+import React, {Component} from 'react';
+import { connect } from 'react-redux'
 import {Loading, DataTable} from 'carbon-components-react'
 import ReactDOM from 'react-dom'
 import {CONTEXT_PATH, PAGE_SIZES, SORT_DIRECTION_ASCENDING, SORT_DIRECTION_DESCENDING, RESOURCE_TYPES} from '../../actions/constants'
 import {getRowSlice, sort, sortColumn, getOverflowMenu, getStatus, buildStatusHtml, getToken} from '../../actions/common'
 import msgs from '../../../nls/kappnav.properties'
 import ResourceTable from './common/ResourceTable.js'
+import SecondaryHeader from './common/SecondaryHeader.jsx'
 import getResourceData from '../../definitions/index'
 import ApplicationModal from './modals/ApplicationModal.js'
+import NamespaceDropdown from './common/NamespaceDropdown'
 
 
 const applicationResourceData = getResourceData(RESOURCE_TYPES.APPLICATION)
 
-class AppView extends React.Component {
+class AppView extends Component {
 
   constructor(props) {
     super(props);
@@ -61,10 +64,18 @@ class AppView extends React.Component {
     this.fetchData = this.fetchData.bind(this);
   }
   render() {
+    let viewTitle = msgs.get('page.applicationView.title');
+    
     if (this.state.loading)
       return <Loading withOverlay={false} className='content-spinner'/>
     else
       return (
+        <div>
+          <SecondaryHeader title={viewTitle} location={location}/>
+          <div className="page-content-container" role="main">
+
+          
+          <NamespaceDropdown />
         <ResourceTable
           rows={this.state.rows}
           headers={this.state.headers} title={''}
@@ -86,8 +97,8 @@ class AppView extends React.Component {
             this.handleSort(e)
           }}
           pageNumber={this.state.pageNumber}
-          namespace={this.props.namespace}
-          namespaces={this.props.namespaces}
+          namespace={this.props.baseInfo.selectedNamespace}
+          namespaces={this.props.baseInfo.namespaces}
           resourceType={applicationResourceData.resourceType}
           createNewModal={(namespace, namespaces, existingSecrets) => {
             return (
@@ -104,30 +115,34 @@ class AppView extends React.Component {
             )
           }}
         />
+        </div>
+        </div>
       );
     }
 
   componentDidMount() {
-    this.fetchData(this.props.namespace, this.state.search, this.props.appNavConfigData)
+    this.fetchData(this.props.baseInfo.selectedNamespace, this.state.search, this.props.baseInfo.appNavConfigMap)
 
-    if (!window.secondaryHeader.refreshCallback) {
-      window.secondaryHeader.refreshCallback = function(result) {
-        //Update Table
-        this.fetchData(this.props.namespace, undefined, this.props.appNavConfigData)
-      }.bind(this);
+    if(window.secondaryHeader !== undefined){
+      if (!window.secondaryHeader.refreshCallback) {
+        window.secondaryHeader.refreshCallback = function(result) {
+          //Update Table
+          this.fetchData(this.props.baseInfo.selectedNamespace, undefined, this.props.baseInfo.appNavConfigMap)
+        }.bind(this);
+      }
     }
 
     var self = this;
     window.setInterval(function(){
-      self.refreshData(self.props.namespace, self.state.search, self.props.appNavConfigData)
+      self.refreshData(self.props.baseInfo.selectedNamespace, self.state.search, self.props.baseInfo.appNavConfigMap)
     }, 10000);
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (this.props.namespace == nextProps.namespace) {
+    if (this.props.baseInfo.selectedNamespace == nextProps.baseInfo.selectedNamespace) {
       return true;
     } else {
-      this.fetchData(nextProps.namespace, undefined, this.props.appNavConfigData)
+      this.fetchData(nextProps.baseInfo.selectedNamespace, undefined, this.props.baseInfo.appNavConfigMap)
     }
     return false;
   }
@@ -195,14 +210,14 @@ class AppView extends React.Component {
   }
 
   displayComponents(name) {
-    let url = location.protocol + '//' + location.host + CONTEXT_PATH + '/applications/' + encodeURIComponent(name) + "?namespace=" + encodeURIComponent(props.namespace)
+    let url = location.protocol + '//' + location.host + CONTEXT_PATH + '/applications/' + encodeURIComponent(name) + "?namespace=" + encodeURIComponent(props.baseInfo.selectedNamespace)
     window.location.href = url
   }
 
   createApplication(data, errorCallback) {
     var refreshViewCallback = function(response) {
       if (response.status === 200) {
-        this.fetchData(this.props.namespace, undefined, this.props.appNavConfigData)
+        this.fetchData(this.props.baseInfo.selectedNamespace, undefined, this.props.baseInfo.appNavConfigMap)
 
       } else if(response.status && response.message) {
         //kube api exception
@@ -265,10 +280,15 @@ class AppView extends React.Component {
         }
         rowArray.push(itemObj)
       });
-
       this.filterTable(search, this.state.pageNumber, this.state.pageSize, rowArray)
     });
   }
 } // end of AppView component
 
-export default AppView;
+export default connect(
+  (state) => ({
+      baseInfo: state.baseInfo,
+  }),
+  {
+  }
+)(AppView);

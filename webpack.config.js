@@ -56,7 +56,7 @@ module.exports = {
         enforce: 'pre',
         loader: 'eslint-loader',
         options: {
-          quiet: true
+          presets: ['env', 'react', 'es2015']
         }
       },
       {

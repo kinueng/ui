@@ -135,11 +135,12 @@ class JobView extends React.Component {
 
   filterTable(searchValue, pageNumber, pageSize, totalRows){
     let filteredRows = []
+    var actionName ={}, rowStatus ={}, rowAge ={}
     if (searchValue) {
       const searchValueLowerCase = searchValue.toLowerCase()
       //filter the rows
       totalRows.forEach((row) => {
-        if (row.appName.props) {
+        if (row && row.appName && row.appName.props) {
           // Account for the possiblity of the name being a link
           // When the application name is a link, the searchable application name text is 
           // under the "props" key
@@ -147,14 +148,54 @@ class JobView extends React.Component {
             filteredRows.push(row)
             return
           }
+        } else{
+          if(row && row.appName && typeof row.appName === 'string'){
+            // Account for the possiblity of the name not being a link
+            if (('' + row.appName).toLowerCase().includes(searchValueLowerCase)) {
+              filteredRows.push(row)
+              return
+            }
+          }
         }
 
         // There has to be a better way of getting the searchable text for status
-        const rowStatus = row.status.props.children[1].props.children
+        if (row && row.status && row.status.props) {
+          // Account for the possiblity of the status being a link
+          rowStatus = row.status.props.children[1].props.children
+        } else{
+          // Account for the possiblity of the status not being a link
+          if(row && row.status && typeof row.status === 'string'){
+            if (('' + row.status).toLowerCase().includes(searchValueLowerCase)) {
+              rowStatus =row.status
+            }
+          }
+        }
 
         // Same as rowStatus, there has to be a better way to get these values from props.children.
-        const actionName = row.actionName.props.children
-        const rowAge = row.age.props.children
+        if(row && row.actionName && row.actionName.props){
+          // Account for the possiblity of the actionName being a link
+          actionName = row.actionName.props.children
+        } else{
+          // Account for the possiblity of the actionName not being a link
+          if(row && row.actionName && typeof row.actionName === 'string'){
+            if (('' + row.actionName).toLowerCase().includes(searchValueLowerCase)) {
+              actionName =row.actionName
+            }
+          }
+        }
+
+        if(row && row.age && row.age.props){
+          // Account for the possiblity of the age being a link
+          rowAge = row.age.props.children
+        } else{
+          // Account for the possiblity of the age not being a link
+          if(row && row.age && typeof row.age === 'string'){
+            if (('' + row.age).toLowerCase().includes(searchValueLowerCase)) {
+              rowAge = row.age
+            }
+          }
+        }
+        
 
         let searchFields = [rowStatus, actionName, row.component, rowAge]
         searchFields = searchFields.map((value) => {

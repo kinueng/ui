@@ -15,17 +15,15 @@
  * limitations under the License.
  *
  *****************************************************************/
+import { createStore, applyMiddleware, combineReducers } from 'redux';
+import thunk from 'redux-thunk';
+import BaseReducer from './reducers/BaseServiceReducer';
 
-import React from 'react'
-import ReactDOM from 'react-dom'
-import ViewContainer from './components/ViewContainer.jsx'
-import { Provider } from 'react-redux'
-import store from './store'
+const reducer = combineReducers({
+  baseInfo: BaseReducer,
+})
 
-
-ReactDOM.render(
-  <Provider store={store}>
-    <ViewContainer />
-  </Provider>,
-  document.getElementById('app'));
-
+export default createStore(
+  reducer,
+  applyMiddleware(thunk)
+);

@@ -122,9 +122,18 @@ class JobView extends Component {
     this.filterTable(e.target.value, 1, this.state.pageSize, this.state.totalRows)
   }
 
+ // To search a field which is not a link with the serach Value
+ ifTheFieldIsNotLink = (row, field, searchValueLowerCase) => {
+    if(row && field && typeof field === 'string'){
+        if (('' + field).toLowerCase().includes(searchValueLowerCase)) {
+          return field
+        }
+    }
+}
+
   filterTable(searchValue, pageNumber, pageSize, totalRows){
     let filteredRows = []
-    var actionName ={}, rowStatus ={}, rowAge ={}
+    var actionName ={}, rowStatus ={}, rowAge ={}, rowName ={}
     if (searchValue) {
       const searchValueLowerCase = searchValue.toLowerCase()
       //filter the rows
@@ -133,18 +142,10 @@ class JobView extends Component {
           // Account for the possiblity of the name being a link
           // When the application name is a link, the searchable application name text is 
           // under the "props" key
-          if (('' + row.appName.props.children).toLowerCase().includes(searchValueLowerCase)) {
-            filteredRows.push(row)
-            return
-          }
+          rowName =row.appName.props.children
         } else{
-          if(row && row.appName && typeof row.appName === 'string'){
-            // Account for the possiblity of the name not being a link
-            if (('' + row.appName).toLowerCase().includes(searchValueLowerCase)) {
-              filteredRows.push(row)
-              return
-            }
-          }
+          // Account for the possiblity of the name not being a link
+          rowName = this.ifTheFieldIsNotLink(row, row.appName, searchValueLowerCase)
         }
 
         // There has to be a better way of getting the searchable text for status
@@ -153,11 +154,7 @@ class JobView extends Component {
           rowStatus = row.status.props.children[1].props.children
         } else{
           // Account for the possiblity of the status not being a link
-          if(row && row.status && typeof row.status === 'string'){
-            if (('' + row.status).toLowerCase().includes(searchValueLowerCase)) {
-              rowStatus =row.status
-            }
-          }
+          rowStatus = this.ifTheFieldIsNotLink(row, row.status, searchValueLowerCase)
         }
 
         // Same as rowStatus, there has to be a better way to get these values from props.children.
@@ -166,11 +163,7 @@ class JobView extends Component {
           actionName = row.actionName.props.children
         } else{
           // Account for the possiblity of the actionName not being a link
-          if(row && row.actionName && typeof row.actionName === 'string'){
-            if (('' + row.actionName).toLowerCase().includes(searchValueLowerCase)) {
-              actionName =row.actionName
-            }
-          }
+          actionName = this.ifTheFieldIsNotLink(row, row.actionName, searchValueLowerCase)
         }
 
         if(row && row.age && row.age.props){
@@ -178,15 +171,10 @@ class JobView extends Component {
           rowAge = row.age.props.children
         } else{
           // Account for the possiblity of the age not being a link
-          if(row && row.age && typeof row.age === 'string'){
-            if (('' + row.age).toLowerCase().includes(searchValueLowerCase)) {
-              rowAge = row.age
-            }
-          }
+         rowAge = this.ifTheFieldIsNotLink(row, row.age, searchValueLowerCase)
         }
-        
 
-        let searchFields = [rowStatus, actionName, row.component, rowAge]
+        let searchFields = [rowStatus, actionName, row.component, rowAge, rowName]
         searchFields = searchFields.map((value) => {
           // Lowercase everything to make string maching accurate
           return ('' + value).toLowerCase()

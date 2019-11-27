@@ -226,13 +226,13 @@ class ComponentView extends Component {
 
     var self = this;
     window.setInterval(function(){
-      refreshResource(self.state.name, self.props.baseInfo.selectedNamespace, self.state.resourceType, self.props.baseInfo.appNavConfigMap).then(result => {
+      refreshResource(self.state.name, self.props.baseInfo.selectedNamespace, self.props.resourceType, self.props.baseInfo.appNavConfigMap).then(result => {
         self.setState({loading: false, data: result});
       });
     }, 10000);
 
     window.setInterval(function(){
-      refreshResourceComponent(self.state.name, self.props.baseInfo.selectedNamespace, self.state.resourceType, self.props.baseInfo.appNavConfigMap).then(result => {
+      refreshResourceComponent(self.state.name, self.props.baseInfo.selectedNamespace, self.props.resourceType, self.props.baseInfo.appNavConfigMap).then(result => {
         if(result === null) {
           this.setState({loadingComponents: false});
         }

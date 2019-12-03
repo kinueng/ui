@@ -29,6 +29,7 @@ import { getRowSlice, sort, sortColumn } from '../../actions/common'
 import SecondaryHeader from './common/SecondaryHeader.jsx'
 import getResourceData, { refreshResource, refreshResourceComponent } from '../../definitions/index'
 import msgs from '../../../nls/kappnav.properties'
+import {gettingCellValues} from '../kappnav/common/ResourceTable.js'
 
 class ComponentView extends Component {
 
@@ -256,32 +257,25 @@ class ComponentView extends Component {
 
   filterTable(searchValue, pageNumber, pageSize, totalRows){
     let filteredRows = [];
+    let resourceData = getResourceData(this.props.resourceType)
     //filter the rows
     if(searchValue) {
+      let searchValueLowerCase = searchValue.toLowerCase();
       totalRows.forEach((row) => {
-        if(row.name.props) { //account for the possiblity of the name being a link
-          if((''+row.name.props.children).toLowerCase().includes(searchValue.toLowerCase())){
-            filteredRows.push(row);
-            return;
-          }
-        } else if((''+row.name).toLowerCase().includes(searchValue.toLowerCase())){
-          filteredRows.push(row);
-          return;
+        var searchFields = gettingCellValues(row, resourceData.moduleKeys.headers);
+        if(row.component){
+          searchFields.push(row.component)
         }
+        searchFields = searchFields.map(function(value) {
+          // Lowercase everything to make string maching accurate
+          return ('' + value).toLowerCase();
+        })
 
-        // There has to be a better way of getting the searchable text for status
-        let rowStatus = row.status.props.children[1].props.children
-
-        if((''+row.compositeKind).toLowerCase().includes(searchValue.toLowerCase())){
-          filteredRows.push(row);
-        } else if((''+row.namespace).toLowerCase().includes(searchValue.toLowerCase())){
-          filteredRows.push(row);
-        } else if((''+row.platform).toLowerCase().includes(searchValue.toLowerCase())){
-          filteredRows.push(row);
-        } else if((''+rowStatus).toLowerCase().includes(searchValue.toLowerCase())){
-          filteredRows.push(row);
-        } else if((''+row.labels).toLowerCase().includes(searchValue.toLowerCase())){
-          filteredRows.push(row);
+        if(searchFields.some(field => field.includes(searchValueLowerCase))) {
+          // If one of the fields contains the search string, add the row 
+          // to what will be showed in filtered view
+          filteredRows.push(row)
+          return
         }
       });
     } else {

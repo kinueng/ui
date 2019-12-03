@@ -27,6 +27,7 @@ import SecondaryHeader from './common/SecondaryHeader.jsx'
 import ResourceTable from './common/ResourceTable.js'
 import getResourceData from '../../definitions/index'
 import PropTypes from 'prop-types'
+import {gettingCellValues} from './common/ResourceTable.js'
 
 
 const jobResourceData = getResourceData(RESOURCE_TYPES.JOB)
@@ -49,12 +50,12 @@ class JobView extends Component {
       pageNumber: 1,
       search: undefined,
       headers: [ // Columns in the grid
-        {key: 'status', header: msgs.get('table.header.status')},
-        {key: 'actionName', header: msgs.get('table.header.actionName')},
-        {key: 'appName', header: msgs.get('table.header.applicationName')},
-        {key: 'component', header: msgs.get('table.header.component')},
-        {key: 'age', header: msgs.get('table.header.age')},
-        {key: 'menuAction', header: msgs.get('table.header.action')}
+        {key: 'status', header: msgs.get('table.header.status'), type: 'status'},
+        {key: 'actionName', header: msgs.get('table.header.actionName'), type: 'actionName'},
+        {key: 'appName', header: msgs.get('table.header.applicationName'), type: 'appName'},
+        {key: 'component', header: msgs.get('table.header.component'), type: 'component'},
+        {key: 'age', header: msgs.get('table.header.age'), type: 'age'},
+        {key: 'menuAction', header: msgs.get('table.header.action'), type: 'menuAction'}
       ]
     }
 
@@ -122,62 +123,19 @@ class JobView extends Component {
     this.filterTable(e.target.value, 1, this.state.pageSize, this.state.totalRows)
   }
 
- // To search a field which is not a link with the serach Value
- ifTheFieldIsNotLink = (row, field, searchValueLowerCase) => {
-    if(row && field && typeof field === 'string'){
-        if (('' + field).toLowerCase().includes(searchValueLowerCase)) {
-          return field
-        }
-    }
-}
-
   filterTable(searchValue, pageNumber, pageSize, totalRows){
     let filteredRows = []
-    var actionName ={}, rowStatus ={}, rowAge ={}, rowName ={}
     if (searchValue) {
       const searchValueLowerCase = searchValue.toLowerCase()
       //filter the rows
       totalRows.forEach((row) => {
-        if (row && row.appName && row.appName.props) {
-          // Account for the possiblity of the name being a link
-          // When the application name is a link, the searchable application name text is 
-          // under the "props" key
-          rowName =row.appName.props.children
-        } else{
-          // Account for the possiblity of the name not being a link
-          rowName = this.ifTheFieldIsNotLink(row, row.appName, searchValueLowerCase)
+        var searchFields = gettingCellValues(row, this.state.headers);
+        if(row.component){
+          searchFields.push(row.component)
         }
-
-        // There has to be a better way of getting the searchable text for status
-        if (row && row.status && row.status.props) {
-          // Account for the possiblity of the status being a link
-          rowStatus = row.status.props.children[1].props.children
-        } else{
-          // Account for the possiblity of the status not being a link
-          rowStatus = this.ifTheFieldIsNotLink(row, row.status, searchValueLowerCase)
-        }
-
-        // Same as rowStatus, there has to be a better way to get these values from props.children.
-        if(row && row.actionName && row.actionName.props){
-          // Account for the possiblity of the actionName being a link
-          actionName = row.actionName.props.children
-        } else{
-          // Account for the possiblity of the actionName not being a link
-          actionName = this.ifTheFieldIsNotLink(row, row.actionName, searchValueLowerCase)
-        }
-
-        if(row && row.age && row.age.props){
-          // Account for the possiblity of the age being a link
-          rowAge = row.age.props.children
-        } else{
-          // Account for the possiblity of the age not being a link
-         rowAge = this.ifTheFieldIsNotLink(row, row.age, searchValueLowerCase)
-        }
-
-        let searchFields = [rowStatus, actionName, row.component, rowAge, rowName]
-        searchFields = searchFields.map((value) => {
+        searchFields = searchFields.map(function(value) {
           // Lowercase everything to make string maching accurate
-          return ('' + value).toLowerCase()
+          return ('' + value).toLowerCase();
         })
 
         if(searchFields.some(field => field.includes(searchValueLowerCase))) {

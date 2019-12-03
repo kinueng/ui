@@ -238,17 +238,16 @@ export default {
   moduleKeys: {
     title: 'page.componentView.title',
     headers: [
-      {key: 'status', header: msgs.get('table.header.status')},
-      {key: 'name', header: msgs.get('table.header.name')},
-      {key: 'compositeKind', header: msgs.get('table.header.kind')},
-      {key: 'namespace', header: msgs.get('table.header.namespace')},
-      {key: 'platform', header: msgs.get('table.header.platform')},
-      {key: 'menuAction', header: msgs.get('table.header.action')},
-      {key: 'title', header: 'Title'},
-      {key: 'description', header: 'Description'},
-      {key: 'section_data', header: 'section_data'},
-      {key: 'section_map', header: 'section_map'}
-
+      {key: 'status', header: msgs.get('table.header.status'), type: 'status'},
+      {key: 'name', header: msgs.get('table.header.name'), type: 'name'},
+      {key: 'compositeKind', header: msgs.get('table.header.kind'), type: 'compositeKind'},
+      {key: 'namespace', header: msgs.get('table.header.namespace'), type: 'namespace'},
+      {key: 'platform', header: msgs.get('table.header.platform'), type: 'platform'},
+      {key: 'menuAction', header: msgs.get('table.header.action'), type: 'menuAction'},
+      {key: 'title', header: 'Title', type: 'title'},
+      {key: 'description', header: 'Description', type: 'description'},
+      {key: 'section_data', header: 'section_data', type: 'section_data'},
+      {key: 'section_map', header: 'section_map', type: 'section_map'}
     ]
   },
   link: getLink,

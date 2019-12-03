@@ -40,6 +40,122 @@ const {
 
 const translateWithId = (locale, id) => msgs.get(id)
 
+// To search a field which is not a link with the serach Value
+export const ifTheFieldIsNotLink = (row, field) => {
+    if(row && field && typeof field === 'string'){
+      return field
+    }
+}
+
+export const gettingCellValues = (row, headers) => {
+  var rowValues =[]
+  headers.forEach(header => {
+    if(header.type === 'name' && row && row.name && row.name.props){
+	  // Account for the possiblity of the name being a link
+      // When the application name is a link, the searchable application name text is 
+      // under the "props" key
+      var rowName =row.name.props.children
+      rowValues.push(rowName)
+    } else if(header.type === 'name' && row && row.name){
+	  // Account for the possiblity of the name not being a link
+      var rowName = ifTheFieldIsNotLink(row, row.name)
+      rowValues.push(rowName)
+    }
+
+    if(header.type === 'status' && row && row.status && row.status.props){
+	  // Account for the possiblity of the status being a link
+      var rowStatus = row.status.props.children[1].props.children
+      rowValues.push(rowStatus)
+    } else if(header.type === 'status' && row && row.status){
+	  // Account for the possiblity of the status not being a link
+      var rowStatus = ifTheFieldIsNotLink(row, row.status)
+      rowValues.push(rowStatus)
+    }
+
+    if(header.type === 'menuAction' && row && row.menuAction && row.menuAction.props){
+	  // Account for the possiblity of the menuAction being a link
+      var actionName = row.menuAction.props.children
+      rowValues.push(actionName)
+    } else if(header.type === 'menuAction' && row && row.menuAction){
+	  // Account for the possiblity of the menuAction not being a link
+      var actionName = ifTheFieldIsNotLink(row, row.menuAction)
+      rowValues.push(actionName)
+    }
+
+    if(header.type === 'age' && row && row.age && row.age.props){
+	  // Account for the possiblity of the age being a link
+      var rowAge = row.age.props.children
+      rowValues.push(rowAge)
+    } else if(header.type === 'age' && row && row.age){
+	  // Account for the possiblity of the age not being a link
+      var rowAge = ifTheFieldIsNotLink(row, row.age)
+      rowValues.push(rowAge)
+    }
+
+    if(header.type === 'console' && row && row.console && row.console.props){
+	  // Account for the possiblity of the console being a link
+      var rowConsole = row.console.props.children
+      rowValues.push(rowConsole)
+    } else if(header.type === 'console' && row && row.console){
+	  // Account for the possiblity of the console not being a link
+      var rowConsole = ifTheFieldIsNotLink(row, row.console)
+      rowValues.push(rowConsole)
+    }
+
+    if(header.type === 'appName' && row && row.appName && row.appName.props){
+	  // Account for the possiblity of the appName being a link
+      var rowAppName = row.appName.props.children
+      rowValues.push(rowAppName)
+    } else if(header.type === 'appName' && row && row.appName){
+	  // Account for the possiblity of the appName not being a link
+      var rowAppName = ifTheFieldIsNotLink(row, row.appName)
+      rowValues.push(rowAppName)
+    }
+
+    if(header.type === 'namespace' && row && row.namespace && row.namespace.props){
+	  // Account for the possiblity of the namespace being a link
+      var rowNamespace = row.namespace.props.children
+      rowValues.push(rowNamespace)
+    } else if(header.type === 'namespace' && row && row.namespace){
+	  // Account for the possiblity of the namespace not being a link
+      var rowNamespace = ifTheFieldIsNotLink(row, row.namespace)
+      rowValues.push(rowNamespace)
+	}
+	
+	if(header.type === 'actionName' && row && row.actionName && row.actionName.props){
+	  // Account for the possiblity of the actionName being a link
+	  var rowActionName = row.actionName.props.children
+	  rowValues.push(rowActionName)
+	} else if(header.type === 'actionName' && row && row.actionName){
+	  // Account for the possiblity of the actionName not being a link
+	  var rowActionName = ifTheFieldIsNotLink(row, row.actionName)
+	  rowValues.push(rowActionName)
+	}
+
+	if(header.type === 'compositeKind' && row && row.compositeKind && row.compositeKind.props){
+	  // Account for the possiblity of the compositeKind being a link
+	  var rowCompositeKind = row.compositeKind.props.children
+	  rowValues.push(rowCompositeKind)
+	} else if(header.type === 'compositeKind' && row && row.compositeKind){
+	  // Account for the possiblity of the compositeKind not being a link
+	  var rowCompositeKind = ifTheFieldIsNotLink(row, row.compositeKind)
+	  rowValues.push(rowCompositeKind)
+	}
+
+	if(header.type === 'platform' && row && row.platform && row.platform.props){
+	   // Account for the possiblity of the compositeKind being a link
+	   var rowPlatform = row.platform.props.children
+	   rowValues.push(rowPlatform)
+	} else if(header.type === 'platform' && row && row.platform){
+	   // Account for the possiblity of the compositeKind not being a link
+	   var rowPlatform = ifTheFieldIsNotLink(row, row.platform)
+	   rowValues.push(rowPlatform)
+	}
+  });
+  return rowValues
+    
+}
+
 class ResourceTable extends React.Component {
 
 	constructor(props) {

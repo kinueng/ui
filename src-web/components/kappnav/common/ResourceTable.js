@@ -40,6 +40,46 @@ const {
 
 const translateWithId = (locale, id) => msgs.get(id)
 
+export const SEARCH_HEADER_TYPES= {
+	NOT_SEARCHABLE : 'NOT_SEARCHABLE',
+	STATUS : 'STATUS',
+	URL: 'URL',
+	STRING :'STRING'
+}
+
+// returing the field if its of "string" type
+export const ifTheFieldIsNotLink = (row, field) => {
+	if (row && field && typeof field === 'string') {
+		return field
+	}
+}
+
+// function to get all the cell values of the DataTable
+export const getSearchableCellList = (row, headers) => {
+	var cellValues = []
+	headers.forEach(header => {
+		if (header.type === SEARCH_HEADER_TYPES.NOT_SEARCHABLE) {
+			//not doing anything as the field is NOT_SEARCHABLE
+		} else if (header.type === SEARCH_HEADER_TYPES.STATUS) {
+			// for the field  of type "STATUS"
+			if (row && row[header.key] && row[header.key].props) {
+				// Since "status" can't be a string or a Link, hence finding its value under the "props" key
+				cellValues.push(row[header.key].props.children[1].props.children)
+			}
+		} else {
+			// for feilds other than "NOT_SEARCHABLE" and  "STATUS"
+			if (row && row[header.key] && row[header.key].props) {
+				// Account for the possiblity of the field being a link
+				cellValues.push(row[header.key].props.children)
+			} else if (row && row[header.key]) {
+				// Account for the possiblity of the field not being a link
+				cellValues.push(ifTheFieldIsNotLink(row, row[header.key]))
+			}
+		}
+	});
+	return cellValues
+}
+
 class ResourceTable extends React.Component {
 
 	constructor(props) {

@@ -27,7 +27,7 @@ import SecondaryHeader from './common/SecondaryHeader.jsx'
 import ResourceTable from './common/ResourceTable.js'
 import getResourceData from '../../definitions/index'
 import PropTypes from 'prop-types'
-import {getSearchableCellList} from './common/ResourceTable.js'
+import {getSearchableCellList, SEARCH_HEADER_TYPES} from './common/ResourceTable.js'
 
 
 const jobResourceData = getResourceData(RESOURCE_TYPES.JOB)
@@ -50,12 +50,12 @@ class JobView extends Component {
       pageNumber: 1,
       search: undefined,
       headers: [ // Columns in the grid
-        {key: 'status', header: msgs.get('table.header.status'), type: 'STATUS'},
-        {key: 'actionName', header: msgs.get('table.header.actionName'), type: 'STRING'},
-        {key: 'appName', header: msgs.get('table.header.applicationName'), type: 'URL'},
-        {key: 'component', header: msgs.get('table.header.component'), type: 'STRING'},
-        {key: 'age', header: msgs.get('table.header.age'), type: 'STRING'},
-        {key: 'menuAction', header: msgs.get('table.header.action'), type: 'NOT_SEARCHABLE'}
+        {key: 'status', header: msgs.get('table.header.status'), type: SEARCH_HEADER_TYPES.STATUS},
+        {key: 'actionName', header: msgs.get('table.header.actionName'), type: SEARCH_HEADER_TYPES.STRING},
+        {key: 'appName', header: msgs.get('table.header.applicationName'), type: SEARCH_HEADER_TYPES.URL},
+        {key: 'component', header: msgs.get('table.header.component'), type: SEARCH_HEADER_TYPES.STRING},
+        {key: 'age', header: msgs.get('table.header.age'), type: SEARCH_HEADER_TYPES.STRING},
+        {key: 'menuAction', header: msgs.get('table.header.action'), type: SEARCH_HEADER_TYPES.NOT_SEARCHABLE}
       ]
     }
 

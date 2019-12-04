@@ -23,6 +23,7 @@ import msgs from '../../nls/kappnav.properties'
 import { getLabelsToString, getAge } from '../actions/common'
 import { updateSecondaryHeader, getOverflowMenu, performUrlAction, buildStatusHtml, getStatus} from '../actions/common'
 import { CONTEXT_PATH, SUBKIND, PLATFORM_KIND, PLATFORM_NAME } from '../actions/constants'
+import {SEARCH_HEADER_TYPES} from '../components/kappnav/common/ResourceTable.js'
 
 export default {
   resourceType: 'application',
@@ -238,16 +239,16 @@ export default {
   moduleKeys: {
     title: 'page.componentView.title',
     headers: [
-      {key: 'status', header: msgs.get('table.header.status'), type: 'STATUS'},
-      {key: 'name', header: msgs.get('table.header.name'), type: 'URL'},
-      {key: 'compositeKind', header: msgs.get('table.header.kind'), type: 'STRING'},
-      {key: 'namespace', header: msgs.get('table.header.namespace'), type: 'STRING'},
-      {key: 'platform', header: msgs.get('table.header.platform'), type: 'STRING'},
-      {key: 'menuAction', header: msgs.get('table.header.action'), type: 'NOT_SEARCHABLE'},
-      {key: 'title', header: 'Title', type: 'NOT_SEARCHABLE'},
-      {key: 'description', header: 'Description', type: 'NOT_SEARCHABLE'},
-      {key: 'section_data', header: 'section_data', type: 'NOT_SEARCHABLE'},
-      {key: 'section_map', header: 'section_map', type: 'NOT_SEARCHABLE'}
+      {key: 'status', header: msgs.get('table.header.status'), type: SEARCH_HEADER_TYPES.STATUS},
+      {key: 'name', header: msgs.get('table.header.name'), type: SEARCH_HEADER_TYPES.URL},
+      {key: 'compositeKind', header: msgs.get('table.header.kind'), type: SEARCH_HEADER_TYPES.STRING},
+      {key: 'namespace', header: msgs.get('table.header.namespace'), type: SEARCH_HEADER_TYPES.STRING},
+      {key: 'platform', header: msgs.get('table.header.platform'), type: SEARCH_HEADER_TYPES.STRING},
+      {key: 'menuAction', header: msgs.get('table.header.action'), type: SEARCH_HEADER_TYPES.NOT_SEARCHABLE},
+      {key: 'title', header: 'Title', type: SEARCH_HEADER_TYPES.NOT_SEARCHABLE},
+      {key: 'description', header: 'Description', type: SEARCH_HEADER_TYPES.NOT_SEARCHABLE},
+      {key: 'section_data', header: 'section_data', type: SEARCH_HEADER_TYPES.NOT_SEARCHABLE},
+      {key: 'section_map', header: 'section_map', type: SEARCH_HEADER_TYPES.NOT_SEARCHABLE}
     ]
   },
   link: getLink,

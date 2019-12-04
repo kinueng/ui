@@ -29,7 +29,7 @@ import SecondaryHeader from './common/SecondaryHeader.jsx'
 import getResourceData from '../../definitions/index'
 import ApplicationModal from './modals/ApplicationModal.js'
 import NamespaceDropdown from './common/NamespaceDropdown'
-import {getSearchableCellList} from './common/ResourceTable.js'
+import {getSearchableCellList, SEARCH_HEADER_TYPES} from './common/ResourceTable.js'
 
 
 const applicationResourceData = getResourceData(RESOURCE_TYPES.APPLICATION)
@@ -50,14 +50,14 @@ class AppView extends Component {
       pageNumber: 1,
       search: undefined,
       headers: [
-        {key: 'status', header: msgs.get('table.header.status'), type: 'STATUS'},
-        {key: 'appName', header: msgs.get('table.header.applicationName'), type: 'URL'},
-        {key: 'namespace', header: msgs.get('table.header.namespace'), type: 'STRING'},
-        {key: 'menuAction', header: msgs.get('table.header.action'), type: 'NOT_SEARCHABLE'},
-        {key: 'title', header: 'Title', type: 'NOT_SEARCHABLE'},
-        {key: 'description', header: 'Description', type: 'NOT_SEARCHABLE'},
-        {key: 'section_data', header: 'section_data', type: 'NOT_SEARCHABLE'},
-        {key: 'section_map', header: 'section_map', type: 'NOT_SEARCHABLE'}
+        {key: 'status', header: msgs.get('table.header.status'), type: SEARCH_HEADER_TYPES.STATUS},
+        {key: 'appName', header: msgs.get('table.header.applicationName'), type: SEARCH_HEADER_TYPES.URL},
+        {key: 'namespace', header: msgs.get('table.header.namespace'), type: SEARCH_HEADER_TYPES.STRING},
+        {key: 'menuAction', header: msgs.get('table.header.action'), type: SEARCH_HEADER_TYPES.NOT_SEARCHABLE},
+        {key: 'title', header: 'Title', type: SEARCH_HEADER_TYPES.NOT_SEARCHABLE},
+        {key: 'description', header: 'Description', type: SEARCH_HEADER_TYPES.NOT_SEARCHABLE},
+        {key: 'section_data', header: 'section_data', type: SEARCH_HEADER_TYPES.NOT_SEARCHABLE},
+        {key: 'section_map', header: 'section_map', type: SEARCH_HEADER_TYPES.NOT_SEARCHABLE}
       ]
     };
 

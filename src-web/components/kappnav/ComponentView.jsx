@@ -29,7 +29,7 @@ import { getRowSlice, sort, sortColumn } from '../../actions/common'
 import SecondaryHeader from './common/SecondaryHeader.jsx'
 import getResourceData, { refreshResource, refreshResourceComponent } from '../../definitions/index'
 import msgs from '../../../nls/kappnav.properties'
-import {gettingCellValues} from '../kappnav/common/ResourceTable.js'
+import {getSearchableCellList} from '../kappnav/common/ResourceTable.js'
 
 class ComponentView extends Component {
 
@@ -262,10 +262,7 @@ class ComponentView extends Component {
     if(searchValue) {
       let searchValueLowerCase = searchValue.toLowerCase();
       totalRows.forEach((row) => {
-        var searchFields = gettingCellValues(row, resourceData.moduleKeys.headers);
-        if(row.component){
-          searchFields.push(row.component)
-        }
+        var searchFields = getSearchableCellList(row, resourceData.moduleKeys.headers);
         searchFields = searchFields.map(function(value) {
           // Lowercase everything to make string maching accurate
           return ('' + value).toLowerCase();

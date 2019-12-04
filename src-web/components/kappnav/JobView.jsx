@@ -27,7 +27,7 @@ import SecondaryHeader from './common/SecondaryHeader.jsx'
 import ResourceTable from './common/ResourceTable.js'
 import getResourceData from '../../definitions/index'
 import PropTypes from 'prop-types'
-import {gettingCellValues} from './common/ResourceTable.js'
+import {getSearchableCellList} from './common/ResourceTable.js'
 
 
 const jobResourceData = getResourceData(RESOURCE_TYPES.JOB)
@@ -51,10 +51,10 @@ class JobView extends Component {
       search: undefined,
       headers: [ // Columns in the grid
         {key: 'status', header: msgs.get('table.header.status'), type: 'status'},
-        {key: 'actionName', header: msgs.get('table.header.actionName'), type: 'actionName'},
-        {key: 'appName', header: msgs.get('table.header.applicationName'), type: 'appName'},
-        {key: 'component', header: msgs.get('table.header.component'), type: 'component'},
-        {key: 'age', header: msgs.get('table.header.age'), type: 'age'},
+        {key: 'actionName', header: msgs.get('table.header.actionName'), type: 'string'},
+        {key: 'appName', header: msgs.get('table.header.applicationName'), type: 'URL'},
+        {key: 'component', header: msgs.get('table.header.component'), type: 'string'},
+        {key: 'age', header: msgs.get('table.header.age'), type: 'string'},
         {key: 'menuAction', header: msgs.get('table.header.action'), type: 'menuAction'}
       ]
     }
@@ -129,10 +129,7 @@ class JobView extends Component {
       const searchValueLowerCase = searchValue.toLowerCase()
       //filter the rows
       totalRows.forEach((row) => {
-        var searchFields = gettingCellValues(row, this.state.headers);
-        if(row.component){
-          searchFields.push(row.component)
-        }
+        var searchFields = getSearchableCellList(row, this.state.headers);
         searchFields = searchFields.map(function(value) {
           // Lowercase everything to make string maching accurate
           return ('' + value).toLowerCase();

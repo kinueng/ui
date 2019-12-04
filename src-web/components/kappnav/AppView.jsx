@@ -29,7 +29,7 @@ import SecondaryHeader from './common/SecondaryHeader.jsx'
 import getResourceData from '../../definitions/index'
 import ApplicationModal from './modals/ApplicationModal.js'
 import NamespaceDropdown from './common/NamespaceDropdown'
-import {gettingCellValues} from './common/ResourceTable.js'
+import {getSearchableCellList} from './common/ResourceTable.js'
 
 
 const applicationResourceData = getResourceData(RESOURCE_TYPES.APPLICATION)
@@ -51,13 +51,13 @@ class AppView extends Component {
       search: undefined,
       headers: [
         {key: 'status', header: msgs.get('table.header.status'), type: 'status'},
-        {key: 'appName', header: msgs.get('table.header.applicationName'), type: 'appName'},
-        {key: 'namespace', header: msgs.get('table.header.namespace'), type: 'namespace'},
+        {key: 'appName', header: msgs.get('table.header.applicationName'), type: 'URL'},
+        {key: 'namespace', header: msgs.get('table.header.namespace'), type: 'string'},
         {key: 'menuAction', header: msgs.get('table.header.action'), type: 'menuAction'},
-        {key: 'title', header: 'Title', type: 'title'},
-        {key: 'description', header: 'Description', type: 'description'},
-        {key: 'section_data', header: 'section_data', type: 'section_data'},
-        {key: 'section_map', header: 'section_map', type: 'section_map'}
+        {key: 'title', header: 'Title', type: 'string'},
+        {key: 'description', header: 'Description', type: 'string'},
+        {key: 'section_data', header: 'section_data', type: 'string'},
+        {key: 'section_map', header: 'section_map', type: 'string'}
       ]
     };
 
@@ -162,10 +162,7 @@ class AppView extends Component {
       let searchValueLowerCase = searchValue.toLowerCase();
       //filter the rows
       totalRows.forEach((row) => {
-        var searchFields = gettingCellValues(row, this.state.headers);
-        if(row.component){
-          searchFields.push(row.component)
-        }
+        var searchFields = getSearchableCellList(row, this.state.headers);
         searchFields = searchFields.map(function(value) {
           // Lowercase everything to make string maching accurate
           return ('' + value).toLowerCase();

@@ -50,14 +50,14 @@ class AppView extends Component {
       pageNumber: 1,
       search: undefined,
       headers: [
-        {key: 'status', header: msgs.get('table.header.status'), type: 'status'},
+        {key: 'status', header: msgs.get('table.header.status'), type: 'STATUS'},
         {key: 'appName', header: msgs.get('table.header.applicationName'), type: 'URL'},
-        {key: 'namespace', header: msgs.get('table.header.namespace'), type: 'string'},
-        {key: 'menuAction', header: msgs.get('table.header.action'), type: 'menuAction'},
-        {key: 'title', header: 'Title', type: 'string'},
-        {key: 'description', header: 'Description', type: 'string'},
-        {key: 'section_data', header: 'section_data', type: 'string'},
-        {key: 'section_map', header: 'section_map', type: 'string'}
+        {key: 'namespace', header: msgs.get('table.header.namespace'), type: 'STRING'},
+        {key: 'menuAction', header: msgs.get('table.header.action'), type: 'NOT_SEARCHABLE'},
+        {key: 'title', header: 'Title', type: 'NOT_SEARCHABLE'},
+        {key: 'description', header: 'Description', type: 'NOT_SEARCHABLE'},
+        {key: 'section_data', header: 'section_data', type: 'NOT_SEARCHABLE'},
+        {key: 'section_map', header: 'section_map', type: 'NOT_SEARCHABLE'}
       ]
     };
 

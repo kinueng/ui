@@ -50,12 +50,12 @@ class JobView extends Component {
       pageNumber: 1,
       search: undefined,
       headers: [ // Columns in the grid
-        {key: 'status', header: msgs.get('table.header.status'), type: 'status'},
-        {key: 'actionName', header: msgs.get('table.header.actionName'), type: 'string'},
+        {key: 'status', header: msgs.get('table.header.status'), type: 'STATUS'},
+        {key: 'actionName', header: msgs.get('table.header.actionName'), type: 'STRING'},
         {key: 'appName', header: msgs.get('table.header.applicationName'), type: 'URL'},
-        {key: 'component', header: msgs.get('table.header.component'), type: 'string'},
-        {key: 'age', header: msgs.get('table.header.age'), type: 'string'},
-        {key: 'menuAction', header: msgs.get('table.header.action'), type: 'menuAction'}
+        {key: 'component', header: msgs.get('table.header.component'), type: 'STRING'},
+        {key: 'age', header: msgs.get('table.header.age'), type: 'STRING'},
+        {key: 'menuAction', header: msgs.get('table.header.action'), type: 'NOT_SEARCHABLE'}
       ]
     }
 

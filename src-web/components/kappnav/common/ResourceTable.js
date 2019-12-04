@@ -39,6 +39,8 @@ const {
 } = DataTable;
 
 const translateWithId = (locale, id) => msgs.get(id)
+const NOT_SEARCHABLE = 'NOT_SEARCHABLE'
+const STATUS = 'STATUS'
 
 // returing the field if its of "string" type
 export const ifTheFieldIsNotLink = (row, field) => {
@@ -51,22 +53,22 @@ export const ifTheFieldIsNotLink = (row, field) => {
 export const getSearchableCellList = (row, headers) => {
 	var cellValues = []
 	headers.forEach(header => {
-		// for "status" field
-		if (header.type === 'status') {
+		if (header.type === NOT_SEARCHABLE) {
+			//not doing anything as the field is NOT_SEARCHABLE
+		} else if (header.type === STATUS) {
+			// for the field  of type "STATUS"
 			if (row && row[header.key] && row[header.key].props) {
 				// Since "status" can't be a string or a Link, hence finding its value under the "props" key
 				cellValues.push(row[header.key].props.children[1].props.children)
 			}
 		} else {
-			// for feilds other than "menuAction", "title", "description", "section_data" and "section_map" as these are not searchable 
-			if (header.key !== "menuAction" && header.key !== "title" && header.key !== "description" && header.key !== "section_data" && header.key !== "section_map") {
-				if (row && row[header.key] && row[header.key].props) {
-					// Account for the possiblity of the field being a link
-					cellValues.push(row[header.key].props.children)
-				} else if (row && row[header.key]) {
-					// Account for the possiblity of the field not being a link
-					cellValues.push(ifTheFieldIsNotLink(row, row[header.key]))
-				}
+			// for feilds other than "NOT_SEARCHABLE" and  "STATUS"
+			if (row && row[header.key] && row[header.key].props) {
+				// Account for the possiblity of the field being a link
+				cellValues.push(row[header.key].props.children)
+			} else if (row && row[header.key]) {
+				// Account for the possiblity of the field not being a link
+				cellValues.push(ifTheFieldIsNotLink(row, row[header.key]))
 			}
 		}
 	});

@@ -453,84 +453,92 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
   delete cloneData.metadata.selfLink
   delete cloneData.metadata.uid
 
+  // ***************
+  // Static Actions
+
+  var hasStaticActions = staticResourceData && staticResourceData.actions && staticResourceData.actions.length>0
+  let staticActions = []
+  if(hasStaticActions) {
+    staticActions = 
+      staticResourceData.actions.map((action, staticindex) => (
+        <OverflowMenuItem key={itemId + action}
+          primaryFocus={staticindex === 0}
+          itemText={msgs.get('table.actions.'+action)}
+          onClick={openModal.bind(this, action, cloneData)}
+          onFocus={(e) => {e.target.title = msgs.get('table.actions.'+action)}}
+          onMouseEnter={(e) => {e.target.title = msgs.get('table.actions.'+action)}} />
+      ))
+  }
+
+  // ***************
+  // URL Actions
+
   var urlActions = actionMap && actionMap[CONFIG_CONSTANTS.URL_ACTIONS]
   urlActions = urlActions && urlActions.filter((action) => {
     return !action[CONFIG_CONSTANTS.MENU_ITEM] || action[CONFIG_CONSTANTS.MENU_ITEM]!='false'
   })
+  var hasUrlActions = urlActions && urlActions.length && urlActions.length>0
+  if(hasUrlActions) {
+    urlActions = removeDisabledActions(resourceLabels, resourceAnnotations, urlActions)
+
+    urlActions.forEach((action) => { //try to cache the links ahead of time
+      var kind = componentData && componentData.kind
+      var namespace = componentData && componentData.metadata && componentData.metadata.namespace
+      var name = componentData && componentData.metadata && componentData.metadata.name
+      performUrlAction(action['url-pattern'], action['open-window'], kind, name, namespace, undefined, false)
+    })
+
+    urlActions = urlActions.map((action, urlindex) => {
+      let actionLabel = action['text.nls'] ? msgs.get(action['text.nls']) : action.text
+      let actionDesc = action['description.nls'] ? msgs.get(action['description.nls']) : action.description
+      return <OverflowMenuItem key={action.name}
+        primaryFocus={urlindex === 0 && !hasStaticActions}
+        itemText={actionLabel}
+        onClick={performUrlAction.bind(this, action['url-pattern'], action['open-window'], componentData && componentData.kind, componentData && componentData.metadata && componentData.metadata.name, componentData && componentData.metadata && componentData.metadata.namespace, undefined, true)}
+        onFocus={(e) => {
+          if(actionDesc){ e.target.title = actionDesc }
+        }}
+        onMouseEnter={(e) => {
+          if(actionDesc){ e.target.title = actionDesc }
+        }} />
+    })
+  }
+
+  // ***************
+  // Command Actions
 
   var cmdActions = actionMap && actionMap[CONFIG_CONSTANTS.CMD_ACTIONS]
   var cmdInputs = actionMap && actionMap[CONFIG_CONSTANTS.INPUTS]
-
-  var hasStaticActions = staticResourceData && staticResourceData.actions && staticResourceData.actions.length>0
-  var hasUrlActions = urlActions && urlActions.length && urlActions.length>0
   var hasCmdActions = cmdActions && cmdActions.length && cmdActions.length>0
+  if(hasCmdActions) {
+    cmdActions = removeDisabledActions(resourceLabels, resourceAnnotations, cmdActions)
 
-  if(hasStaticActions || hasUrlActions || hasCmdActions) {
-      var menu = <OverflowMenu floatingMenu flipped iconDescription={msgs.get('svg.description.overflowMenu')}>
-        {(() => {
-          if(hasStaticActions) {
-            return staticResourceData.actions.map((action, staticindex) => (
-              <OverflowMenuItem key={itemId + action}
-                primaryFocus={staticindex === 0}
-                itemText={msgs.get('table.actions.'+action)}
-                onClick={openModal.bind(this, action, cloneData)}
-                onFocus={(e) => {e.target.title = msgs.get('table.actions.'+action)}}
-                onMouseEnter={(e) => {e.target.title = msgs.get('table.actions.'+action)}} />
-            ))
-          }
-        })()}
-        {(() => {
-          if(urlActions) {
+    cmdActions = cmdActions.map((action, cmdindex) => {
+      let actionLabel = action['text.nls'] ? msgs.get(action['text.nls']) : action.text
+      let actionDesc = action['description.nls'] ? msgs.get(action['description.nls']) : action.description
+      return <OverflowMenuItem key={action.name}
+        primaryFocus={cmdindex === 0 && !hasUrlActions && !hasStaticActions}
+        itemText={actionLabel}
+        onClick={openModal.bind(this, "action", cloneData, applicationName, applicationNamespace, action, cmdInputs)}
+        onFocus={(e) => {
+          if(actionDesc){ e.target.title = actionDesc }
+        }}
+        onMouseEnter={(e) => {
+          if(actionDesc){ e.target.title = actionDesc }
+        }} 
+      />
+    })
+  }
 
-            urlActions = removeDisabledActions(resourceLabels, resourceAnnotations, urlActions)
-
-            urlActions.forEach((action) => { //try to cache the links ahead of time
-              var kind = componentData && componentData.kind
-              var namespace = componentData && componentData.metadata && componentData.metadata.namespace
-              var name = componentData && componentData.metadata && componentData.metadata.name
-              performUrlAction(action['url-pattern'], action['open-window'], kind, name, namespace, undefined, false)
-            })
-
-            return urlActions.map((action, urlindex) => {
-              let actionLabel = action['text.nls'] ? msgs.get(action['text.nls']) : action.text
-              let actionDesc = action['description.nls'] ? msgs.get(action['description.nls']) : action.description
-              return <OverflowMenuItem key={action.name}
-                primaryFocus={urlindex === 0 && !hasStaticActions}
-                itemText={actionLabel}
-                onClick={performUrlAction.bind(this, action['url-pattern'], action['open-window'], componentData && componentData.kind, componentData && componentData.metadata && componentData.metadata.name, componentData && componentData.metadata && componentData.metadata.namespace, undefined, true)}
-                onFocus={(e) => {
-                  if(actionDesc){ e.target.title = actionDesc }
-                }}
-                onMouseEnter={(e) => {
-                  if(actionDesc){ e.target.title = actionDesc }
-                }} />
-            })
-          }
-        })()}
-        {(() => {
-          if(cmdActions) {
-
-            cmdActions = removeDisabledActions(resourceLabels, resourceAnnotations, cmdActions)
-
-            return cmdActions.map((action, cmdindex) => {
-              let actionLabel = action['text.nls'] ? msgs.get(action['text.nls']) : action.text
-              let actionDesc = action['description.nls'] ? msgs.get(action['description.nls']) : action.description
-              return <OverflowMenuItem key={action.name}
-                primaryFocus={cmdindex === 0 && !hasUrlActions && !hasStaticActions}
-                itemText={actionLabel}
-                onClick={openModal.bind(this, "action", cloneData, applicationName, applicationNamespace, action, cmdInputs)}
-                onFocus={(e) => {
-                  if(actionDesc){ e.target.title = actionDesc }
-                }}
-                onMouseEnter={(e) => {
-                  if(actionDesc){ e.target.title = actionDesc }
-                }} 
-              />
-            })
-          }
-        })()}
+  // The arrays need to be .concat() in a specific order: static, url, cmd
+  let allEnabledActions = staticActions.concat(urlActions).concat(cmdActions)
+  // Use filter to remove undefined/null lists that were added by .concat()
+  allEnabledActions = allEnabledActions.filter(n => n)
+  if(allEnabledActions.length > 0) {
+    var menu =
+      <OverflowMenu floatingMenu flipped iconDescription={msgs.get('svg.description.overflowMenu')}>
+        {allEnabledActions}
       </OverflowMenu>
-
-      return menu
+    return menu
   }
 }

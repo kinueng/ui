@@ -29,6 +29,7 @@ import SecondaryHeader from './common/SecondaryHeader.jsx'
 import getResourceData from '../../definitions/index'
 import ApplicationModal from './modals/ApplicationModal.js'
 import NamespaceDropdown from './common/NamespaceDropdown'
+import {getSearchableCellList, SEARCH_HEADER_TYPES} from './common/ResourceTable.js'
 
 
 const applicationResourceData = getResourceData(RESOURCE_TYPES.APPLICATION)
@@ -49,14 +50,14 @@ class AppView extends Component {
       pageNumber: 1,
       search: undefined,
       headers: [
-        {key: 'status', header: msgs.get('table.header.status')},
-        {key: 'appName', header: msgs.get('table.header.applicationName')},
-        {key: 'namespace', header: msgs.get('table.header.namespace')},
-        {key: 'menuAction', header: msgs.get('table.header.action')},
-        {key: 'title', header: 'Title'},
-        {key: 'description', header: 'Description'},
-        {key: 'section_data', header: 'section_data'},
-        {key: 'section_map', header: 'section_map'}
+        {key: 'status', header: msgs.get('table.header.status'), type: SEARCH_HEADER_TYPES.STATUS},
+        {key: 'appName', header: msgs.get('table.header.applicationName'), type: SEARCH_HEADER_TYPES.URL},
+        {key: 'namespace', header: msgs.get('table.header.namespace'), type: SEARCH_HEADER_TYPES.STRING},
+        {key: 'menuAction', header: msgs.get('table.header.action'), type: SEARCH_HEADER_TYPES.NOT_SEARCHABLE},
+        {key: 'title', header: 'Title', type: SEARCH_HEADER_TYPES.NOT_SEARCHABLE},
+        {key: 'description', header: 'Description', type: SEARCH_HEADER_TYPES.NOT_SEARCHABLE},
+        {key: 'section_data', header: 'section_data', type: SEARCH_HEADER_TYPES.NOT_SEARCHABLE},
+        {key: 'section_map', header: 'section_map', type: SEARCH_HEADER_TYPES.NOT_SEARCHABLE}
       ]
     };
 
@@ -158,23 +159,20 @@ class AppView extends Component {
   filterTable(searchValue, pageNumber, pageSize, totalRows){
     let filteredRows = []
     if (searchValue) {
+      let searchValueLowerCase = searchValue.toLowerCase();
       //filter the rows
       totalRows.forEach((row) => {
-        if (row.appName.props) { //account for the possiblity of the name being a link
-          if (('' + row.appName.props.children).toLowerCase().includes(searchValue.toLowerCase())) {
-            filteredRows.push(row)
-            return
-          }
-        } else if (('' + appName.appName).toLowerCase().includes(searchValue.toLowerCase())) {
+        var searchFields = getSearchableCellList(row, this.state.headers);
+        searchFields = searchFields.map(function(value) {
+          // Lowercase everything to make string maching accurate
+          return ('' + value).toLowerCase();
+        })
+
+        if(searchFields.some(field => field.includes(searchValueLowerCase))) {
+          // If one of the fields contains the search string, add the row 
+          // to what will be showed in filtered view
           filteredRows.push(row)
           return
-        }
-
-        // There has to be a better way of getting the searchable text for status
-        let rowStatus = row.status.props.children[1].props.children
-
-        if (('' + rowStatus).toLowerCase().includes(searchValue.toLowerCase())) {
-          filteredRows.push(row)
         }
       });
     } else {

@@ -27,6 +27,7 @@ import SecondaryHeader from './common/SecondaryHeader.jsx'
 import ResourceTable from './common/ResourceTable.js'
 import getResourceData from '../../definitions/index'
 import PropTypes from 'prop-types'
+import {getSearchableCellList, SEARCH_HEADER_TYPES} from './common/ResourceTable.js'
 
 
 const jobResourceData = getResourceData(RESOURCE_TYPES.JOB)
@@ -49,12 +50,12 @@ class JobView extends Component {
       pageNumber: 1,
       search: undefined,
       headers: [ // Columns in the grid
-        {key: 'status', header: msgs.get('table.header.status')},
-        {key: 'actionName', header: msgs.get('table.header.actionName')},
-        {key: 'appName', header: msgs.get('table.header.applicationName')},
-        {key: 'component', header: msgs.get('table.header.component')},
-        {key: 'age', header: msgs.get('table.header.age')},
-        {key: 'menuAction', header: msgs.get('table.header.action')}
+        {key: 'status', header: msgs.get('table.header.status'), type: SEARCH_HEADER_TYPES.STATUS},
+        {key: 'actionName', header: msgs.get('table.header.actionName'), type: SEARCH_HEADER_TYPES.STRING},
+        {key: 'appName', header: msgs.get('table.header.applicationName'), type: SEARCH_HEADER_TYPES.URL},
+        {key: 'component', header: msgs.get('table.header.component'), type: SEARCH_HEADER_TYPES.STRING},
+        {key: 'age', header: msgs.get('table.header.age'), type: SEARCH_HEADER_TYPES.STRING},
+        {key: 'menuAction', header: msgs.get('table.header.action'), type: SEARCH_HEADER_TYPES.NOT_SEARCHABLE}
       ]
     }
 
@@ -128,27 +129,10 @@ class JobView extends Component {
       const searchValueLowerCase = searchValue.toLowerCase()
       //filter the rows
       totalRows.forEach((row) => {
-        if (row.appName.props) {
-          // Account for the possiblity of the name being a link
-          // When the application name is a link, the searchable application name text is 
-          // under the "props" key
-          if (('' + row.appName.props.children).toLowerCase().includes(searchValueLowerCase)) {
-            filteredRows.push(row)
-            return
-          }
-        }
-
-        // There has to be a better way of getting the searchable text for status
-        const rowStatus = row.status.props.children[1].props.children
-
-        // Same as rowStatus, there has to be a better way to get these values from props.children.
-        const actionName = row.actionName.props.children
-        const rowAge = row.age.props.children
-
-        let searchFields = [rowStatus, actionName, row.component, rowAge]
-        searchFields = searchFields.map((value) => {
+        var searchFields = getSearchableCellList(row, this.state.headers);
+        searchFields = searchFields.map(function(value) {
           // Lowercase everything to make string maching accurate
-          return ('' + value).toLowerCase()
+          return ('' + value).toLowerCase();
         })
 
         if(searchFields.some(field => field.includes(searchValueLowerCase))) {

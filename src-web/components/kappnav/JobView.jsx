@@ -248,8 +248,8 @@ class JobView extends Component {
           const detailAction = urlActions[0]
           const kind = 'Job'
           const linkId = kind+'_'+metadata.name+'link'
-          itemObj.actionName = <a rel="noreferrer" id={linkId} href='#' onClick={performUrlAction.bind(this, detailAction['url-pattern'], detailAction['open-window'], kind, appUuid, metadata.namespace, undefined, true)}>{jobName}</a>
-          performUrlAction(detailAction['url-pattern'], detailAction['open-window'], kind, appUuid, metadata.namespace, linkId, false)  //update the link in place
+          itemObj.actionName = <a rel="noreferrer" id={linkId} href='#' onClick={performUrlAction.bind(this, detailAction['url-pattern'], detailAction['open-window'], kind, "", appUuid, metadata.namespace, undefined, true)}>{jobName}</a>
+          performUrlAction(detailAction['url-pattern'], detailAction['open-window'], kind, "", appUuid, metadata.namespace, linkId, false)  //update the link in place
         } else {
           // Not every K8 platform has a URL for displaying K8 Job kind details
           itemObj.actionName = jobName

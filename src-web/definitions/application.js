@@ -384,6 +384,7 @@ export function refreshApplicationComponents(appname, namespace, appNavConfigDat
           ? metadata.annotations
           : {};
         var kind = component.kind;
+        var apiVersion = component.apiVersion;
         var compositeKind = kind
           ? kind
           : '';
@@ -439,10 +440,10 @@ export function refreshApplicationComponents(appname, namespace, appNavConfigDat
           if(link) {
             //Expand the link and modify the URL on the fly to match the expanded link
             var linkId = kind+"_"+metadata.name+"link";
-            itemObj.name=<a id={linkId} href="#" onClick={performUrlAction.bind(this, link, urlActions[0]["open-window"], kind, metadata.name, metadata.namespace, undefined, true)}>
+            itemObj.name=<a id={linkId} href="#" onClick={performUrlAction.bind(this, link, urlActions[0]["open-window"], kind, apiVersion, metadata.name, metadata.namespace, undefined, true)}>
               {metadata.name}
             </a>;
-            performUrlAction(link, urlActions[0]["open-window"], kind, metadata.name, metadata.namespace, linkId, false);  //update the link in place
+            performUrlAction(link, urlActions[0]["open-window"], kind, apiVersion, metadata.name, metadata.namespace, linkId, false);  //update the link in place
           } else {
               itemObj.name = metadata.name;
           }

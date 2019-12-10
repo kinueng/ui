@@ -226,10 +226,10 @@ const openModal_internal = (operation, resource, application, applicationNamespa
   }
 }
 
-export const performUrlAction = (urlPattern, openWindow, kind, name, namespace, linkId, followLink) => {
+export const performUrlAction = (urlPattern, openWindow, kind, apiVersion, name, namespace, linkId, followLink) => {
   if(urlPattern) {
     //expand the url
-    fetch('/kappnav/resource/' + encodeURIComponent(name)+'/'+kind+'?action-pattern='+encodeURIComponent(urlPattern)+'&namespace='+encodeURIComponent(namespace))
+    fetch('/kappnav/resource/' + encodeURIComponent(name)+'/'+kind+'?action-pattern='+encodeURIComponent(urlPattern)+'&namespace='+encodeURIComponent(namespace)+'&apiversion='+encodeURIComponent(apiVersion))
       .then(response => {
         if (!response.ok) {
         //Failed to get a link back
@@ -483,9 +483,10 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
 
     urlActions.forEach((action) => { //try to cache the links ahead of time
       var kind = componentData && componentData.kind
+      var apiVersion = componentData && componentData.apiVersion
       var namespace = componentData && componentData.metadata && componentData.metadata.namespace
       var name = componentData && componentData.metadata && componentData.metadata.name
-      performUrlAction(action['url-pattern'], action['open-window'], kind, name, namespace, undefined, false)
+      performUrlAction(action['url-pattern'], action['open-window'], kind, apiVersion, name, namespace, undefined, false)
     })
 
     urlActions = urlActions.map((action, urlindex) => {
@@ -494,7 +495,7 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
       return <OverflowMenuItem key={action.name}
         primaryFocus={urlindex === 0 && !hasStaticActions}
         itemText={actionLabel}
-        onClick={performUrlAction.bind(this, action['url-pattern'], action['open-window'], componentData && componentData.kind, componentData && componentData.metadata && componentData.metadata.name, componentData && componentData.metadata && componentData.metadata.namespace, undefined, true)}
+        onClick={performUrlAction.bind(this, action['url-pattern'], action['open-window'], componentData && componentData.kind, componentData && componentData.apiVersion, componentData && componentData.metadata && componentData.metadata.name, componentData && componentData.metadata && componentData.metadata.namespace, undefined, true)}
         onFocus={(e) => {
           if(actionDesc){ e.target.title = actionDesc }
         }}

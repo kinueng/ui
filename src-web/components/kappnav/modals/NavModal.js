@@ -258,7 +258,7 @@ class NavModal extends React.PureComponent {
     opened && onChange('namespace', selectedNamespace) // set namespace using selected value in namespace dropdown by default when modal opens
     opened
       ? this.setState({open: true})
-      : this.setState({open: false, selectedMenuItem: menuItems[0]})
+      : this.setState({open: false, selectedMenuItem: menuItems[0], postStatus:undefined, postErrorMsg:undefined})
 
     if (!opened) {
       this.handleReset()

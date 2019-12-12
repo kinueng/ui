@@ -111,7 +111,7 @@ app.all('*', (req, res, next) => {
     const cookieConfig = {
       httpOnly: true, // to disable accessing cookie via client side js
       secure: true, // to force https (if you use it)
-      maxAge: 1000000000, // ttl in ms (remove this option and cookie will die when browser is closed)
+      maxAge: 1000000000 // ttl in ms (remove this option and cookie will die when browser is closed)
     };
     res.cookie('kappnav-user', req.user, cookieConfig);
     next()
@@ -137,6 +137,16 @@ app.use('/kappnav', proxy({
   changeOrigin: true,
   secure: false
 }))
+
+app.use('/kappnav-ui/logout', (req, res) => {
+  //For oauth proxy environemnts remove user and redirect to sign_in.  That doubles as a logout path and removes the session cookie.
+  if(KUBE_ENV === 'okd' || KUBE_ENV === 'ocp') {
+    res.clearCookie('kappnav-user')
+    var host = 'https://'+req.headers['host']
+    res.redirect(host + '/oauth/sign_in')
+  }
+})
+
 
 app.use('/kappnav-ui/openshift/appNavIcon.css', (req, res) => {
   request({

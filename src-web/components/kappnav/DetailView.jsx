@@ -143,6 +143,9 @@ class DetailView extends Component {
                 //fetch the action maps
                 var metadata = result.metadata
                 var applicationName
+                const parentNamespace = decodeURIComponent(new URL(window.location.href).searchParams.get("parentnamespace"))
+                const namespace = decodeURIComponent(new URL(window.location.href).searchParams.get("namespace"))
+                var applicationNamespace
 
                 //Set application name if we are navigating from applications
                 var paths = window.location.pathname.split('/')
@@ -151,8 +154,12 @@ class DetailView extends Component {
                 } else {
                   applicationName = 'kappnav.not.assigned'
                 }
-
-                var applicationNamespace = metadata.namespace
+                // if the component and parent namespaces are same, then we use either else we will be using the parent namespaces
+                if(parentNamespace === namespace){
+                  applicationNamespace = metadata.namespace
+                } else{
+                  applicationNamespace = parentNamespace
+                }
                 updateSecondaryHeader(getStatus(metadata, this.props.baseInfo.appNavConfigMap).statusColor, getStatus(metadata, this.props.baseInfo.appNavConfigMap).statusText, getOverflowMenu(result, actions, this.state.staticResourceData, applicationName, applicationNamespace))
               }
             })

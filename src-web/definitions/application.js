@@ -422,8 +422,9 @@ export function refreshApplicationComponents(appname, namespace, appNavConfigDat
         }
 
         var actionMap = item["action-map"]
+        const applicationNamespace = decodeURIComponent(new URL(window.location.href).searchParams.get("namespace"))
         if (resourceType == "application") {  //known link to our detail panel and our custom resource types
-          itemObj.name = <a href="#" onClick={() => resourceType == "application" ? displayApp(metadata.name, metadata.namespace) : displayDetail(appname, resourceType, metadata.name, metadata.namespace)}>
+          itemObj.name = <a href="#" onClick={() => resourceType == "application" ? displayApp(metadata.name, metadata.namespace) : displayDetail(appname, resourceType, metadata.name, metadata.namespace, applicationNamespace)}>
             {metadata.name}
           </a>;
           itemObj.menuAction = getOverflowMenu(component, actionMap, applicationResourceData, appname, namespace);
@@ -461,8 +462,8 @@ function displayApp(appname, namespace) {
 }
 
 // display details
-function displayDetail(appname, resourceType, name, namespace) {
-  //applications and components are now in the same namespace
-  let url= location.protocol+'//'+location.host+ CONTEXT_PATH + '/applications/'+encodeURIComponent(appname)+'/'+resourceType+'/'+encodeURIComponent(name)+'?namespace='+encodeURIComponent(namespace)+'&parentnamespace='+encodeURIComponent(namespace)
+function displayDetail(appname, resourceType, name, namespace, applicationNamespace) {
+  //applications and components can be under different namespaces
+  let url= location.protocol+'//'+location.host+ CONTEXT_PATH + '/applications/'+encodeURIComponent(appname)+'/'+resourceType+'/'+encodeURIComponent(name)+'?namespace='+encodeURIComponent(namespace)+'&parentnamespace='+encodeURIComponent(applicationNamespace)
   window.location.href = url;
 }

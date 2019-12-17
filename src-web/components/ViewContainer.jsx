@@ -23,9 +23,9 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { fetchLoadingNamespaces, fetchLoadingSecrets, fetchLoadingAppNavConfigMaps } from '../reducers/BaseServiceReducer';
 import AppView from './kappnav/AppView.jsx';
 import ComponentView from './kappnav/ComponentView.jsx';
-import DetailView from './kappnav/DetailView.jsx';
 import JobView from './kappnav/JobView.jsx';
 import { RESOURCE_TYPES } from '../actions/constants';
+import {getExtendedRoutes} from './extensions/RouteExtensions'
 
 class ViewContainer extends Component {
 
@@ -64,6 +64,11 @@ class ViewContainer extends Component {
                                     <ComponentView {...props}
                                                    title={msgs.get('page.applicationView.title')}
                                                    resourceType={RESOURCE_TYPES.APPLICATION}/>}/>
+
+                            {/* getting all extended routes if any */}
+                            {getExtendedRoutes().length > 0 ? getExtendedRoutes().map((route) => {
+                                return <Route exact path={route.path} component={route.component}/>
+                            }): null}
                         </Switch>
                     </Router>
                 </main>

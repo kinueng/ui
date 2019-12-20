@@ -24,6 +24,7 @@ import { getLabelsToString, getAge } from '../actions/common'
 import { updateSecondaryHeader, getOverflowMenu, performUrlAction, buildStatusHtml, getStatus} from '../actions/common'
 import { CONTEXT_PATH, SUBKIND, PLATFORM_KIND, PLATFORM_NAME } from '../actions/constants'
 import {SEARCH_HEADER_TYPES} from '../components/kappnav/common/ResourceTable.js'
+import {getLink, getExtendedResourceTypes} from '../components/extensions/ApplicationExtension'
 
 export default {
   resourceType: 'application',
@@ -344,10 +345,6 @@ export function getMatchExpressions(item) {
   })
 }
 
-export function getLink(itemName) {
-  return ``
-}
-
 export function refreshApplication(appname, namespace, appNavConfigData, applicationResourceData) {
   return fetch('/kappnav/application/' + encodeURIComponent(appname)+'?namespace='+encodeURIComponent(namespace))
     .then(response => {
@@ -423,7 +420,7 @@ export function refreshApplicationComponents(appname, namespace, appNavConfigDat
 
         var actionMap = item["action-map"]
         const applicationNamespace = decodeURIComponent(new URL(window.location.href).searchParams.get("namespace"))
-        if (resourceType == "application") {  //known link to our detail panel and our custom resource types
+        if(getExtendedResourceTypes().length > 0 && getExtendedResourceTypes().includes(resourceType)){
           itemObj.name = <a href="#" onClick={() => resourceType == "application" ? displayApp(metadata.name, metadata.namespace) : displayDetail(appname, resourceType, metadata.name, metadata.namespace, applicationNamespace)}>
             {metadata.name}
           </a>;

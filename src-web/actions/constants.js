@@ -22,6 +22,8 @@
  * action name: <NOUN>_<VERB>
  */
 
+import { EXTENDED_RESOURCE_TYPES, EXTENDED_CONFIG_CONSTANTS } from '../components/extensions/ConstantsExtension';
+
 export const CONTEXT_PATH = '/kappnav-ui'
 
 export const SUBKIND = 'kappnav.subkind'
@@ -44,25 +46,12 @@ export const REQUEST_STATUS = {
   ERROR: 'ERROR'
 }
 
-export const CONFIG_CONSTANTS = {
-  ACTION_MAP: 'action-map',
-  CMD_ACTIONS: 'cmd-actions',
-  INPUTS: 'inputs',
-  MENU_ITEM: 'menu-item',
-  REQUIRES_INPUT: 'requires-input',
-  URL_ACTIONS: 'url-actions',
-  ENABLEMENT_LABEL: 'enablement-label',
-  ENABLEMENT_ANNOTATION: 'enablement-annotation'
-}
-
 export const STATUS_COLORS = {
   BORDER_COLOR: '#464646',
   DEFAULT_COLOR: 'GREY'
 }
 
 //Constants below are different between icp4a and kabanero
-
-export const RESOURCE_TYPES = {
-  APPLICATION: { name: 'APPLICATION' },
-  JOB: { name: 'JOB' }
-}
+// loading extended RESOURCE_TYPES and CONFIG_CONSTANTS
+export const RESOURCE_TYPES = EXTENDED_RESOURCE_TYPES;
+export const CONFIG_CONSTANTS = EXTENDED_CONFIG_CONSTANTS;

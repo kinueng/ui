@@ -21,6 +21,7 @@ import React from 'react'
 import msgs from '../../nls/kappnav.properties'
 import PropTypes from 'prop-types'
 import { CSSTransition } from 'react-transition-group'
+import {getExtendedRoutes} from  './extensions/NavigationExtension'
 
 require('../../scss/left-nav.scss')
 
@@ -54,6 +55,12 @@ class LeftNav extends React.Component {
         <li className="left-nav-item primary-nav-item">
         <a role='menuitem' href="/kappnav-ui/jobs" title={msgs.get('page.jobsView.title')}>{msgs.get('page.jobsView.title')}</a>
         </li>
+        {/* getting all extended routes if any */}
+        {getExtendedRoutes().length > 0 ? getExtendedRoutes().map((route) => {
+            return <li className="left-nav-item primary-nav-item">
+              <a role='menuitem' href={route.href} title={route.title}>{route.title}</a>
+            </li>
+        }): null}
       </ul>
     )
   } // end of renderRoutes(...)

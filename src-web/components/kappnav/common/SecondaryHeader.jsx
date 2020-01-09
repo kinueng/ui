@@ -38,7 +38,7 @@ require('../../../../scss/kappnav.scss')
 const items = [
   {
     id: "logout",
-    text: "Log Out"
+    text: msgs.get('user.menu.logout')
   }
 ];
 class SecondaryHeader extends React.Component {
@@ -124,7 +124,7 @@ class SecondaryHeader extends React.Component {
                 label={<Icon
                   className="user-icon"
                   name='user'
-                  description={msgs.get('user.menu.label', [document.documentElement.getAttribute('displayUser')])}
+                  description={document.documentElement.getAttribute('displayUser')}
                 />}
                 items={items}
                 className="user-width"

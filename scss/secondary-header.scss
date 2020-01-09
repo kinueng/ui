@@ -134,3 +134,25 @@ $secondary-header-max-height: 6.5rem;
   left: 3rem;
   transition: left 300ms $animation__standard;
 }
+
+svg.user-icon {
+  height: 24px;
+  width: 24px;
+}
+
+.user-width{
+  background-color: #152935;
+  border-bottom: 0px;
+  width: 98px;
+  box-shadow:0px 1px 0px 0px #152935;
+  padding-left: 40px;
+}
+
+.user-width .bx--list-box__field .bx--list-box__menu-icon {
+  display: none;
+}
+
+.user-width .bx--list-box__menu{
+  margin-top: 5px;
+  margin-left: 15px;
+}

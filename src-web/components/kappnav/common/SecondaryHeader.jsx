@@ -20,7 +20,7 @@
 
 import React from 'react'
 import { DetailPageHeader } from 'carbon-addons-cloud-react'
-import { Breadcrumb, Tabs, Tab } from 'carbon-components-react'
+import { Breadcrumb, Tabs, Tab, DropdownV2, Icon } from 'carbon-components-react'
 import ResourceModal from '../modals/ResourceModal'
 import RemoveResourceModal from '../modals/RemoveResourceModal'
 import ActionModal from '../modals/ActionModal'
@@ -35,6 +35,12 @@ require('../../../../scss/common.scss')
 require('../../../../scss/resource-overview.scss')
 require('../../../../scss/kappnav.scss')
 
+const items = [
+  {
+    id: "logout",
+    text: "Log Out"
+  }
+];
 class SecondaryHeader extends React.Component {
   constructor(props) {
     super(props)
@@ -67,6 +73,11 @@ class SecondaryHeader extends React.Component {
 
   componentDidMount() {
     this.props.tabs && this.focusTab()
+  }
+
+  initiateLogOut = (event) => {
+    let url = location.protocol + '//' + location.host + CONTEXT_PATH + '/logout'
+    window.location.href = url
   }
 
   render() {
@@ -107,6 +118,20 @@ class SecondaryHeader extends React.Component {
               )
           })()}
           <div className="navigation-container"></div>
+          {document.documentElement.getAttribute('kube') === 'ocp' || document.documentElement.getAttribute('kube') === 'okd' ?
+            <div>
+              <DropdownV2
+                label={<Icon
+                  className="user-icon"
+                  name='user'
+                  description={msgs.get('user.menu.label', [document.documentElement.getAttribute('displayUser')])}
+                />}
+                items={items}
+                className="user-width"
+                onChange={(event) => this.initiateLogOut(event)}
+                itemToString={item => (item ? item.text : "")}
+              />
+            </div> : null}
         </div>
         <ActionMessageModal open={this.state.actionMessageModalOpen}
           label={this.state.resourceModalLabel}

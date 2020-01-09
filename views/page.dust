@@ -15,7 +15,7 @@
 !}
 
 <!DOCTYPE html>
-<html lang="{myLocale}" kube="{kube}" appnavConfigmapNamespace="{appnavConfigmapNamespace}" >
+<html lang="{myLocale}" kube="{kube}" displayUser="{displayUser}" appnavConfigmapNamespace="{appnavConfigmapNamespace}" >
     <meta name="csrf-token" content="{csrfToken}">
     <head>
         <meta charset="UTF-8">

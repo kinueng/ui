@@ -58,7 +58,9 @@ class AppView extends Component {
         {key: 'description', header: 'Description', type: SEARCH_HEADER_TYPES.NOT_SEARCHABLE},
         {key: 'section_data', header: 'section_data', type: SEARCH_HEADER_TYPES.NOT_SEARCHABLE},
         {key: 'section_map', header: 'section_map', type: SEARCH_HEADER_TYPES.NOT_SEARCHABLE}
-      ]
+      ],
+      viewType: 'table.empty.applications',
+      modalType: 'button.application.create'
     };
 
     // make 'this' visible to class methods
@@ -101,6 +103,8 @@ class AppView extends Component {
           namespace={this.props.baseInfo.selectedNamespace}
           namespaces={this.props.baseInfo.namespaces}
           resourceType={applicationResourceData.resourceType}
+          viewType={this.state.viewType}
+          modalType={this.state.modalType}
           createNewModal={(namespace, namespaces, existingSecrets) => {
             return (
               <DataTable.TableToolbarContent>

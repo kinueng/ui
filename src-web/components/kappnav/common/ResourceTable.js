@@ -456,7 +456,7 @@ class ResourceTable extends React.Component {
 											var msg = msgs.get('table.empty', [resource]);
 
 											return (
-												<TableRow><TableCell colSpan={headers.length + 1}>{msg} <span className='addResourceLink' id='navModalLink'>{modal}</span>.</TableCell></TableRow>
+												<TableRow><TableCell colSpan={headers.length + 1}>{msg} <span className='emptyTableResourceLink' id='navModalLink'>{modal}</span>.</TableCell></TableRow>
 											)
 										} else {
 											return(

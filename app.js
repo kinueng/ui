@@ -258,7 +258,8 @@ app.get('*', (req, res) => {
     appnavConfigmapNamespace: APPNAV_CONFIGMAP_NAMESPACE,
     contextPath: CONTEXT_PATH,
     title: 'Application Navigator',
-    csrfToken: req.csrfToken()
+    csrfToken: req.csrfToken(),
+    displayUser : req.user
   })
 })
 

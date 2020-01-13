@@ -113,17 +113,22 @@ class ResourceTable extends React.Component {
 		}
 	}
 
-	/* This function is hidding the expandable icon from the DataTable Carbon Components only for
-	   those resources which doesn't have the "section-map" attribute or if the "section-map" 
-	   attribute is empty*/
-	componentDidMount() {
-		//If the resource table is empty, a row with text should have a link to the 'Add [resoure_name]' navmodal
-		//The "link" should trigger a click on the 'Add [resource_name]' button above the table
+	/* This function is to add the onlcick to the 'Add [resource_name]' link in the message row of an empty resource table.
+	When the resource table is empty, a row with text should have a link to the 'Add [resoure_name]' navmodal.
+	Clicking this link should trigger a click on the 'Add [resource_name]' button above the table */
+	connectAddLinkOnClick() {
 		var addResourceButton = document.getElementById('create-application');
 		var navModalLink = document.getElementById('navModalLink');
 		if (navModalLink && addResourceButton) {
 			navModalLink.onclick = function() {addResourceButton.click()};
 		}
+	}
+
+	/* This function is hidding the expandable icon from the DataTable Carbon Components only for
+	   those resources which doesn't have the "section-map" attribute or if the "section-map" 
+	   attribute is empty*/
+	componentDidMount() {
+		this.connectAddLinkOnClick()
 
 		if (this.props.rows.length !== 0) {
 			for (var i = 0; i < this.props.rows.length; i++) {
@@ -145,13 +150,7 @@ class ResourceTable extends React.Component {
 	   those resources which doesn't have the "section-map" attribute or if the "section-map" 
 	   attribute is empty by first making expandable icon visible on every rows of the DataTable*/
 	componentDidUpdate() {
-		//If the resource table is empty, a row with text should have a link to the 'Add [resoure_name]' navmodal
-		//The "link" should trigger a click on the 'Add [resource_name]' button above the table
-		var addResourceButton = document.getElementById('create-application');
-		var navModalLink = document.getElementById('navModalLink');
-		if (navModalLink && addResourceButton) {
-			navModalLink.onclick = function() {addResourceButton.click()};
-		}
+		this.connectAddLinkOnClick()
 
 		if (this.props.rows.length !== 0) {
 			for (var i = 0; i < this.props.rows.length; i++) {

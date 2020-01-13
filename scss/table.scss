@@ -149,3 +149,9 @@ tr.bx--expandable-row-v2 + tr[data-child-row] td {
 .bx--row {
   width: 100%
 }
+
+.emptyTableResourceLink {
+  font-weight: 600;
+  color: #3d70b2;
+  cursor: pointer;
+}

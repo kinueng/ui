@@ -113,10 +113,23 @@ class ResourceTable extends React.Component {
 		}
 	}
 
+	/* This function is to add the onlcick to the 'Add [resource_name]' link in the message row of an empty resource table.
+	When the resource table is empty, a row with text should have a link to the 'Add [resoure_name]' navmodal.
+	Clicking this link should trigger a click on the 'Add [resource_name]' button above the table */
+	connectAddLinkOnClick() {
+		var addResourceButton = document.getElementById('create-application');
+		var navModalLink = document.getElementById('navModalLink');
+		if (navModalLink && addResourceButton) {
+			navModalLink.onclick = function() {addResourceButton.click()};
+		}
+	}
+
 	/* This function is hidding the expandable icon from the DataTable Carbon Components only for
 	   those resources which doesn't have the "section-map" attribute or if the "section-map" 
 	   attribute is empty*/
 	componentDidMount() {
+		this.connectAddLinkOnClick()
+
 		if (this.props.rows.length !== 0) {
 			for (var i = 0; i < this.props.rows.length; i++) {
 				var row = this.props.rows[i]
@@ -137,6 +150,8 @@ class ResourceTable extends React.Component {
 	   those resources which doesn't have the "section-map" attribute or if the "section-map" 
 	   attribute is empty by first making expandable icon visible on every rows of the DataTable*/
 	componentDidUpdate() {
+		this.connectAddLinkOnClick()
+
 		if (this.props.rows.length !== 0) {
 			for (var i = 0; i < this.props.rows.length; i++) {
 				var row = this.props.rows[i]
@@ -356,7 +371,9 @@ class ResourceTable extends React.Component {
 			namespace,
 			namespaces, //this is a list of namespaces that we use to populate the create new modals
 			existingSecrets,
-			createNewModal
+			createNewModal,
+			viewType,
+			modalType
 		} = this.props
 
 		let c;
@@ -427,25 +444,43 @@ class ResourceTable extends React.Component {
 										</TableRow>
 									</TableHead>
 									<TableBody>
-										{rows.map(row => (
-											<React.Fragment key={row.id}>
-												<TableExpandRow {...getRowProps({ row })} ariaLabel={row.id} expandIconDescription={msgs.get('expand')} onClick={() => { this.toggleExpandCollapse(row.id) }}>
-													{row.cells.map(cell => (
-														this.renderCell(row, cell)
-													))}
-												</TableExpandRow>
-												{row.isExpanded && (
-													<TableExpandedRow>
-														<TableCell className="expandedRow" colSpan={headers.length + 1}>
-															<div> {
-																this.renderCellExpanded(row)
-															}</div>
-														</TableCell>
+									{(() => {
+										//When the resource table is empty, add a new row with a message that encourages users to add a new resource 
+										//viewType is undefined when in the Command Actions view
+										//viewType is the message key for the resource type: applications, WAS ND cells, or Liberty collectives
+										//modal is the message key for the title of the add modal that should pop up (ex: "Add Application")
+										if (rows.length === 0 && viewType) {
+											var resource = msgs.get(viewType);
+											var modal = msgs.get(modalType);
+											var msg = msgs.get('table.empty', [resource]);
 
-													</TableExpandedRow>
-												)}
-											</React.Fragment>
-										))}
+											return (
+												<TableRow><TableCell colSpan={headers.length + 1}>{msg} <span className='emptyTableResourceLink' id='navModalLink'>{modal}</span>.</TableCell></TableRow>
+											)
+										} else {
+											return(
+												rows.map(row => (
+												<React.Fragment key={row.id}>
+													<TableExpandRow {...getRowProps({ row })} ariaLabel={row.id} expandIconDescription={msgs.get('expand')} onClick={() => { this.toggleExpandCollapse(row.id) }}>
+														{row.cells.map(cell => (
+															this.renderCell(row, cell)
+														))}
+													</TableExpandRow>
+													{row.isExpanded && (
+														<TableExpandedRow>
+															<TableCell className="expandedRow" colSpan={headers.length + 1}>
+																<div> {
+																	this.renderCellExpanded(row)
+																}</div>
+															</TableCell>
+
+														</TableExpandedRow>
+													)}
+												</React.Fragment>
+												))
+											)
+										}
+									})()}
 									</TableBody>
 								</Table>
 							</TableContainer>

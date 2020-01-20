@@ -19,11 +19,10 @@
 'use strict'
 
 import React from 'react'
-import { ComposedModal, ModalHeader, ModalBody, ToastNotification, Icon } from 'carbon-components-react'
-import {CONTEXT_PATH} from '../../../actions/constants'
+import { ComposedModal, ModalHeader, ModalBody } from 'carbon-components-react'
 import { withRouter } from 'react-router-dom'
 import msgs from '../../../../nls/kappnav.properties'
-import moment from 'moment';
+import Notification from '../common/Notification'
 
 require('../../../../scss/modal.scss')
 class ActionMessageModal extends React.PureComponent {
@@ -82,34 +81,7 @@ class ActionMessageModal extends React.PureComponent {
       //  Toaster component to a different React class Component.
       if (open) {
         return (
-          <ToastNotification
-            caption={
-              <div>
-                {new moment().format('HH:mm:ss   LL')}
-                <a href={location.protocol + '//' + location.host + CONTEXT_PATH + '/jobs'}>
-                  <Icon
-                    className="launch-icon"
-                    name='launch'
-                    description={msgs.get('toaster.action.caption')} />
-                </a>
-              </div>
-            }
-            hideCloseButton={false}
-            iconDescription={msgs.get('modal.button.close.the.modal')}
-            onCloseButtonClick={handleClose}
-            kind="info"
-            notificationType="toast"
-            role="alert"
-            className='toaster-style'
-            subtitle={
-              <div>
-                <h3> {msgs.get('toaster.action.subtitle', [result.metadata.annotations['kappnav-job-action-text'], result.metadata.labels['kappnav-job-component-name']])}</h3>
-                <br />
-              </div>
-            }
-            timeout={5000}
-            title={msgs.get('toaster.action.success')}
-          />
+          <Notification result={result} handleClose={handleClose}/>
         )
       }
       else {

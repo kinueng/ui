@@ -26,6 +26,7 @@ import ComponentView from './kappnav/ComponentView.jsx';
 import JobView from './kappnav/JobView.jsx';
 import { RESOURCE_TYPES } from '../actions/constants';
 import {getExtendedRoutes} from './extensions/RouteExtensions'
+import NotificationHandler from './kappnav/common/NotificationHandler'
 
 class ViewContainer extends Component {
 
@@ -49,10 +50,11 @@ class ViewContainer extends Component {
         }
         else{
         return (
-            <div >
-                <main >
+            <div>
+                <NotificationHandler />
+                <main>
                     <Router>
-                        <Switch >
+                        <Switch>
                             <Route exact path="/kappnav-ui/" component={AppView} />
 
                             <Route exact path="/kappnav-ui/applications" component={AppView} />

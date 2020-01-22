@@ -41,21 +41,35 @@ export default class Notification extends React.PureComponent {
 
     constructor(props) {
         super(props)
-        const result = this.props.result
+        const { type, result } = this.props
+
+        let _title = this._determineTitleBasedOnType(type)
+        
         const _subtitle =
             <div>
             <h3> {msgs.get('toaster.action.subtitle', [result.metadata.annotations['kappnav-job-action-text'], result.metadata.labels['kappnav-job-component-name']])}</h3>
             <br />
             </div>
-        
+
         this.state = {
+            title: _title,
             subtitle : _subtitle,
             handleClose: this.props.handleClose
         }
     }
 
+    _determineTitleBasedOnType(notification_type) {
+        if(notification_type === 'initiated') {
+            return msgs.get('toaster.action.success')
+        } else if(notification_type === 'completed') {
+            return msgs.get('toaster.action.completed.title')
+        } else {
+            return ''
+        }
+    }
+
     render() {
-        const { subtitle, handleClose } = this.state
+        const { title, subtitle, handleClose } = this.state
         return ( 
             <ToastNotification
                 // Using key attribute as a workaround for problem: https://github.com/carbon-design-system/carbon/issues/4211
@@ -70,7 +84,7 @@ export default class Notification extends React.PureComponent {
                 className='kv--toaster-notification'
                 subtitle={subtitle}
                 timeout={notificationTimeout}
-                title={msgs.get('toaster.action.success')}
+                title={title}
             />
         )
     }

@@ -23,11 +23,25 @@ import msgs from '../../../../nls/kappnav.properties'
 import NavModal, { withForm } from './NavModal'
 import { General, Labels, Namespace, MatchLabels, MatchExpressions, ComponentKinds } from '../common/ModalFormItems'
 
+const LEARNMORE_URL ='https://github.com/kappnav/README/blob/master/how-to-create-applications.md#step-2-add-the-application-in-kubernetes-application-navigator'
+// adding menu_items with its label and tooltip message
 const MENU_ITEMS = [
-  'general',
-  'labels',
-  'selectors',
-  'componentKinds'
+  {
+    label: 'general' ,
+    tooltip: msgs.get('tooltip.application.general')
+  },
+  {
+    label: 'labels' ,
+    tooltip: msgs.get('tooltip.application.labels')
+  },
+  {
+    label: 'selectors' ,
+    tooltip: msgs.get('tooltip.application.selectors')
+  },
+  {
+    label: 'componentKinds' ,
+    tooltip: msgs.get('tooltip.application.componentKinds')
+  }
 ]
 
 const initialState = {
@@ -89,6 +103,8 @@ const ApplicationModal = ({ createAction, namespaces, form, onChange, onJsonChan
     menuItems={MENU_ITEMS}
     onChange={onChange}
     json={json}
+    kind ={initialState.form.kind}
+    learnmoreURL={LEARNMORE_URL}
     onJsonChange={onJsonChange}
     onToggle={onToggle}
     initialForm={initialState}

@@ -28,8 +28,12 @@ const translateWithId = (locale, id) => msgs.get(id)
 
 const transform = (field, handleChange, event) => {
   handleChange(field, event.target.value)
-  // to copying the content of the name field present in the General tab to the div present in the header of the modal
-  document.getElementById('modal-name').innerText = document.getElementById('name').value
+  //to copying the content of the name field present in the General tab to the textinput present in the header of the modal
+  var generalTabElement = document.getElementById('name');
+  var subHeaderNameElement = document.getElementById('modal-name');
+	if (generalTabElement && subHeaderNameElement) {
+    subHeaderNameElement.innerText = generalTabElement.value
+  }
 }
 
 const handleNumberFieldChange = (field, handleChange, event) => {

@@ -179,7 +179,7 @@ class NavModal extends React.PureComponent {
                   showIcon={true}>
                   <p dangerouslySetInnerHTML={{ __html: msgs.get('tooltip.jsonmode') }} />
                   <div className="bx--tooltip__footer">
-                    <a className="bx--link" target="_blank" href={this.props.learnmoreURL}>
+                    <a className="bx--link" target="_blank" rel="noopener noreferrer" href={this.props.learnmoreURL}>
                       {msgs.get('tooltip.learn.more')}
                     </a>
                   </div>
@@ -479,7 +479,7 @@ class NavModalForm extends React.PureComponent {
             showIcon={true}>
             <p dangerouslySetInnerHTML={{ __html: item.tooltip }} />
             <div className="bx--tooltip__footer">
-              <a className="bx--link" target="_blank" href={this.props.learnmoreURL}>
+              <a className="bx--link" target="_blank" rel="noopener noreferrer" href={this.props.learnmoreURL}>
                 {msgs.get('tooltip.learn.more')}
               </a>
             </div>

@@ -27,7 +27,8 @@ import {
   ModalBody,
   ModalFooter,
   Button,
-  Toggle
+  Toggle,
+  Tooltip
 } from 'carbon-components-react'
 import msgs from '../../../../nls/kappnav.properties'
 import {REQUEST_STATUS} from '../../../actions/constants'
@@ -101,7 +102,7 @@ class NavModal extends React.PureComponent {
     this.validateRequiredFields = lodash.throttle(this.validateRequiredFields.bind(this), 1000, {trailing: false})
     this.state = {
       open: false,
-      selectedMenuItem: this.props.menuItems[0],
+      selectedMenuItem: this.props.menuItems[0].label,
       jsonMode: false,
       parsingError: undefined,
       postStatus: undefined,
@@ -148,29 +149,50 @@ class NavModal extends React.PureComponent {
             open={open} 
             onClose={() => this.toggleModal(false)}>
 
-            <ModalHeader buttonOnClick={this.handleOpen.bind(this, false)} iconDescription={this.props.closeButtonLabel}>
-              <div>
-                <p className='bx--modal-header__label'>
-                  {this.props.modalLabel}
-                </p>
-                <p className='bx--modal-header__heading'>
-                  {this.props.modalHeading}
-                </p>
+          <ModalHeader buttonOnClick={this.handleOpen.bind(this, false)} iconDescription={this.props.closeButtonLabel}>
+            <div>
+              <p className='bx--modal-header__label'>
+                {this.props.modalLabel}
+              </p>
+              <p className='bx--modal-header__heading'>
+                {this.props.modalHeading}
+              </p>
+              {/* adding the subheader to the modal */}
+              <div className="sub-header">
+                <div>
+                  {msgs.get('formfield.header.' + this.props.kind) }
+                </div>
+                <div contentEditable = {false} data-text="enter name" id= "modal-name">
+                </div>
               </div>
-              {
-                !hideJsonEditor && <div className='toggle'>
-                    <p>
-                      {msgs.get('mode.json')}
-                    </p>
-                    <Toggle id='json-toggle' onToggle={this.handleToggle} labelA={msgs.get('off')} labelB={msgs.get('on')}/>
+            </div>
+            {
+              !hideJsonEditor && <div className='toggle'>
+                <p style={{ display: "inline" }}>
+                  {msgs.get('mode.json')}
+                </p>
+                {/* adding tooltip */}
+                <Tooltip
+                  iconDescription={msgs.get('formtip.tooltip')}
+                  triggerText=''
+                  direction='right'
+                  showIcon={true}>
+                  <p dangerouslySetInnerHTML={{ __html: msgs.get('tooltip.jsonmode') }} />
+                  <div className="bx--tooltip__footer">
+                    <a className="bx--link" target="_blank" rel="noopener noreferrer" href={this.props.learnmoreURL}>
+                      {msgs.get('tooltip.learn.more')}
+                    </a>
                   </div>
-              }
-            </ModalHeader>
+                </Tooltip>
+                <Toggle id='json-toggle' onToggle={this.handleToggle} labelA={msgs.get('off')} labelB={msgs.get('on')} />
+              </div>
+            }
+          </ModalHeader>
             <ModalBody>
               {
                 jsonMode
                   ? <NavModalJsonEditor postStatus={this.state.postStatus} postErrorMsg={this.state.postErrorMsg} parsingError={parsingError} json={json} onJsonChange={onJsonChange}/>
-                  : <NavModalForm postStatus={this.state.postStatus} postErrorMsg={this.state.postErrorMsg} parsingError={parsingError} menuItems={menuItems} selectedMenuItem={selectedMenuItem} onMenuClick={this.onMenuClick} childComponents={children} validationErrors={validationErrors} onChange={onChange}/>
+                  : <NavModalForm postStatus={this.state.postStatus} postErrorMsg={this.state.postErrorMsg} parsingError={parsingError} menuItems={menuItems} selectedMenuItem={selectedMenuItem} onMenuClick={this.onMenuClick} childComponents={children} validationErrors={validationErrors} onChange={onChange} learnmoreURL={this.props.learnmoreURL}/>
               }
             </ModalBody>
             <ModalFooter primaryButtonDisabled={this.props.primaryButtonDisabled} primaryButtonText={msgs.get(
@@ -258,7 +280,7 @@ class NavModal extends React.PureComponent {
     opened && onChange('namespace', selectedNamespace) // set namespace using selected value in namespace dropdown by default when modal opens
     opened
       ? this.setState({open: true})
-      : this.setState({open: false, selectedMenuItem: menuItems[0], postStatus:undefined, postErrorMsg:undefined})
+      : this.setState({open: false, selectedMenuItem: menuItems[0].label, postStatus:undefined, postErrorMsg:undefined})
 
     if (!opened) {
       this.handleReset()
@@ -365,8 +387,8 @@ class NavModal extends React.PureComponent {
     errorClone.form = hasErrors
     if (hasErrors && onSubmit && this.props.menuItems) {
       for (let i = 0; i < this.props.menuItems.length; i++) {
-        if (errors[this.props.menuItems[i]]) {
-          this.setState({validationErrors: errorClone, selectedMenuItem: this.props.menuItems[i]})
+        if (errors[this.props.menuItems[i].label]) {
+          this.setState({validationErrors: errorClone, selectedMenuItem: this.props.menuItems[i].label})
           break
         }
       }
@@ -426,7 +448,7 @@ class NavModalForm extends React.PureComponent {
               iconDescription={msgs.get('svg.description.error')}
               subtitle={postStatus === REQUEST_STATUS.ERROR ? postErrorMsg : msgs.get('error.parse.description')} />}
           {(() => {
-            const index = menuItems.indexOf(selectedMenuItem)
+            const index = menuItems.findIndex(menuItem => menuItem.label === selectedMenuItem);
             if (index >= 0) {
               return React.cloneElement(
                 React.Children.toArray(childComponents)[index], {
@@ -444,9 +466,25 @@ class NavModalForm extends React.PureComponent {
   getMenuItems() {
     const { menuItems, onMenuClick, validationErrors } = this.props
     return menuItems.map((item, index) =>
-      <li key={index} className={this.isActive(item)} id={item}>
-        <a href="#" onClick={onMenuClick.bind(null, item)} className='menu-item' role='menuitem'>{msgs.get(`modal.nav.${item}`)}</a>
-        {validationErrors.form && validationErrors[item] && !this.isActive(item) && <Icon className='modal-tab-error' name='icon--error--glyph' description={msgs.get('svg.description.error')} />}
+      <li key={index} className={this.isActive(item.label)} id={item.label}>
+        <a href="#" onClick={onMenuClick.bind(null, item.label)} className='menu-item' role='menuitem'>{msgs.get(`modal.nav.${item.label}`)}</a>
+        {validationErrors.form && validationErrors[item.label] && !this.isActive(item.label) && <Icon className='modal-tab-error' name='icon--error--glyph' description={msgs.get('svg.description.error')} />}
+        {/* adding tooltip */}
+        <div className ="tooltip-margin">
+          <Tooltip
+            iconDescription={msgs.get('formtip.tooltip')}
+            triggerClassName="tooltip-active-hover"
+            triggerText=''
+            direction='right'
+            showIcon={true}>
+            <p dangerouslySetInnerHTML={{ __html: item.tooltip }} />
+            <div className="bx--tooltip__footer">
+              <a className="bx--link" target="_blank" rel="noopener noreferrer" href={this.props.learnmoreURL}>
+                {msgs.get('tooltip.learn.more')}
+              </a>
+            </div>
+          </Tooltip>
+        </div>
       </li>
     )
   }

@@ -243,3 +243,37 @@
 svg.launch-icon {
   margin-left: 197px;
 }
+
+.tooltip-margin{
+  margin-right: 25px;
+}
+
+.modal-navigation-bar ul li:hover .tooltip-active-hover svg path{
+  fill:white
+}
+
+.modal-navigation-bar ul li.active .tooltip-active-hover svg path{
+  fill:white
+}
+
+.toggle .bx--form-item{
+  margin-bottom: 0px;
+}
+
+.sub-header div{
+  float: left;
+  height: 18px;
+  color: #5A6872;	
+  font-family: "IBM Plex Sans";	
+  font-size: 12px;
+  line-height: 18px;
+}
+
+#modal-name{
+  font-style: italic;
+  padding-left: 5px;
+}
+
+[contentEditable=false]:empty:not(:focus):before{
+  content:attr(data-text)
+}

@@ -363,9 +363,6 @@ export function refreshApplication(appname, namespace, appNavConfigData, applica
 }
 
 export function refreshApplicationComponents(appname, namespace, appNavConfigData, applicationResourceData) {
-  const cellResourceData = getResourceData(RESOURCE_TYPES.WASTRADITIONALAPP)
-  const collectiveResourceData = getResourceData(RESOURCE_TYPES.LIBERTYAPP)
-
   return fetch('/kappnav/components/' + encodeURIComponent(appname)+'?namespace='+encodeURIComponent(namespace))
   .then(response => {
     if (!response.ok) {
@@ -428,13 +425,7 @@ export function refreshApplicationComponents(appname, namespace, appNavConfigDat
           itemObj.name = <a href="#" onClick={() => resourceType == "application" ? displayApp(metadata.name, metadata.namespace) : displayDetail(appname, resourceType, metadata.name, metadata.namespace, applicationNamespace)}>
             {metadata.name}
           </a>;
-          if(resourceType.includes(msgs.get('resourceType.was'))){
-            itemObj.menuAction = getOverflowMenu(component, actionMap, cellResourceData, appname, namespace);
-          } else if(resourceType.includes(msgs.get('resourceType.liberty'))){
-            itemObj.menuAction = getOverflowMenu(component, actionMap, collectiveResourceData, appname, namespace);
-          } else {
-            itemObj.menuAction = getOverflowMenu(component, actionMap, applicationResourceData, appname, namespace);
-          }
+            itemObj.menuAction = getOverflowMenu(component, actionMap, getResourceData(RESOURCE_TYPES[resourceType.replace(/-/g, "").toUpperCase()]), appname, namespace)
         } else {
           var urlActions = actionMap && actionMap["url-actions"];
           var urlActions = urlActions && urlActions.filter(function (action) {

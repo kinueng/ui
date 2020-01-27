@@ -15,12 +15,12 @@
  * limitations under the License.
  *
  *****************************************************************/
- 
-module.exports = function(app){
-  
-    require('./public')(app);
-  
-    require('./health')(app);
 
-    require('./extensions')(app);
-};  
+var express = require('express');
+
+module.exports = function(app) {
+  var router = express.Router();
+
+  app.use("/extensions", router);
+}
+

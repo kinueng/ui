@@ -17,17 +17,4 @@
  *****************************************************************/
 
 export const EXTENDED_RESOURCE_TYPES = {	
-    APPLICATION: { name: 'APPLICATION' },
-    JOB: { name: 'JOB' }
-}
-
-export const EXTENDED_CONFIG_CONSTANTS = {	
-    ACTION_MAP: 'action-map',
-    CMD_ACTIONS: 'cmd-actions',
-    INPUTS: 'inputs',
-    MENU_ITEM: 'menu-item',
-    REQUIRES_INPUT: 'requires-input',
-    URL_ACTIONS: 'url-actions',
-    ENABLEMENT_LABEL: 'enablement-label',
-    ENABLEMENT_ANNOTATION: 'enablement-annotation'
 }

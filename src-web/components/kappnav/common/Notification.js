@@ -67,7 +67,7 @@ export default class Notification extends React.PureComponent {
                 kind="info"
                 notificationType="toast"
                 role="alert"
-                className='toaster-style'
+                className='kv--toaster-notification'
                 subtitle={subtitle}
                 timeout={notificationTimeout}
                 title={msgs.get('toaster.action.success')}

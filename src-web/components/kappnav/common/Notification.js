@@ -58,6 +58,8 @@ export default class Notification extends React.PureComponent {
         const { subtitle, handleClose } = this.state
         return ( 
             <ToastNotification
+                // Using key attribute as a workaround for problem: https://github.com/carbon-design-system/carbon/issues/4211
+                key={'toast-notification-' + new Date().getTime()}
                 caption={_caption}
                 hideCloseButton={false}
                 iconDescription={msgs.get('modal.button.close.the.modal')}
@@ -65,7 +67,7 @@ export default class Notification extends React.PureComponent {
                 kind="info"
                 notificationType="toast"
                 role="alert"
-                className='toaster-style'
+                className='kv--toaster-notification'
                 subtitle={subtitle}
                 timeout={notificationTimeout}
                 title={msgs.get('toaster.action.success')}

@@ -71,29 +71,6 @@ const General = ({ form, onChange, children, error, labelName, labelContent }, c
   </div>
 }
 
-const Label = ({ id, item, onModify, onRemove }, context) =>
-  <div className='field-row'>
-    <FieldWrapper labelText={msgs.get('formfield.label')} content={msgs.get('formtip.common.label.label')}>
-      <TextInput
-        id={`labels-name-${id}`}
-        value={item.name}
-        hideLabel
-        className='bx--text-input-override'
-        labelText={msgs.get('formfield.label') + ' ' + msgs.get('formtip.common.label.label')}
-        onChange={onModify.bind(null, 'name')} />
-    </FieldWrapper>
-    <FieldWrapper labelText={msgs.get('formfield.value')} content={msgs.get('formtip.common.label.value')}>
-      <TextInput
-        id={`labels-value-${id}`}
-        value={item.value}
-        hideLabel
-        className='bx--text-input-override'
-        labelText={msgs.get('formfield.value') + ' ' + msgs.get('formtip.common.label.value')}
-        onChange={onModify.bind(null, 'value')} />
-    </FieldWrapper>
-    <RemoveIcon id={`labels-remove-${id}`} onRemove={onRemove} />
-  </div>
-
 const MatchLabel = ({ id, item, onModify, onRemove }, context) =>
   <div className='field-row'>
     <FieldWrapper labelText={msgs.get('formfield.label')} content={msgs.get('formtip.common.matchLabel')}>
@@ -198,8 +175,7 @@ const MatchExpressions = withMultiple(MatchExpression, { key: '', operator: '', 
 
 
 const Namespace = NamespaceSelect
-const Labels = withMultiple(Label, { name: '', value: '' })
 const MatchLabels = withMultiple(MatchLabel, { name: '', value: '' })
 const ComponentKinds = withMultiple(Kind, { group: '', kind: '' })
 
-export { General, Labels, MatchLabels, transform, RemoveIcon, Namespace, NumberField, MatchExpressions, ComponentKinds }
+export { General, MatchLabels, transform, RemoveIcon, Namespace, NumberField, MatchExpressions, ComponentKinds }

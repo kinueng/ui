@@ -15,6 +15,37 @@
  * limitations under the License.
  *
  *****************************************************************/
+.bx--toast-notification {
+    &.kv--toaster-notification,
+    &.kv--toaster-notification:first-child {
+        min-width: 30rem;
+        margin: 3rem 0 0 0;
+        right: 0;
+        position: absolute;
+        z-index: 10;
+    }
+}
 
-export const EXTENDED_RESOURCE_TYPES = {	
+.bx--toast-notification__title {
+    font-size: 1.1rem;
+}
+.bx--toast-notification__caption {
+    font-size: 1rem;
+}
+
+.toast {
+    position: fixed;
+    top: 8.5%;
+    right: -100%;
+    z-index: 6000;
+    transition: right 1s ease-in;
+    
+    &.bx--toast-notification {
+        margin: 0;
+    }
+    
+    &.toast-open {
+        right: 0;
+        transition: right 1s ease-out;
+    }
 }

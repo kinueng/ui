@@ -21,7 +21,7 @@
 import React from 'react'
 import msgs from '../../../../nls/kappnav.properties'
 import NavModal, { withForm } from './NavModal'
-import { General, Labels, Namespace, MatchLabels, MatchExpressions, ComponentKinds } from '../common/ModalFormItems'
+import { General, Namespace, MatchLabels, MatchExpressions, ComponentKinds } from '../common/ModalFormItems'
 
 const LEARNMORE_URL ='https://github.com/kappnav/README/blob/master/how-to-create-applications.md#step-2-add-the-application-in-kubernetes-application-navigator'
 // adding menu_items with its label and tooltip message
@@ -29,10 +29,6 @@ const MENU_ITEMS = [
   {
     label: 'general' ,
     tooltip: msgs.get('tooltip.application.general')
-  },
-  {
-    label: 'labels' ,
-    tooltip: msgs.get('tooltip.application.labels')
   },
   {
     label: 'selectors' ,
@@ -50,7 +46,6 @@ const initialState = {
     namespace: 'default',
     kind: 'Application',
     apiVersion: 'app.k8s.io/v1beta1',
-    labels: [{ name: '', value: '' }],
     matchLabels: [{ name: '', value: '' }],
     matchExpressions: [{key: '', operator: '', values: ''}],
     componentKinds: [{group:'', kind:''}]
@@ -62,7 +57,6 @@ const applicationMapping = {
   apiVersion: 'apiVersion',
   name: 'metadata.name',
   namespace: 'metadata.namespace',
-  labels: 'metadata.labels',
   matchLabels: 'spec.selector.matchLabels',
   matchExpressions: 'spec.selector.matchExpressions',
   componentKinds: 'spec.componentKinds'
@@ -113,10 +107,6 @@ const ApplicationModal = ({ createAction, namespaces, form, onChange, onJsonChan
     <General form={form}>
       <Namespace form={form} onChange={onChange} namespaces={namespaces} />
     </General>
-    <Labels
-      type='labels'
-      items={form.labels}
-      addLabel={msgs.get('formaction.addLabel')} />
     <Selector form={form} />
     <KindSection form={form} />
   </NavModal>

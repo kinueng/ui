@@ -22,9 +22,10 @@ import React from 'react'
 import msgs from '../../nls/kappnav.properties'
 import { getLabelsToString, getAge } from '../actions/common'
 import { updateSecondaryHeader, getOverflowMenu, performUrlAction, buildStatusHtml, getStatus} from '../actions/common'
-import { CONTEXT_PATH, SUBKIND, PLATFORM_KIND, PLATFORM_NAME } from '../actions/constants'
+import { CONTEXT_PATH, SUBKIND, PLATFORM_KIND, PLATFORM_NAME, RESOURCE_TYPES } from '../actions/constants'
 import {SEARCH_HEADER_TYPES} from '../components/kappnav/common/ResourceTable.js'
 import {getLink, getExtendedResourceTypes} from '../components/extensions/ApplicationExtension'
+import getResourceData from './index'
 
 export default {
   resourceType: 'application',
@@ -424,7 +425,7 @@ export function refreshApplicationComponents(appname, namespace, appNavConfigDat
           itemObj.name = <a href="#" onClick={() => resourceType == "application" ? displayApp(metadata.name, metadata.namespace) : displayDetail(appname, resourceType, metadata.name, metadata.namespace, applicationNamespace)}>
             {metadata.name}
           </a>;
-          itemObj.menuAction = getOverflowMenu(component, actionMap, applicationResourceData, appname, namespace);
+            itemObj.menuAction = getOverflowMenu(component, actionMap, getResourceData(RESOURCE_TYPES[resourceType.replace(/-/g, "").toUpperCase()]), appname, namespace)
         } else {
           var urlActions = actionMap && actionMap["url-actions"];
           var urlActions = urlActions && urlActions.filter(function (action) {

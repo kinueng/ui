@@ -43,28 +43,29 @@ export default class Notification extends React.PureComponent {
         super(props)
         const { type, result } = this.props
 
-        let _title = this._determineTitleBasedOnType(type)
+        const { title, subtitleMsgKey } = this._determineTitleAndSubtitleBasedOnType(type)
         
-        const _subtitle =
+        const subtitle =
             <div>
-            <h3> {msgs.get('toaster.action.subtitle', [result.metadata.annotations['kappnav-job-action-text'], result.metadata.labels['kappnav-job-component-name']])}</h3>
+            <h3> {msgs.get(subtitleMsgKey, [result.metadata.annotations['kappnav-job-action-text'], result.metadata.labels['kappnav-job-component-name']])}</h3>
             <br />
             </div>
 
         this.state = {
-            title: _title,
-            subtitle : _subtitle,
+            title: title,
+            subtitle : subtitle,
             handleClose: this.props.handleClose
         }
     }
 
-    _determineTitleBasedOnType(notification_type) {
+    _determineTitleAndSubtitleBasedOnType(notification_type) {
         if(notification_type === 'initiated') {
-            return msgs.get('toaster.action.success')
+            return {title: msgs.get('toaster.action.success'), subtitleMsgKey: 'toaster.action.subtitle'}
         } else if(notification_type === 'completed') {
-            return msgs.get('toaster.action.completed.title')
+            return {title: msgs.get('toaster.action.completed.title'), subtitleMsgKey: 'toaster.action.completed.subtitle'}
         } else {
-            return ''
+            // Fail fast if type is not provided
+            return undefined
         }
     }
 

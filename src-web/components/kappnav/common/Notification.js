@@ -32,7 +32,7 @@ const _caption =
         <a href={location.protocol + '//' + location.host + CONTEXT_PATH + '/jobs'}>
             <Icon className="launch-icon"
                 name='launch'
-                description={msgs.get('toaster.action.caption')} 
+                description={msgs.get('toaster.action.icon.label')} 
             />
         </a>
     </div>

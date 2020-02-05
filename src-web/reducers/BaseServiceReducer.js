@@ -34,7 +34,7 @@ const _selectedNamespace = getSelectedNamespace()
 
 const initState = {
     namespaces: [],
-    secrets: [],
+    secrets: undefined,
     appNavConfigMap: {},
     selectedNamespace: _selectedNamespace
 }

@@ -18,7 +18,7 @@
 
 import 'carbon-components/scss/globals/scss/styles.scss';
 import React from 'react';
-import { PaginationV2, DataTable, Icon, MultiSelect, Tooltip } from 'carbon-components-react';
+import { PaginationV2, DataTable, Icon, MultiSelect, Tooltip, Button } from 'carbon-components-react';
 import { PAGE_SIZES } from '../../../actions/constants';
 import msgs from '../../../../nls/kappnav.properties';
 
@@ -355,6 +355,19 @@ class ResourceTable extends React.Component {
 		return c;
 	}
 
+	//Renders action buttons that will go under a table with selectable rows
+	//button object contains key:value pairs specifying button properties(ex: kind, text, etc)
+	renderButton(button, selectedRows) {
+		let b;
+		if (button.href) { 
+			b = <Button small kind={button.kind} id={button.buttonText} href={button.href}>{button.buttonText}</Button>
+		} 
+		if (button.action) { //onClick method call passes selectedRows to perform 'action' on/with those values
+			b = <Button small kind={button.kind} id={button.buttonText} onClick={() => {button.action(selectedRows)}}>{button.buttonText}</Button>
+		}
+		return b;
+	}
+
 	render() {
 		const {
 			title,
@@ -375,7 +388,8 @@ class ResourceTable extends React.Component {
 			createNewModal,
 			viewType,
 			modalType,
-			selectableRows
+			selectableRows, //when set to 'true' the table rows are selectable
+			tableButtons //array of "button" objects containing key:value pairs of button properties
 		} = this.props
 
 		let c;
@@ -549,6 +563,17 @@ class ResourceTable extends React.Component {
 								pageRangeText={(current, total) => msgs.get('pagination.pageRange', [current, total])}
 								itemRangeText={(min, max, total) => `${msgs.get('pagination.itemRange', [min, max])} ${msgs.get('pagination.itemRangeDescription', [total])}`}
 							/>
+							{(() => {
+								if ((tableButtons !== undefined) && (selectableRows === true)) { //only display table buttons below a table with selectable rows
+									return (
+										<div className="buttonContainer">
+											{tableButtons.map(button => (
+												this.renderButton(button, selectedRows)
+											))}
+										</div>
+									)
+								}
+							})()}
 						</div>
 					)}
 				/>

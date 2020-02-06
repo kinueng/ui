@@ -26,6 +26,7 @@ import ComponentView from './kappnav/ComponentView.jsx';
 import JobView from './kappnav/JobView.jsx';
 import { RESOURCE_TYPES } from '../actions/constants';
 import {getExtendedRoutes} from './extensions/RouteExtensions'
+import {getExtendedComponentButtons} from './extensions/ComponentListExtensions'
 import NotificationHandler from './kappnav/common/NotificationHandler'
 
 class ViewContainer extends Component {
@@ -65,7 +66,9 @@ class ViewContainer extends Component {
                                 component={(props) => 
                                     <ComponentView {...props}
                                                    title={msgs.get('page.applicationView.title')}
-                                                   resourceType={RESOURCE_TYPES.APPLICATION}/>}/>
+                                                   resourceType={RESOURCE_TYPES.APPLICATION}
+                                                   customComponentButtons={getExtendedComponentButtons()}/>}
+                                                   />
 
                             {/* getting all extended routes if any */}
                             {getExtendedRoutes().length > 0 ? getExtendedRoutes().map((route) => {

@@ -32,7 +32,7 @@ const _caption =
         <a href={location.protocol + '//' + location.host + CONTEXT_PATH + '/jobs'}>
             <Icon className="launch-icon"
                 name='launch'
-                description={msgs.get('toaster.action.caption')} 
+                description={msgs.get('toaster.action.icon.label')} 
             />
         </a>
     </div>
@@ -41,21 +41,36 @@ export default class Notification extends React.PureComponent {
 
     constructor(props) {
         super(props)
-        const result = this.props.result
-        const _subtitle =
+        const { type, result } = this.props
+
+        const { title, subtitleMsgKey } = this._determineTitleAndSubtitleBasedOnType(type)
+        
+        const subtitle =
             <div>
-            <h3> {msgs.get('toaster.action.subtitle', [result.metadata.annotations['kappnav-job-action-text'], result.metadata.labels['kappnav-job-component-name']])}</h3>
+            <h3> {msgs.get(subtitleMsgKey, [result.metadata.annotations['kappnav-job-action-text'], result.metadata.labels['kappnav-job-component-name']])}</h3>
             <br />
             </div>
-        
+
         this.state = {
-            subtitle : _subtitle,
+            title: title,
+            subtitle : subtitle,
             handleClose: this.props.handleClose
         }
     }
 
+    _determineTitleAndSubtitleBasedOnType(notification_type) {
+        if(notification_type === 'initiated') {
+            return {title: msgs.get('toaster.action.success'), subtitleMsgKey: 'toaster.action.subtitle'}
+        } else if(notification_type === 'completed') {
+            return {title: msgs.get('toaster.action.completed.title'), subtitleMsgKey: 'toaster.action.completed.subtitle'}
+        } else {
+            // Fail fast if type is not provided
+            return undefined
+        }
+    }
+
     render() {
-        const { subtitle, handleClose } = this.state
+        const { title, subtitle, handleClose } = this.state
         return ( 
             <ToastNotification
                 // Using key attribute as a workaround for problem: https://github.com/carbon-design-system/carbon/issues/4211
@@ -70,7 +85,7 @@ export default class Notification extends React.PureComponent {
                 className='kv--toaster-notification'
                 subtitle={subtitle}
                 timeout={notificationTimeout}
-                title={msgs.get('toaster.action.success')}
+                title={title}
             />
         )
     }

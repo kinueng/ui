@@ -471,6 +471,35 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
   }
 
   // ***************
+  // Custom Actions
+
+  var kind = componentData && componentData.kind
+  var namespace = componentData && componentData.metadata && componentData.metadata.namespace
+  var name = componentData && componentData.metadata && componentData.metadata.name
+  var componentBodyToRemove =[{
+    "app":name,
+    "namespace": namespace,
+    "kind":kind
+  }]
+  
+
+  var hasCustomActions = staticResourceData && staticResourceData.customActions && staticResourceData.customActions.length>0
+  let customActions = []
+  if(hasCustomActions) {
+    customActions = 
+      staticResourceData.customActions.map((customAction, staticindex) => {
+        if(customAction.show(applicationNamespace) === true){
+          return <OverflowMenuItem key={itemId + customAction.label}
+          primaryFocus={staticindex === 0}
+          itemText={msgs.get('table.customActions.'+customAction.label)}
+          onClick={customAction.action.bind(this, applicationName, applicationNamespace, componentBodyToRemove)}
+          onFocus={(e) => {e.target.title = msgs.get('table.customActions.'+customAction.label)}}
+          onMouseEnter={(e) => {e.target.title = msgs.get('table.customActions.'+customAction.label)}} />
+        }
+      })
+  }
+
+  // ***************
   // URL Actions
 
   var urlActions = actionMap && actionMap[CONFIG_CONSTANTS.URL_ACTIONS]
@@ -531,7 +560,7 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
   }
 
   // The arrays need to be .concat() in a specific order: static, url, cmd
-  let allEnabledActions = staticActions.concat(urlActions).concat(cmdActions)
+  let allEnabledActions = staticActions.concat(customActions).concat(urlActions).concat(cmdActions)
   // Use filter to remove undefined/null lists that were added by .concat()
   allEnabledActions = allEnabledActions.filter(n => n)
   if(allEnabledActions.length > 0) {

@@ -26,6 +26,7 @@ import ComponentView from './kappnav/ComponentView.jsx';
 import JobView from './kappnav/JobView.jsx';
 import { RESOURCE_TYPES } from '../actions/constants';
 import {getExtendedRoutes} from './extensions/RouteExtensions'
+import NotificationHandler from './kappnav/common/NotificationHandler'
 
 class ViewContainer extends Component {
 
@@ -34,7 +35,7 @@ class ViewContainer extends Component {
             this.props.fetchLoadingNamespaces();
         }
 
-        if (this.props.baseInfo.secrets.length === 0) {
+        if (this.props.baseInfo.secrets === undefined) {
             this.props.fetchLoadingSecrets();
         }
 
@@ -44,15 +45,16 @@ class ViewContainer extends Component {
     }
 
     render() {
-        if (Object.keys(this.props.baseInfo.appNavConfigMap).length === 0){
+        if (Object.keys(this.props.baseInfo.appNavConfigMap).length === 0 || this.props.baseInfo.secrets === undefined || this.props.baseInfo.namespaces.length === 0){
             return (<div></div>)
         }
         else{
         return (
-            <div >
-                <main >
+            <div>
+                <NotificationHandler />
+                <main>
                     <Router>
-                        <Switch >
+                        <Switch>
                             <Route exact path="/kappnav-ui/" component={AppView} />
 
                             <Route exact path="/kappnav-ui/applications" component={AppView} />

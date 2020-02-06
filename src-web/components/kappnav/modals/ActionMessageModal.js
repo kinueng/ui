@@ -81,7 +81,7 @@ class ActionMessageModal extends React.PureComponent {
       //  Toaster component to a different React class Component.
       if (open) {
         return (
-          <Notification result={result} handleClose={handleClose}/>
+          <Notification type='initiated' result={result} handleClose={handleClose}/>
         )
       }
       else {

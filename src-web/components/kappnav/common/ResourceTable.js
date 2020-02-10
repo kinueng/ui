@@ -18,7 +18,7 @@
 
 import 'carbon-components/scss/globals/scss/styles.scss';
 import React from 'react';
-import { PaginationV2, DataTable, Icon, MultiSelect, Tooltip } from 'carbon-components-react';
+import { PaginationV2, DataTable, Icon, MultiSelect, Tooltip, Button } from 'carbon-components-react';
 import { PAGE_SIZES } from '../../../actions/constants';
 import msgs from '../../../../nls/kappnav.properties';
 
@@ -31,10 +31,11 @@ const {
 	TableRow,
 	TableBody,
 	TableCell,
-	TableHeader,
 	TableExpandHeader,
 	TableExpandRow,
 	TableExpandedRow,
+	TableSelectAll,
+	TableSelectRow,
 	TableToolbar
 } = DataTable;
 
@@ -354,6 +355,19 @@ class ResourceTable extends React.Component {
 		return c;
 	}
 
+	//Renders action buttons that will go under a table with selectable rows
+	//button object contains key:value pairs specifying button properties(ex: kind, text, etc)
+	renderButton(button, selectedRows) {
+		let b;
+		if (button.href) { 
+			b = <Button small kind={button.kind} id={button.buttonText} href={button.href}>{button.buttonText}</Button>
+		} 
+		if (button.action) { //onClick method call passes selectedRows to perform 'action' on/with those values
+			b = <Button small kind={button.kind} id={button.buttonText} onClick={() => {button.action(selectedRows)}}>{button.buttonText}</Button>
+		}
+		return b;
+	}
+
 	render() {
 		const {
 			title,
@@ -373,7 +387,9 @@ class ResourceTable extends React.Component {
 			existingSecrets,
 			createNewModal,
 			viewType,
-			modalType
+			modalType,
+			selectableRows, //when set to 'true' the table rows are selectable
+			tableButtons //array of "button" objects containing key:value pairs of button properties
 		} = this.props
 
 		let c;
@@ -383,7 +399,7 @@ class ResourceTable extends React.Component {
 					rows={rows}
 					headers={headers}
 					translateWithId={translateWithId.bind(null, document.documentElement.lang)}
-					render={({ rows, headers, getHeaderProps, getRowProps }) => (
+					render={({ rows, headers, getRowProps, getSelectionProps, selectedRows }) => (
 						<div>
 							<TableContainer title={title}>
 								<TableToolbar>
@@ -406,22 +422,14 @@ class ResourceTable extends React.Component {
 										}
 									})()}
 								</TableToolbar>
-								<Table>
-									<TableHead>
-										<TableRow>
-											<TableExpandHeader />
-											{(() => {
-												return headers.map(header => {
-													if (header.key === 'menuAction') {
-														return (
-															<DataTable.TableHeader key={header.key}>
-																<span className='bx--table-header-label'>{header.header}</span>
-															</DataTable.TableHeader>
-														)
-													} else if (header.key === 'title' || header.key === 'description' || header.key === 'section_data' || header.key === 'enablement_label' || header.key === 'section_map') {
-														return c;
-													} else {
-														return (
+								{(() => {
+									if (selectableRows) { //table rows will have a checkbox to allow multi-selection
+										return (
+											<Table zebra={false}>
+												<TableHead>
+													<TableRow>
+														<TableSelectAll {...getSelectionProps()}/>
+														{headers.map(header => (
 															<th scope={'col'} key={header.key}>
 																<button
 																	title={msgs.get(`svg.description.${!sortColumn || sortDirection === 'desc' ? 'asc' : 'desc'}`)}
@@ -429,60 +437,110 @@ class ResourceTable extends React.Component {
 																	className={`bx--table-sort-v2${sortDirection === 'asc' ? ' bx--table-sort-v2--ascending' : ''}${sortColumn === header.key ? ' bx--table-sort-v2--active' : ''}`}
 																	data-key={header.key}
 																>
-																	<span className='bx--table-header-label'>{header.header}</span>
+																<span className='bx--table-header-label'>{header.header}</span>
 																	<Icon
 																		className='bx--table-sort-v2__icon'
 																		name='caret--down'
 																		description={msgs.get(`svg.description.${!sortColumn || sortDirection === 'desc' ? 'asc' : 'desc'}`)} />
 																</button>
 															</th>
-														)
-													}
-												})
-											})()}
-
-										</TableRow>
-									</TableHead>
-									<TableBody>
-									{(() => {
-										//When the resource table is empty, add a new row with a message that encourages users to add a new resource 
-										//viewType is undefined when in the Command Actions view
-										//viewType is the message key for the resource type: applications, WAS ND cells, or Liberty collectives
-										//modal is the message key for the title of the add modal that should pop up (ex: "Add Application")
-										if (rows.length === 0 && viewType) {
-											var resource = msgs.get(viewType);
-											var modal = msgs.get(modalType);
-											var msg = msgs.get('table.empty', [resource]);
-
-											return (
-												<TableRow><TableCell colSpan={headers.length + 1}>{msg} <span className='emptyTableResourceLink' id='navModalLink'>{modal}</span>.</TableCell></TableRow>
-											)
-										} else {
-											return(
-												rows.map(row => (
-												<React.Fragment key={row.id}>
-													<TableExpandRow {...getRowProps({ row })} ariaLabel={row.id} expandIconDescription={msgs.get('expand')} onClick={() => { this.toggleExpandCollapse(row.id) }}>
-														{row.cells.map(cell => (
-															this.renderCell(row, cell)
 														))}
-													</TableExpandRow>
-													{row.isExpanded && (
-														<TableExpandedRow>
-															<TableCell className="expandedRow" colSpan={headers.length + 1}>
-																<div> {
-																	this.renderCellExpanded(row)
-																}</div>
-															</TableCell>
+													</TableRow>
+												</TableHead>
+										<TableBody>
+                                            {rows.map(row => (
+												<TableRow key={row.id}>
+													<TableSelectRow {...getSelectionProps({ row })} ariaLabel={row.id + '-checkbox'}/>
+													{row.cells.map(cell => (
+														this.renderCell(row, cell)
+													))}
+												</TableRow>  
+                                            ))}
+                                        </TableBody>
+										</Table>
+										)
+									} else {
+										return (
+											<Table>
+											<TableHead>
+												<TableRow>
+													<TableExpandHeader />
+													{(() => {
+														return headers.map(header => {
+															if (header.key === 'menuAction') {
+																return (
+																	<DataTable.TableHeader key={header.key}>
+																		<span className='bx--table-header-label'>{header.header}</span>
+																	</DataTable.TableHeader>
+																)
+															} else if (header.key === 'title' || header.key === 'description' || header.key === 'section_data' || header.key === 'enablement_label' || header.key === 'section_map') {
+																return c;
+															} else {
+																return (
+																	<th scope={'col'} key={header.key}>
+																		<button
+																			title={msgs.get(`svg.description.${!sortColumn || sortDirection === 'desc' ? 'asc' : 'desc'}`)}
+																			onClick={handleSort}
+																			className={`bx--table-sort-v2${sortDirection === 'asc' ? ' bx--table-sort-v2--ascending' : ''}${sortColumn === header.key ? ' bx--table-sort-v2--active' : ''}`}
+																			data-key={header.key}
+																		>
+																			<span className='bx--table-header-label'>{header.header}</span>
+																			<Icon
+																				className='bx--table-sort-v2__icon'
+																				name='caret--down'
+																				description={msgs.get(`svg.description.${!sortColumn || sortDirection === 'desc' ? 'asc' : 'desc'}`)} />
+																		</button>
+																	</th>
+																)
+															}
+														})
+													})()}
+		
+												</TableRow>
+											</TableHead>
+											<TableBody>
+											{(() => {
+												//When the resource table is empty, add a new row with a message that encourages users to add a new resource 
+												//viewType is undefined when in the Command Actions view
+												//viewType is the message key for the resource type: applications, WAS ND cells, or Liberty collectives
+												//modal is the message key for the title of the add modal that should pop up (ex: "Add Application")
+												if (rows.length === 0 && viewType) {
+													var resource = msgs.get(viewType);
+													var modal = msgs.get(modalType);
+													var msg = msgs.get('table.empty', [resource]);
+		
+													return (
+														<TableRow><TableCell colSpan={headers.length + 1}>{msg} <span className='emptyTableResourceLink' id='navModalLink'>{modal}</span>.</TableCell></TableRow>
+													)
+												} else {
+													return(
+														rows.map(row => (
+														<React.Fragment key={row.id}>
+															<TableExpandRow {...getRowProps({ row })} ariaLabel={row.id} expandIconDescription={msgs.get('expand')} onClick={() => { this.toggleExpandCollapse(row.id) }}>
+																{row.cells.map(cell => (
+																	this.renderCell(row, cell)
+																))}
+															</TableExpandRow>
+															{row.isExpanded && (
+																<TableExpandedRow>
+																	<TableCell className="expandedRow" colSpan={headers.length + 1}>
+																		<div> {
+																			this.renderCellExpanded(row)
+																		}</div>
+																	</TableCell>
+																</TableExpandedRow>
+															)}
+														</React.Fragment>
+														))
+													)
+												}
+											})()}
+											</TableBody>
+										</Table>
+										)
+									}
 
-														</TableExpandedRow>
-													)}
-												</React.Fragment>
-												))
-											)
-										}
-									})()}
-									</TableBody>
-								</Table>
+								})()}
 							</TableContainer>
 							<PaginationV2
 								key='pagination'
@@ -497,6 +555,17 @@ class ResourceTable extends React.Component {
 								pageRangeText={(current, total) => msgs.get('pagination.pageRange', [current, total])}
 								itemRangeText={(min, max, total) => `${msgs.get('pagination.itemRange', [min, max])} ${msgs.get('pagination.itemRangeDescription', [total])}`}
 							/>
+							{(() => {
+								if ((tableButtons !== undefined) && (selectableRows === true)) { //only display table buttons below a table with selectable rows
+									return (
+										<div className="buttonContainer">
+											{tableButtons.map(button => (
+												this.renderButton(button, selectedRows)
+											))}
+										</div>
+									)
+								}
+							})()}
 						</div>
 					)}
 				/>

@@ -429,30 +429,22 @@ class ResourceTable extends React.Component {
 												<TableHead>
 													<TableRow>
 														<TableSelectAll {...getSelectionProps()}/>
-															{(() => {
-																return headers.map(header => {
-																	if (header.key === 'title' || header.key === 'description' || header.key === 'section_data' || header.key === 'enablement_label' || header.key === 'section_map') { //TODO: may not need this check with the new API
-																		return c; 
-																	} else {
-																		return (
-																			<th scope={'col'} key={header.key}>
-																				<button
-																					title={msgs.get(`svg.description.${!sortColumn || sortDirection === 'desc' ? 'asc' : 'desc'}`)}
-																					onClick={handleSort}
-																					className={`bx--table-sort-v2${sortDirection === 'asc' ? ' bx--table-sort-v2--ascending' : ''}${sortColumn === header.key ? ' bx--table-sort-v2--active' : ''}`}
-																					data-key={header.key}
-																				>
-																				<span className='bx--table-header-label'>{header.header}</span>
-																					<Icon
-																						className='bx--table-sort-v2__icon'
-																						name='caret--down'
-																						description={msgs.get(`svg.description.${!sortColumn || sortDirection === 'desc' ? 'asc' : 'desc'}`)} />
-																				</button>
-																			</th>
-																		)
-																	}
-																})
-															})()}
+														{headers.map(header => (
+															<th scope={'col'} key={header.key}>
+																<button
+																	title={msgs.get(`svg.description.${!sortColumn || sortDirection === 'desc' ? 'asc' : 'desc'}`)}
+																	onClick={handleSort}
+																	className={`bx--table-sort-v2${sortDirection === 'asc' ? ' bx--table-sort-v2--ascending' : ''}${sortColumn === header.key ? ' bx--table-sort-v2--active' : ''}`}
+																	data-key={header.key}
+																>
+																<span className='bx--table-header-label'>{header.header}</span>
+																	<Icon
+																		className='bx--table-sort-v2__icon'
+																		name='caret--down'
+																		description={msgs.get(`svg.description.${!sortColumn || sortDirection === 'desc' ? 'asc' : 'desc'}`)} />
+																</button>
+															</th>
+														))}
 													</TableRow>
 												</TableHead>
 										<TableBody>

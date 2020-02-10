@@ -1,6 +1,6 @@
 /*****************************************************************
  *
- * Copyright 2019 IBM Corporation
+ * Copyright 2019, 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import lodash from 'lodash'
 import { Module, ModuleBody } from 'carbon-addons-cloud-react'
-import { Loading } from 'carbon-components-react'
+import { Loading, Button } from 'carbon-components-react'
 import ResourceTable from './common/ResourceTable.js'
 import StructuredListModule from './common/StructuredListModule'
 import { CONTEXT_PATH, PAGE_SIZES, SORT_DIRECTION_ASCENDING, RESOURCE_TYPES } from '../../actions/constants'
@@ -89,7 +89,7 @@ class ComponentView extends Component {
   }
 
   render() {
-    const {title, resourceType} = this.props
+    const {title, resourceType, customComponentButtons} = this.props
     const {name} = this.state
 
     // Remove the last directory in the URL path
@@ -127,10 +127,10 @@ class ComponentView extends Component {
 
     let moduleTitle = msgs.get(resourceData.moduleKeys.title)
     let moduleHeader = 
-      <div className='bx--module__header' style={{justifyContent: 'space-between'}} onClick={(e)=>{this.toggleExpandCollapse()}}>
+      <div className='bx--module__header' style={{justifyContent: 'space-between'}}>
         <ul data-accordion className="bx--accordion">
           <li data-accordion-item className="bx--accordion__item" className={this.state.expanded ? 'bx--accordion__item--active' : '' }>
-            <button className="bx--accordion__heading" aria-expanded={this.state.expanded} aria-controls={name+"modulePane"} title={this.state.expanded ? msgs.get('collapse') : msgs.get('expand') }>
+            <button className="bx--accordion__heading" aria-expanded={this.state.expanded} aria-controls={name+"modulePane"} title={this.state.expanded ? msgs.get('collapse') : msgs.get('expand')} onClick={(e)=>{this.toggleExpandCollapse()}}>
               <svg className="bx--accordion__arrow" width="7" height="12" viewBox="0 0 7 12">
                 <path fillRule="nonzero" d="M5.569 5.994L0 .726.687 0l6.336 5.994-6.335 6.002L0 11.27z" />
               </svg>
@@ -138,6 +138,20 @@ class ComponentView extends Component {
             </button>
           </li>
         </ul>
+        {(() => {
+          return (
+            <div>
+              {customComponentButtons.map((button, index) => (
+                <Button small icon={button.icon}
+                  onClick={button.action.bind(this)}
+                  iconDescription={msgs.get(button.iconDescription)}
+                  id={'customComponentButtons' + index}>
+                  {msgs.get(button.label)}
+                </Button>
+              ))}
+            </div>
+          )
+        })()}
       </div>
 
     let moduleBody = 

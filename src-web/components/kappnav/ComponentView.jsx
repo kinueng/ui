@@ -141,7 +141,7 @@ class ComponentView extends Component {
         {(() => {
           return (
             <div>
-              {customComponentButtons.map((button, index) => (
+              {customComponentButtons && customComponentButtons.map((button, index) => (
                 <Button small icon={button.icon}
                   onClick={button.action.bind(this)}
                   iconDescription={msgs.get(button.iconDescription)}

@@ -23,7 +23,7 @@ const express = require('express'),
       moment = require('moment'),
       i18n = require('node-i18n-util'),
       app = express(),
-      request = require('request')
+      axios = require('axios')
 
 var log4js = require('log4js'),
     consolidate = require('consolidate'),
@@ -72,36 +72,6 @@ app.use((err, req, res, next) => {
 })
 
 app.all('*', (req, res, next) => {
-  if(KUBE_ENV === 'icp') {
-    var host = 'https://'+req.headers['host']
-    var access_token = (req.cookies && req.cookies['cfc-access-token-cookie']) || ''
-
-    var url = host + '/idprovider/v1/auth/exchangetoken'
-    var headers = {
-      'Content-Type' : 'application/x-www-form-urlencoded'
-    }
-    var form = { access_token: access_token}
-
-    request.post({ url: url,
-      form: form,
-      headers: headers,
-      method: 'POST',
-      rejectUnauthorized: false
-    }, (error, response, body) => {
-
-      if(!error && response.statusCode == 200) {
-        req.user = JSON.parse(body).sub
-        if(!JSON.parse(body).id_token) {
-          return res.redirect(host + '/oidc/logout.jsp?error=noteam')
-        }
-        next()
-      } else {
-        //Not a valid token
-        return res.redirect(host + '/oidc/logout.jsp?error=noteam')
-      }
-    })
-  } else {
-    //not ICP, see if the user information is in the headers
     req.user = req.headers['x-forwarded-user']
     if(req.user && req.user !== ''){
       req.user = req.user.replace(/:/g,'')
@@ -115,7 +85,6 @@ app.all('*', (req, res, next) => {
     };
     res.cookie('kappnav-user', req.user, cookieConfig);
     next()
-  }
 })
 
 app.use(CONTEXT_PATH, express.static(STATIC_PATH, {
@@ -147,16 +116,18 @@ app.use('/kappnav-ui/logout', (req, res) => {
   }
 })
 
+const agent = new https.Agent({  
+  rejectUnauthorized: false
+});
 
 app.use('/kappnav-ui/openshift/appNavIcon.css', (req, res) => {
-  request({
+  axios({
     url: TARGET + '/kappnav/configmap/kappnav-config?namespace=' + APPNAV_CONFIGMAP_NAMESPACE,
     method: 'GET',
-    rejectUnauthorized: false
-  }, (error, response, body) => {
-    if (!error && response.statusCode === 200) {
-      var json = JSON.parse(body)
-      var url = json.data['kappnav-url']
+    httpsAgent: agent
+  }).then(function (response) {
+    if (response.status === 200) {
+      var url = response.data['kappnav-url']
       const appNavIcon =
           `
             .icon-appnav {
@@ -176,21 +147,21 @@ app.use('/kappnav-ui/openshift/appNavIcon.css', (req, res) => {
       res.type('.css')
       res.send(appNavIcon)
     } else {
-      // TODO: How to fail safely?
+      res.status(500).send("Failed to get appNavIcon.css")
     }
-
+  }).catch(function (error) {
+    res.status(500).send(error.message)
   })
 })
 
 app.use('/kappnav-ui/openshift/featuredApp.js', (req, res) => {
-  request({
+  axios({
     url: TARGET + '/kappnav/configmap/kappnav-config?namespace='+APPNAV_CONFIGMAP_NAMESPACE,
     method: 'GET',
-    rejectUnauthorized: false
-  }, (error, response, body) => {
-    if (!error && response.statusCode === 200) {
-      var json = JSON.parse(body)
-      var url = json.data['kappnav-url']
+    httpsAgent: agent
+  }).then(function (response) {
+    if (response.status === 200) {
+      var url = response.data['kappnav-url']
       const featuredApp =
           `
             (function() {
@@ -205,21 +176,22 @@ app.use('/kappnav-ui/openshift/featuredApp.js', (req, res) => {
       res.type('.js')
       res.send(featuredApp)
     } else {
-      // TODO: How to fail safely?
+      res.status(500).send("Failed to get featuredApp.css")
     }
+  }).catch(function (error) {
+    res.status(500).send(error.message)
   })
 })
 
 
 app.use('/kappnav-ui/openshift/appLauncher.js', (req, res) => {
-  request({
+  axios({
     url: TARGET + '/kappnav/configmap/kappnav-config?namespace='+APPNAV_CONFIGMAP_NAMESPACE,
     method: 'GET',
-    rejectUnauthorized: false
-  }, (error, response, body) => {
-    if (!error && response.statusCode === 200) {
-      var json = JSON.parse(body)
-      var url = json.data['kappnav-url']
+    httpsAgent: agent
+  }).then(function (response) {
+    if (response.status === 200) {
+      var url = response.data['kappnav-url']
       const appLauncher =
           `
           (function() {
@@ -234,8 +206,10 @@ app.use('/kappnav-ui/openshift/appLauncher.js', (req, res) => {
       res.type('.js')
       res.send(appLauncher)
     } else {
-      // TODO: How to fail safely?
+      res.status(500).send("Failed to get appLauncher.css")
     }
+  }).catch(function (error) {
+    res.status(500).send(error.message)
   })
 })
 

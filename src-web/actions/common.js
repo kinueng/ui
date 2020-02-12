@@ -486,12 +486,7 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
             "namespace": namespace,
             "kind":kind
           }]
-          return <OverflowMenuItem key={itemId + customAction.label}
-          primaryFocus={staticindex === 0}
-          itemText={msgs.get(customAction.label)}
-          onClick={customAction.action.bind(this, applicationName, applicationNamespace, componentBodyToRemove)}
-          onFocus={(e) => {e.target.title = msgs.get(customActions.label)}}
-          onMouseEnter={(e) => {e.target.title = msgs.get(customActions.label)}} />
+          return customAction.getCustomAction(staticindex, itemId, applicationName, applicationNamespace, componentBodyToRemove)
         }
       })
   }

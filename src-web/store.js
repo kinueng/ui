@@ -18,9 +18,11 @@
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 import BaseReducer from './reducers/BaseServiceReducer';
+import ResourceTableMessageReducer from './reducers/ResourceTableMessageReducer'
 
 const reducer = combineReducers({
   baseInfo: BaseReducer,
+  resourceTableMessageReducer : ResourceTableMessageReducer
 })
 
 export default createStore(

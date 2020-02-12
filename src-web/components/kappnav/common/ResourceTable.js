@@ -17,10 +17,12 @@
  *****************************************************************/
 
 import 'carbon-components/scss/globals/scss/styles.scss';
-import React from 'react';
-import { PaginationV2, DataTable, Icon, MultiSelect, Tooltip, Button } from 'carbon-components-react';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { PaginationV2, DataTable, Icon, MultiSelect, Tooltip, Button, InlineNotification } from 'carbon-components-react';
 import { PAGE_SIZES } from '../../../actions/constants';
 import msgs from '../../../../nls/kappnav.properties';
+import {updateRemoveComponent}  from '../../../reducers/ResourceTableMessageReducer'
 
 require('../../../../scss/table.scss')
 
@@ -81,7 +83,7 @@ export const getSearchableCellList = (row, headers) => {
 	return cellValues
 }
 
-class ResourceTable extends React.Component {
+class ResourceTable extends Component {
 
 	constructor(props) {
 		super(props);
@@ -421,6 +423,21 @@ class ResourceTable extends React.Component {
 											return (createNewModal(namespace == '' ? 'default' : namespace, namespaces, existingSecrets))
 										}
 									})()}
+									{(() => {
+										if (this.props.resourceTableMessageReducer.resourceTableMessage && this.props.resourceTableMessageReducer.resourceTableMessage !== '') {
+											return <InlineNotification
+												hideCloseButton={false}
+												iconDescription="describes the close button"
+												kind="error"
+												notificationType="inline"
+												onCloseButtonClick={() => this.props.updateRemoveComponent()}
+												role="alert"
+												subtitle=""
+												title={this.props.resourceTableMessageReducer.resourceTableMessage}
+												//title="ravi kumar singh"
+											/>
+										}
+									})()}
 								</TableToolbar>
 								{(() => {
 									if (selectableRows) { //table rows will have a checkbox to allow multi-selection
@@ -574,6 +591,12 @@ class ResourceTable extends React.Component {
 	}
 } // end of AppResourceTable component
 
-
-
-export default ResourceTable;
+export default connect(
+    (state) => ({
+		baseInfo: state.baseInfo,
+		resourceTableMessageReducer : state.resourceTableMessageReducer
+    }),
+    {
+		updateRemoveComponent
+    }
+)(ResourceTable);

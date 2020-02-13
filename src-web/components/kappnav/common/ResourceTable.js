@@ -22,7 +22,7 @@ import { connect } from 'react-redux';
 import { PaginationV2, DataTable, Icon, MultiSelect, Tooltip, Button, InlineNotification } from 'carbon-components-react';
 import { PAGE_SIZES } from '../../../actions/constants';
 import msgs from '../../../../nls/kappnav.properties';
-import {updateRemoveComponent}  from '../../../reducers/ResourceTableMessageReducer'
+import {updateResourceTableError}  from '../../../reducers/ResourceTableReducer'
 
 require('../../../../scss/table.scss')
 
@@ -424,17 +424,16 @@ class ResourceTable extends Component {
 										}
 									})()}
 									{(() => {
-										if (this.props.resourceTableMessageReducer.resourceTableMessage && this.props.resourceTableMessageReducer.resourceTableMessage !== '') {
+										if (this.props.resourceTableReducer.resourceTableError && this.props.resourceTableReducer.resourceTableError !== '') {
 											return <InlineNotification
 												hideCloseButton={false}
-												iconDescription="describes the close button"
+												iconDescription={msgs.get('modal.button.close')}
 												kind="error"
 												notificationType="inline"
-												onCloseButtonClick={() => this.props.updateRemoveComponent()}
+												onCloseButtonClick={() => this.props.updateResourceTableError()}
 												role="alert"
 												subtitle=""
-												title={this.props.resourceTableMessageReducer.resourceTableMessage}
-												//title="ravi kumar singh"
+												title={this.props.resourceTableReducer.resourceTableError}
 											/>
 										}
 									})()}
@@ -594,9 +593,9 @@ class ResourceTable extends Component {
 export default connect(
     (state) => ({
 		baseInfo: state.baseInfo,
-		resourceTableMessageReducer : state.resourceTableMessageReducer
+		resourceTableReducer : state.resourceTableReducer
     }),
     {
-		updateRemoveComponent
+		updateResourceTableError
     }
 )(ResourceTable);

@@ -215,7 +215,7 @@ class ComponentView extends Component {
 
   componentWillReceiveProps(nextProps) {
     var self = this;
-    if (this.props.resourceTableMessageReducer.resourceTableMessage !== nextProps.resourceTableMessageReducer.resourceTableMessage && nextProps.resourceTableMessageReducer.resourceTableMessage !== '') {
+    if (this.props.resourceTableReducer.resourceTableError !== nextProps.resourceTableReducer.resourceTableError && nextProps.resourceTableReducer.resourceTableError !== '') {
       this.setState({loadingComponents: true});
       refreshResourceComponent(self.state.name, self.props.baseInfo.selectedNamespace, self.props.resourceType, self.props.baseInfo.appNavConfigMap).then(result => {
         if(result === null) {
@@ -351,7 +351,7 @@ fetchData(name, skipComponentReload) {
 export default connect(
   (state) => ({
       baseInfo: state.baseInfo,
-      resourceTableMessageReducer : state.resourceTableMessageReducer
+      resourceTableReducer : state.resourceTableReducer
   }),
   {
   }

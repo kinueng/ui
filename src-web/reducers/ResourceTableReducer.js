@@ -18,21 +18,21 @@
 
 // Intital State of Redux store
 const initState = {
-    resourceTableMessage:''
+    resourceTableError:''
 }
 
 // Action Types
 const LOADING_RESOURCETYPEERROR = 'LOADING_RESOURCETYPEERROR';
 
 // Action Creators
-export const loadingRemoveComponent = (message) => ({
+export const loadingResoureTableError = (message) => ({
     type: LOADING_RESOURCETYPEERROR,
     payload: message
 });
 
-export const updateRemoveComponent = () => {
+export const updateResourceTableError = () => {
     return (dispatch) => {
-        dispatch(loadingRemoveComponent(''));
+        dispatch(loadingResoureTableError(''));
     }
 }
 
@@ -41,7 +41,7 @@ export default (state = initState, action) => {
         case LOADING_RESOURCETYPEERROR:
             return {
                 ...state,
-                resourceTableMessage: action.payload
+                resourceTableError: action.payload
         };
         default:
             return state;

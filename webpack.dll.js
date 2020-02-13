@@ -33,7 +33,6 @@ module.exports = {
     'vendorappnav': [
 	  'babel-polyfill',
       'carbon-components-react',
-      'loadable-components',
       'lodash',
       'moment',
 	  'node-libs-browser',

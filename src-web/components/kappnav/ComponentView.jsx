@@ -213,6 +213,19 @@ class ComponentView extends Component {
     return resourceType.name.toLowerCase() + 's'
   }
 
+  componentWillReceiveProps(nextProps) {
+    var self = this;
+    if (this.props.resourceTableReducer.resourceTableError !== nextProps.resourceTableReducer.resourceTableError && nextProps.resourceTableReducer.resourceTableError !== '') {
+      this.setState({loadingComponents: true});
+      refreshResourceComponent(self.state.name, self.props.baseInfo.selectedNamespace, self.props.resourceType, self.props.baseInfo.appNavConfigMap).then(result => {
+        if(result === null) {
+          this.setState({loadingComponents: false});
+        }
+        self.filterTable(self.state.search, self.state.pageNumber, self.state.pageSize, result)
+      });
+    }
+  }
+
   componentDidMount(){
     this.fetchData(this.state.name);
     if(window.secondaryHeader !== undefined){
@@ -338,6 +351,7 @@ fetchData(name, skipComponentReload) {
 export default connect(
   (state) => ({
       baseInfo: state.baseInfo,
+      resourceTableReducer : state.resourceTableReducer
   }),
   {
   }

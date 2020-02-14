@@ -430,7 +430,7 @@ class ResourceTable extends Component {
 												iconDescription={msgs.get('modal.button.close')}
 												kind="error"
 												notificationType="inline"
-												onCloseButtonClick={() => this.props.updateResourceTableError()}
+												onCloseButtonClick={() => this.props.updateResourceTableError('')}
 												role="alert"
 												subtitle=""
 												title={this.props.resourceTableReducer.resourceTableError}

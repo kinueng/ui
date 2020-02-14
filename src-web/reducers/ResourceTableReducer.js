@@ -30,9 +30,9 @@ export const loadingResoureTableError = (message) => ({
     payload: message
 });
 
-export const updateResourceTableError = () => {
+export const updateResourceTableError = (error) => {
     return (dispatch) => {
-        dispatch(loadingResoureTableError(''));
+        dispatch(loadingResoureTableError(error));
     }
 }
 

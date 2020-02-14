@@ -404,7 +404,7 @@ class ResourceTable extends Component {
 					render={({ rows, headers, getRowProps, getSelectionProps, selectedRows }) => (
 						<div>
 							<TableContainer title={title}>
-								<TableToolbar>
+								<TableToolbar className={(createNewModal !== undefined) ? 'toolbarItems justifyToolbarContent' : 'toolbarItems'}>
 									<DataTable.TableToolbarSearch onChange={onInputChange} closeButtonLabelText={msgs.get('modal.button.close')} translateWithId={translateWithId.bind(null, document.documentElement.lang)} />
 									{(() => {
 										if (filterItems !== undefined) {
@@ -419,13 +419,9 @@ class ResourceTable extends Component {
 										}
 									})()}
 									{(() => {
-										if (createNewModal !== undefined) {
-											return (createNewModal(namespace == '' ? 'default' : namespace, namespaces, existingSecrets))
-										}
-									})()}
-									{(() => {
 										if (this.props.resourceTableReducer.resourceTableError && this.props.resourceTableReducer.resourceTableError !== '') {
 											return <InlineNotification
+												className='tableInlineNotification'
 												hideCloseButton={false}
 												iconDescription={msgs.get('modal.button.close')}
 												kind="error"
@@ -435,6 +431,11 @@ class ResourceTable extends Component {
 												subtitle=""
 												title={this.props.resourceTableReducer.resourceTableError}
 											/>
+										}
+									})()}
+									{(() => {
+										if (createNewModal !== undefined) {
+											return (createNewModal(namespace == '' ? 'default' : namespace, namespaces, existingSecrets))
 										}
 									})()}
 								</TableToolbar>

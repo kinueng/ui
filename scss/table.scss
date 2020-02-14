@@ -5,9 +5,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  *****************************************************************/
- 
+
 @import 'node_modules/carbon-components/scss/globals/scss/_colors';
 
 .resource-table {
@@ -34,13 +34,13 @@
       color: $color__blue-51;
       font-size: 0.75rem;
     }
-  
+
     .bx--structured-list-td {
       padding: .825rem;
       padding-left: 0;
     }
   }
-  
+
   .row-not-expanded .bx--table-expand-v2__button {
     visibility: hidden;
   }
@@ -55,7 +55,7 @@ tr.bx--expandable-row-v2 + tr[data-child-row] td {
   padding-right: 0;
   padding-bottom: 0;
 }
-  
+
 .bx--overflow-menu-options__option--danger:only-child {
   border-top: 0;
 }
@@ -160,7 +160,19 @@ tr.bx--expandable-row-v2 + tr[data-child-row] td {
   padding-top: 75px;
 }
 
-.bx--inline-notification{
-  margin: 0px;
-  float: right;
+.toolbarItems { //vertically align toolbar items(search, InlineNotification, modal button)
+  align-items: center;
+}
+
+.justifyToolbarContent { //add space between toolbar items(search, InlineNotification, modal button) to evenly position them above the table
+  justify-content: space-between;
+}
+
+.bx--toolbar-content { //removing left margin that wasn't allowing justify-content to work
+  margin-left: 0px;
+}
+
+.tableInlineNotification {
+  margin-left: 2.5rem;
+  margin-right: 2.5rem;
 }

@@ -66,7 +66,7 @@ class NotificationHandler extends React.PureComponent {
             let commands = completed_commands.commands
             renderResult =
                 <div id="notification-handler">
-                    {commands.map((command) => <Notification type='completed' result={command} />)}
+                    {commands.map((command) => <Notification type='completed' result={command} key={Math.random()} />)}
                 </div>
             return renderResult
         }

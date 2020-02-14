@@ -53,6 +53,7 @@ export const fetchAppNavConfigMap = () => {
             appNavConfigData.statuColorMapping = JSON.parse(data['status-color-mapping'])
             appNavConfigData.statusPrecedence = JSON.parse(data['app-status-precedence'])
             appNavConfigData.statusUnknown = data['status-unknown']
+            appNavConfigData.completedJobsPollingInterval = data['ui-completed-jobs-polling-interval-in-ms']
             return appNavConfigData
         });
 }

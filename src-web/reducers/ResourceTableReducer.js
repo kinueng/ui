@@ -32,7 +32,7 @@ export const loadingResoureTableError = (message) => ({
 
 export const updateResourceTableError = (error) => {
     return (dispatch) => {
-        dispatch(loadingResoureTableError(error));
+        if(error) dispatch(loadingResoureTableError(error));
     }
 }
 

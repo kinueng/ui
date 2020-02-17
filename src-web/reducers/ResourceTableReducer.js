@@ -18,17 +18,31 @@
 
 // Intital State of Redux store
 const initState = {
-    resourceTableError:''
+    resourceTableError:'',
+    componentView : {}
 }
 
 // Action Types
+const LOADING_APPLICATIONCOMPONENTS = 'LOADING_APPLICATIONCOMPONENTS';
 const LOADING_RESOURCETYPEERROR = 'LOADING_RESOURCETYPEERROR';
 
 // Action Creators
+export const loadingApplicationComponents = (components) => ({
+    type: LOADING_APPLICATIONCOMPONENTS,
+    payload: components
+});
+
 export const loadingResoureTableError = (message) => ({
     type: LOADING_RESOURCETYPEERROR,
     payload: message
 });
+
+// Action Dispatchers
+export const fetchApplicationComponents = (components) => {
+    return (dispatch) => {
+        dispatch(loadingApplicationComponents(components));
+    }
+}
 
 export const updateResourceTableError = (error) => {
     return (dispatch) => {
@@ -38,6 +52,11 @@ export const updateResourceTableError = (error) => {
 
 export default (state = initState, action) => {
     switch (action.type) {
+        case LOADING_APPLICATIONCOMPONENTS:
+            return {
+                ...state,
+                componentView: action.payload
+        };
         case LOADING_RESOURCETYPEERROR:
             return {
                 ...state,

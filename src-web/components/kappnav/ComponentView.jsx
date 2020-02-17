@@ -30,7 +30,7 @@ import SecondaryHeader from './common/SecondaryHeader.jsx'
 import getResourceData, { refreshResource, refreshResourceComponent } from '../../definitions/index'
 import msgs from '../../../nls/kappnav.properties'
 import {getSearchableCellList} from '../kappnav/common/ResourceTable.js'
-import {fetchApplicationComponents} from '../../reducers/ResourceTableReducer'
+import {fetchApplicationComponents} from '../../reducers/ComponentViewReducer'
 
 class ComponentView extends Component {
 
@@ -258,7 +258,6 @@ class ComponentView extends Component {
     window.setInterval(function(){
       refreshResource(self.state.name, self.props.baseInfo.selectedNamespace, self.props.resourceType, self.props.baseInfo.appNavConfigMap).then(result => {
         self.setState({loading: false, data: result});
-        self.loadingReduxStore(result, self.state.name)
       });
     }, 10000);
 

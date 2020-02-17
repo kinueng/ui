@@ -1,6 +1,6 @@
 /*****************************************************************
  *
- * Copyright 2019 IBM Corporation
+ * Copyright 2019, 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,12 @@
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 import BaseReducer from './reducers/BaseServiceReducer';
+import ComponentViewReducer from './reducers/ComponentViewReducer';
 import ResourceTableReducer from './reducers/ResourceTableReducer'
 
 const reducer = combineReducers({
   baseInfo: BaseReducer,
+  componentViewReducer : ComponentViewReducer,
   resourceTableReducer : ResourceTableReducer
 })
 

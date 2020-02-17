@@ -166,13 +166,20 @@ tr.bx--expandable-row-v2 + tr[data-child-row] td {
 
 .justifyToolbarContent { //add space between toolbar items(search, InlineNotification, modal button) to evenly position them above the table
   justify-content: space-between;
+
+  .tableInlineNotification { //inline message is in bewteen the search and a button so margin is needed on both sides
+    margin-right: 2.5rem;
+  }
 }
 
 .bx--toolbar-content { //removing left margin that wasn't allowing justify-content to work
   margin-left: 0px;
 }
 
-.tableInlineNotification {
+.tableInlineNotification { //only add margin on left to add space between search and inline message - msg will float right
   margin-left: 2.5rem;
-  margin-right: 2.5rem;
+}
+
+.bx--search { //fix size of search field so it doesn't shrink
+  width: 250px;
 }

@@ -445,7 +445,7 @@ class ResourceTable extends Component {
 											<Table zebra={false}>
 												<TableHead>
 													<TableRow>
-														<TableSelectAll {...getSelectionProps()}/>
+														{(rows.length > 0) && <TableSelectAll {...getSelectionProps()}/>}
 														{headers.map(header => (
 															<th scope={'col'} key={header.key}>
 																<button
@@ -465,15 +465,23 @@ class ResourceTable extends Component {
 													</TableRow>
 												</TableHead>
 										<TableBody>
-                                            {rows.map(row => (
-												<TableRow key={row.id}>
-													<TableSelectRow {...getSelectionProps({ row })} ariaLabel={row.id + '-checkbox'}/>
-													{row.cells.map(cell => (
-														this.renderCell(row, cell)
-													))}
-												</TableRow>  
-                                            ))}
-                                        </TableBody>
+										{(() => {
+											if (rows.length === 0) {
+												return (this.props.getCustomTableMsg(headers))
+											} else {
+                        return (
+													rows.map(row => (
+													<TableRow key={row.id}>
+														<TableSelectRow {...getSelectionProps({ row })} ariaLabel={row.id + '-checkbox'} disabled={false}/>
+														{row.cells.map(cell => (
+															this.renderCell(row, cell)
+														))}
+													</TableRow>  
+													))
+												)
+											}
+										})()}
+                    </TableBody>
 										</Table>
 										)
 									} else {

@@ -156,6 +156,10 @@ tr.bx--expandable-row-v2 + tr[data-child-row] td {
   cursor: pointer;
 }
 
+a.emptyTableResourceLink {
+  text-decoration: none;
+}
+
 .buttonContainer {
   padding-top: 75px;
 }

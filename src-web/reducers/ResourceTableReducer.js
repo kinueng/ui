@@ -33,7 +33,11 @@ export const loadingResoureTableError = (message) => ({
 // Action Dispatchers
 export const updateResourceTableError = (error) => {
     return (dispatch) => {
-        if(error) dispatch(loadingResoureTableError(error));
+        if (error === undefined) {
+            dispatch(loadingResoureTableError(''));
+        } else {
+            dispatch(loadingResoureTableError(error));
+        }
     }
 }
 

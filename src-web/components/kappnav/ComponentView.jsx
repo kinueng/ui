@@ -30,6 +30,7 @@ import SecondaryHeader from './common/SecondaryHeader.jsx'
 import getResourceData, { refreshResource, refreshResourceComponent } from '../../definitions/index'
 import msgs from '../../../nls/kappnav.properties'
 import {getSearchableCellList} from '../kappnav/common/ResourceTable.js'
+import {fetchApplicationComponents} from '../../reducers/ComponentViewReducer'
 
 class ComponentView extends Component {
 
@@ -266,6 +267,7 @@ class ComponentView extends Component {
           this.setState({loadingComponents: false});
         }
         self.filterTable(self.state.search, self.state.pageNumber, self.state.pageSize, result)
+        self.loadingReduxStore(result, self.state.name)
       });
     }, 30000);
 
@@ -281,6 +283,24 @@ class ComponentView extends Component {
 
   searchInputChange(e) {
     this.filterTable(e.target.value, 1, this.state.pageSize, this.state.totalRows)
+  }
+
+  loadingReduxStore(result, applicationName) {
+    var components = []
+    var componentViewReduxData = {
+      "applicationName": applicationName,
+      "applicationNamespace": this.props.baseInfo.selectedNamespace
+    }
+    result.forEach((component) => {
+      var eachComponent = {
+        "componentName": component.name.props.children,
+        "componentNamespace": component.namespace
+      }
+      components.push(eachComponent)
+    })
+    componentViewReduxData["components"] = components
+    //calling the dispatcher function to load the redux store
+    this.props.fetchApplicationComponents(componentViewReduxData)
   }
 
   filterTable(searchValue, pageNumber, pageSize, totalRows){
@@ -342,6 +362,7 @@ fetchData(name, skipComponentReload) {
     refreshResourceComponent(name, this.props.baseInfo.selectedNamespace, this.props.resourceType, this.props.baseInfo.appNavConfigMap).then(result => {
       self.setState({loadingComponents: false});
       self.filterTable(self.state.search, this.state.pageNumber, this.state.pageSize, result)
+      this.loadingReduxStore(result, name)
     });
   }
 }
@@ -354,5 +375,6 @@ export default connect(
       resourceTableReducer : state.resourceTableReducer
   }),
   {
+    fetchApplicationComponents
   }
 )(ComponentView);

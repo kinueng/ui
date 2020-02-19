@@ -472,7 +472,7 @@ class ResourceTable extends Component {
 														return (
 															rows.map(row => (
 															<TableRow key={row.id}>
-															<TableSelectRow {...getSelectionProps({ row })} ariaLabel={row.id + '-checkbox'} disabled={false}/>
+															<TableSelectRow {...getSelectionProps({ row })} ariaLabel={row.id + '-checkbox'} checked={row.disabled} disabled={row.disabled}/>
 																{row.cells.map(cell => (
 																	this.renderCell(row, cell)
 																))}

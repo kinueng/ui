@@ -464,24 +464,24 @@ class ResourceTable extends Component {
 														))}
 													</TableRow>
 												</TableHead>
-										<TableBody>
-										{(() => {
-											if (rows.length === 0) {
-												return (this.props.getCustomTableMsg(headers))
-											} else {
-                        return (
-													rows.map(row => (
-													<TableRow key={row.id}>
-														<TableSelectRow {...getSelectionProps({ row })} ariaLabel={row.id + '-checkbox'} disabled={false}/>
-														{row.cells.map(cell => (
-															this.renderCell(row, cell)
-														))}
-													</TableRow>  
-													))
-												)
-											}
-										})()}
-                    </TableBody>
+												<TableBody>
+												{(() => {
+													if (rows.length === 0) {
+														return (this.props.getCustomTableMsg(headers))
+													} else {
+														return (
+															rows.map(row => (
+															<TableRow key={row.id}>
+															<TableSelectRow {...getSelectionProps({ row })} ariaLabel={row.id + '-checkbox'} disabled={false}/>
+																{row.cells.map(cell => (
+																	this.renderCell(row, cell)
+																))}
+															</TableRow>
+															))
+														)
+													}
+												})()}
+												</TableBody>
 										</Table>
 										)
 									} else {

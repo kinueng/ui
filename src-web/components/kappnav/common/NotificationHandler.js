@@ -52,7 +52,7 @@ class NotificationHandler extends React.PureComponent {
             // return the default
             return default_api_polling_intervals_milliseconds 
         } else {
-            return parseInt(interval, 10); // 10 is for mathmatical base number
+            return parseInt(interval)
         }
     }
 

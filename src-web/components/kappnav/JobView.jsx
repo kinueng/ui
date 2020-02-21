@@ -61,7 +61,12 @@ class JobView extends Component {
 
     // make 'this' visible to class methods
     this.fetchData = this.fetchData.bind(this)
+    this.jobIsActive = this.jobIsActive.bind(this)
+    this.jobIsPending = this.jobIsPending.bind(this)
+    this.jobSucceeded = this.jobSucceeded.bind(this)
+    this.jobFailed = this.jobFailed.bind(this)
   }
+
   render() {
     let viewTitle = msgs.get('page.jobsView.title')
     if (this.state.loading)
@@ -173,30 +178,39 @@ class JobView extends Component {
 
   getJobStatus(job) {
     const { appNavConfigMap } = this.props
-    var statusColorMapping = appNavConfigMap && appNavConfigMap.statuColorMapping
-    var statusPrecedence = appNavConfigMap && appNavConfigMap.statusPrecedence ? appNavConfigMap && appNavConfigMap.statusPrecedence : []
+    const statusColorMapping = appNavConfigMap && appNavConfigMap.statuColorMapping
+    const statusPrecedence = appNavConfigMap && appNavConfigMap.statusPrecedence ? appNavConfigMap.statusPrecedence : []
 
-    var statusColor = STATUS_COLORS.DEFAULT_COLOR
-    var statusText = ''
-    var sortTitle = ''
+    let statusColor = STATUS_COLORS.DEFAULT_COLOR // default grey
+    let statusText = ''
+    let sortTitle = ''
 
-    var jobName = job && job.metadata.labels['kappnav-job-application-name']
+    let jobName = job && job.metadata.labels['kappnav-job-application-name']
 
     // Default the status to Normal until the job returns a done state (eg FAILED, COMPLETED)
-    var doneState = 'Normal'
-    if(job.status.conditions && job.status.conditions[0]) {
-      var type = job.status.conditions[0].type // Assuming ever only have 1 condition
-      // Based status choices on https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.13/#jobcondition-v1-batch
-      if(type.toUpperCase() === 'FAILED') {
-        doneState = 'Problem'
-      } else if(type.toUpperCase() === 'COMPLETE') {
-        doneState = 'Normal'
-      }
+    let doneState = ''
+    if(this.jobIsActive(job)) {
+      doneState = 'In Progress'
+      statusText = msgs.get('in.progress')
+
+    } else if(this.jobIsPending(job)) {
+      doneState = 'Pending'
+      statusText = msgs.get('pending')
+
+    } else if(this.jobFailed(job)) {
+      doneState = 'Failed'
+      statusText = msgs.get('failed')
+
+    } else if(this.jobSucceeded(job)) {
+      doneState = 'Completed'
+      statusText = msgs.get('completed')
+
+    } else {
+      doneState = 'Unknown'
+      statusText = msgs.get('unknown')
     }
 
-    statusText = msgs.get(doneState.toLowerCase())
-
-    var sortIndex = statusPrecedence.findIndex(val => val === doneState)
+    const sortIndex = statusPrecedence.findIndex(val => val === doneState)
 
     if(statusColorMapping && doneState) {
       var colorKey = statusColorMapping.values && statusColorMapping.values[doneState]
@@ -216,6 +230,34 @@ class JobView extends Component {
       statusText: statusText,
       sortTitle: sortTitle
     }
+  }
+
+  jobIsActive(job) {
+    if(!job && !!!job.status.active) {
+      // Check the existance on all the fields 
+      return false
+    }
+    return job.status.active > 0
+  }
+
+  jobIsPending(job) {
+    // If none of these fields exist, the assumption is that
+    // the job is pending
+    return !job && !!!job.status.active && !!!job.status.succeeded && !!!job.status.failed
+  }
+
+  jobSucceeded(job) {
+    if(!job && !!!job.status.succeeded) {
+      return false
+    }
+    return job.status.succeeded > 0
+  }
+
+  jobFailed(job) {
+    if(!job && !!!job.status.failed) {
+      return false
+    }
+    return job.status.failed > 0
   }
 
   refreshData(search) {

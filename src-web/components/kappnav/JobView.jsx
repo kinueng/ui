@@ -103,7 +103,7 @@ class JobView extends Component {
   componentDidMount() {
     this.fetchData(this.state.search)
 
-    var self = this
+    let self = this
     window.setInterval(() => {
       self.refreshData(self.state.search)
     }, 10000)
@@ -123,7 +123,7 @@ class JobView extends Component {
       const searchValueLowerCase = searchValue.toLowerCase()
       //filter the rows
       totalRows.forEach((row) => {
-        var searchFields = getSearchableCellList(row, this.state.headers);
+        let searchFields = getSearchableCellList(row, this.state.headers);
         searchFields = searchFields.map(function(value) {
           // Lowercase everything to make string maching accurate
           return ('' + value).toLowerCase();
@@ -182,13 +182,12 @@ class JobView extends Component {
     const statusPrecedence = appNavConfigMap && appNavConfigMap.statusPrecedence ? appNavConfigMap.statusPrecedence : []
 
     let statusColor = STATUS_COLORS.DEFAULT_COLOR // default grey
-    let statusText = ''
     let sortTitle = ''
 
     let jobName = job && job.metadata.labels['kappnav-job-application-name']
 
-    // Default the status to Normal until the job returns a done state (eg FAILED, COMPLETED)
     let doneState = ''
+    let statusText = ''
     if(this.jobIsActive(job)) {
       doneState = 'In Progress'
       statusText = msgs.get('in.progress')
@@ -213,9 +212,9 @@ class JobView extends Component {
     const sortIndex = statusPrecedence.findIndex(val => val === doneState)
 
     if(statusColorMapping && doneState) {
-      var colorKey = statusColorMapping.values && statusColorMapping.values[doneState]
+      const colorKey = statusColorMapping.values && statusColorMapping.values[doneState]
       if(colorKey) {
-        var color = statusColorMapping.colors && statusColorMapping.colors[colorKey]
+        const color = statusColorMapping.colors && statusColorMapping.colors[colorKey]
         if(color) {
           statusColor = color
         }
@@ -234,7 +233,6 @@ class JobView extends Component {
 
   jobIsActive(job) {
     if(!job && !!!job.status.active) {
-      // Check the existance on all the fields 
       return false
     }
     return job.status.active > 0
@@ -243,7 +241,9 @@ class JobView extends Component {
   jobIsPending(job) {
     // If none of these fields exist, the assumption is that
     // the job is pending
-    return !job && !!!job.status.active && !!!job.status.succeeded && !!!job.status.failed
+    return !job && !!!job.status.active
+                && !!!job.status.succeeded
+                && !!!job.status.failed
   }
 
   jobSucceeded(job) {
@@ -271,7 +271,7 @@ class JobView extends Component {
         const appUuid = metadata.name
         const jobName = metadataLabel['kappnav-job-action-name']
 
-        var itemObj = {}
+        let itemObj = {}
         itemObj.id = metadata.uid+'-job'
         itemObj.status = buildStatusHtml(this.getJobStatus(job))
 
@@ -287,7 +287,7 @@ class JobView extends Component {
           itemObj.actionName = jobName
         }
         
-        var applicationName = metadataLabel['kappnav-job-application-name']
+        const applicationName = metadataLabel['kappnav-job-application-name']
         if (applicationName && applicationName === 'kappnav.not.assigned') {
           itemObj.appName = msgs.get('not.assigned')
         } else {

@@ -89,8 +89,6 @@ class JobView extends Component {
             this.handleSort(e)
           }}
           pageNumber={this.state.pageNumber}
-          namespace={this.props.baseInfo.selectedNamespace}
-          namespaces={this.props.baseInfo.namespaces}
         />
         </div>
         </div>
@@ -98,21 +96,12 @@ class JobView extends Component {
   }
 
   componentDidMount() {
-    this.fetchData(this.props.baseInfo.selectedNamespace, this.state.search, this.props.baseInfo.appNavConfigMap)
+    this.fetchData(this.state.search)
 
     var self = this
     window.setInterval(() => {
-      self.refreshData(self.props.baseInfo.selectedNamespace, self.state.search, self.props.baseInfo.appNavConfigMap)
+      self.refreshData(self.state.search)
     }, 10000)
-  }
-
-  shouldComponentUpdate(nextProps) {
-    if (this.props.baseInfo.selectedNamespace == nextProps.baseInfo.selectedNamespace) {
-      return true
-    } else {
-      this.fetchData(nextProps.baseInfo.selectedNamespace, undefined, this.props.baseInfo.appNavConfigMap)
-    }
-    return false
   }
 
   handlePaginationClick(e) {
@@ -177,20 +166,21 @@ class JobView extends Component {
     }
   }
 
-  fetchData(namespace, search, appNavConfigData) {
+  fetchData(search) {
     this.setState({loading: true})
-    this.refreshData(namespace, search, appNavConfigData)
+    this.refreshData(search)
   }
 
-  getStatus(job, appNavConfigData) {
-    var statusColorMapping = appNavConfigData && appNavConfigData.statuColorMapping
-    var statusPrecedence = appNavConfigData && appNavConfigData.statusPrecedence ? appNavConfigData && appNavConfigData.statusPrecedence : []
+  getJobStatus(job) {
+    const { appNavConfigMap } = this.props
+    var statusColorMapping = appNavConfigMap && appNavConfigMap.statuColorMapping
+    var statusPrecedence = appNavConfigMap && appNavConfigMap.statusPrecedence ? appNavConfigMap && appNavConfigMap.statusPrecedence : []
 
     var statusColor = STATUS_COLORS.DEFAULT_COLOR
     var statusText = ''
     var sortTitle = ''
 
-    var appName = job && job.metadata.labels['kappnav-job-application-name']
+    var jobName = job && job.metadata.labels['kappnav-job-application-name']
 
     // Default the status to Normal until the job returns a done state (eg FAILED, COMPLETED)
     var doneState = 'Normal'
@@ -216,7 +206,7 @@ class JobView extends Component {
           statusColor = color
         }
       }
-      sortTitle = sortIndex + statusColor + appName
+      sortTitle = sortIndex + statusColor + jobName
     }
 
     return {
@@ -228,7 +218,7 @@ class JobView extends Component {
     }
   }
 
-  refreshData(namespace, search, appNavConfigData) {
+  refreshData(search) {
     fetch('/kappnav/resource/commands').then(result => result.json()).then(result => {
       const rowArray = []
       const actionMap = result[CONFIG_CONSTANTS.ACTION_MAP]
@@ -241,7 +231,7 @@ class JobView extends Component {
 
         var itemObj = {}
         itemObj.id = metadata.uid+'-job'
-        itemObj.status = buildStatusHtml(this.getStatus(job, appNavConfigData))
+        itemObj.status = buildStatusHtml(this.getJobStatus(job))
 
         const urlActions = actionMap ? actionMap[CONFIG_CONSTANTS.URL_ACTIONS] : ''
         if(urlActions && urlActions[0]) {
@@ -277,10 +267,11 @@ class JobView extends Component {
   }
 } // end of JobView component
 
-export default connect(
-  (state) => ({
-      baseInfo: state.baseInfo,
-  }),
-  {
+const mapStateToProps = (state) => {
+  return {
+    baseInfo: state.baseInfo,
+    appNavConfigMap: state.baseInfo.appNavConfigMap
   }
-)(JobView)
+}
+
+export default connect(mapStateToProps)(JobView)

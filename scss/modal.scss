@@ -88,6 +88,7 @@
         text-decoration: none;
         padding: 0.875rem 1.25rem;
         display: block;
+        width: 100%;
       }
       > svg {
         fill: $support-01;
@@ -231,6 +232,8 @@ svg.launch-icon {
 
 .tooltip-margin{
   margin-right: 25px;
+  position: absolute;
+  right: 0;
 }
 
 .modal-navigation-bar ul li:hover .tooltip-active-hover svg path{

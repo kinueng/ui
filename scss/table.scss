@@ -87,6 +87,11 @@ tr.bx--expandable-row-v2 + tr[data-child-row] td {
   white-space: nowrap;
 }
 
+.bx--data-table-v2-container {
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
 .title {
   color: black;
   margin-top: 17px;

@@ -43,6 +43,8 @@ const {
 
 const translateWithId = (locale, id) => msgs.get(id)
 
+var displayedHeaders; //used to calculate how many columns the message for an empty table(w/ non-selectable rows) should span 
+
 export const SEARCH_HEADER_TYPES= {
 	NOT_SEARCHABLE : 'NOT_SEARCHABLE',
 	STATUS : 'STATUS',
@@ -491,6 +493,7 @@ class ResourceTable extends Component {
 												<TableRow>
 													<TableExpandHeader />
 													{(() => {
+														displayedHeaders = headers.length
 														return headers.map(header => {
 															if (header.key === 'menuAction') {
 																return (
@@ -499,6 +502,7 @@ class ResourceTable extends Component {
 																	</DataTable.TableHeader>
 																)
 															} else if (header.key === 'title' || header.key === 'description' || header.key === 'section_data' || header.key === 'enablement_label' || header.key === 'section_map') {
+																displayedHeaders-- //subtract 1 for each time a header has these keys since these will not be displayed
 																return c;
 															} else {
 																return (
@@ -535,7 +539,7 @@ class ResourceTable extends Component {
 													var msg = msgs.get('table.empty', [resource]);
 		
 													return (
-														<TableRow><TableCell colSpan={headers.length + 1}>{msg} <span className='emptyTableResourceLink' id='navModalLink'>{modal}</span>.</TableCell></TableRow>
+														<TableRow><TableCell colSpan={displayedHeaders + 1}>{msg} <span className='emptyTableResourceLink' id='navModalLink'>{modal}</span>.</TableCell></TableRow>
 													)
 												} else {
 													return(

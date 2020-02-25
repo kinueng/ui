@@ -26,7 +26,6 @@ import msgs from '../../../nls/kappnav.properties'
 import SecondaryHeader from './common/SecondaryHeader.jsx'
 import ResourceTable from './common/ResourceTable.js'
 import getResourceData from '../../definitions/index'
-import PropTypes from 'prop-types'
 import {getSearchableCellList, SEARCH_HEADER_TYPES} from './common/ResourceTable.js'
 
 
@@ -34,7 +33,8 @@ const jobResourceData = getResourceData(RESOURCE_TYPES.JOB)
 
 // This is the view that shows a collection of Command Actions jobs
 class JobView extends Component {
-  
+
+  intervalID = 0
 
   constructor(props) {
     super(props)
@@ -104,9 +104,13 @@ class JobView extends Component {
     this.fetchData(this.state.search)
 
     let self = this
-    window.setInterval(() => {
+    this.intervalID = window.setInterval(() => {
       self.refreshData(self.state.search)
     }, 10000)
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.intervalID)
   }
 
   handlePaginationClick(e) {
@@ -311,7 +315,6 @@ class JobView extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    baseInfo: state.baseInfo,
     appNavConfigMap: state.baseInfo.appNavConfigMap
   }
 }

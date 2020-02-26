@@ -44,7 +44,7 @@ class JobView extends Component {
       totalRows: [],
       filteredRows: [],
       rows: [],
-      sortColumn: 'age', // default sort
+      sortColumn: 'status', // default sort
       sortDirection: SORT_DIRECTION_ASCENDING,
       pageSize: PAGE_SIZES.DEFAULT,
       pageNumber: 1,
@@ -190,7 +190,7 @@ class JobView extends Component {
 
     let jobName = job && job.metadata.labels['kappnav-job-application-name']
 
-    let doneState = ''
+    let doneState = '' // Case sensitive!
     let statusText = ''
     if(this.jobIsActive(job)) {
       doneState = 'In Progress'
@@ -223,7 +223,13 @@ class JobView extends Component {
           statusColor = color
         }
       }
-      sortTitle = sortIndex + statusColor + jobName
+
+      // Within the same statuses (e.g. Failed), we want the most recent 
+      // Failed to be at the top of the Failed grouping
+      const createdTime = getCreationTime(job)
+      const howOldInMilliseconds = getAgeDifference(createdTime).diffDuration
+
+      sortTitle = sortIndex + '-' + howOldInMilliseconds + '-' + jobName
     }
 
     return {

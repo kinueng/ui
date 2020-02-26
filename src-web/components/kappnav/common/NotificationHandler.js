@@ -35,6 +35,8 @@ const localStorage_key_last_seen_completed_job_timestamp = 'timestamp-of-last-se
 // Browser local storage keys - end
 
 class NotificationHandler extends React.PureComponent {
+
+    intervalID = 0
     
     constructor(props) {
         super(props)
@@ -52,7 +54,7 @@ class NotificationHandler extends React.PureComponent {
             // return the default
             return default_api_polling_intervals_milliseconds 
         } else {
-            return parseInt(interval, 10); // 10 is for mathmatical base number
+            return parseInt(interval)
         }
     }
 
@@ -79,7 +81,7 @@ class NotificationHandler extends React.PureComponent {
         const pollingInterval = this.getPollingIntervalFromConfig()
 
         // Setup the continuous API polling
-        this.timer = setInterval(
+        this.intervalID = setInterval(
                 () => this.getCompletedJobs(), 
                 pollingInterval);
     }
@@ -87,7 +89,7 @@ class NotificationHandler extends React.PureComponent {
     componentWillUnmount() {
         // Need to make sure interval is stopped when component
         // is not being used
-        clearInterval(this.timer)
+        clearInterval(this.intervalID)
     }
 
     /**

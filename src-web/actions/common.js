@@ -157,11 +157,11 @@ export const getAgeDifference = (createdTime) => {
 export const getCreationTime = (item, timestampKey) => {
   const key = timestampKey ? timestampKey : defaultTimestampKey
   const createdTime = lodash.get(item, key)
-  return createdTime;
+  return createdTime
 }
 
 export const getAge = (item, timestampKey) => {
-  const createdTime = getCreationTime(item, timestampKey);
+  const createdTime = getCreationTime(item, timestampKey)
   if (createdTime) {
     const diff = getAgeDifference(createdTime),
           days = diff.days,

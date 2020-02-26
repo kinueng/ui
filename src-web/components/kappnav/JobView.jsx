@@ -26,7 +26,6 @@ import msgs from '../../../nls/kappnav.properties'
 import SecondaryHeader from './common/SecondaryHeader.jsx'
 import ResourceTable from './common/ResourceTable.js'
 import getResourceData from '../../definitions/index'
-import PropTypes from 'prop-types'
 import {getSearchableCellList, SEARCH_HEADER_TYPES} from './common/ResourceTable.js'
 
 
@@ -34,7 +33,8 @@ const jobResourceData = getResourceData(RESOURCE_TYPES.JOB)
 
 // This is the view that shows a collection of Command Actions jobs
 class JobView extends Component {
-  
+
+  intervalID = 0
 
   constructor(props) {
     super(props)
@@ -44,7 +44,7 @@ class JobView extends Component {
       totalRows: [],
       filteredRows: [],
       rows: [],
-      sortColumn: 'age', // default sort
+      sortColumn: 'status', // default sort
       sortDirection: SORT_DIRECTION_ASCENDING,
       pageSize: PAGE_SIZES.DEFAULT,
       pageNumber: 1,
@@ -61,7 +61,12 @@ class JobView extends Component {
 
     // make 'this' visible to class methods
     this.fetchData = this.fetchData.bind(this)
+    this.jobIsActive = this.jobIsActive.bind(this)
+    this.jobIsPending = this.jobIsPending.bind(this)
+    this.jobSucceeded = this.jobSucceeded.bind(this)
+    this.jobFailed = this.jobFailed.bind(this)
   }
+
   render() {
     let viewTitle = msgs.get('page.jobsView.title')
     if (this.state.loading)
@@ -89,8 +94,6 @@ class JobView extends Component {
             this.handleSort(e)
           }}
           pageNumber={this.state.pageNumber}
-          namespace={this.props.baseInfo.selectedNamespace}
-          namespaces={this.props.baseInfo.namespaces}
         />
         </div>
         </div>
@@ -98,21 +101,16 @@ class JobView extends Component {
   }
 
   componentDidMount() {
-    this.fetchData(this.props.baseInfo.selectedNamespace, this.state.search, this.props.baseInfo.appNavConfigMap)
+    this.fetchData(this.state.search)
 
-    var self = this
-    window.setInterval(() => {
-      self.refreshData(self.props.baseInfo.selectedNamespace, self.state.search, self.props.baseInfo.appNavConfigMap)
+    let self = this
+    this.intervalID = window.setInterval(() => {
+      self.refreshData(self.state.search)
     }, 10000)
   }
 
-  shouldComponentUpdate(nextProps) {
-    if (this.props.baseInfo.selectedNamespace == nextProps.baseInfo.selectedNamespace) {
-      return true
-    } else {
-      this.fetchData(nextProps.baseInfo.selectedNamespace, undefined, this.props.baseInfo.appNavConfigMap)
-    }
-    return false
+  componentWillUnmount() {
+    clearInterval(this.intervalID)
   }
 
   handlePaginationClick(e) {
@@ -129,7 +127,7 @@ class JobView extends Component {
       const searchValueLowerCase = searchValue.toLowerCase()
       //filter the rows
       totalRows.forEach((row) => {
-        var searchFields = getSearchableCellList(row, this.state.headers);
+        let searchFields = getSearchableCellList(row, this.state.headers);
         searchFields = searchFields.map(function(value) {
           // Lowercase everything to make string maching accurate
           return ('' + value).toLowerCase();
@@ -177,46 +175,61 @@ class JobView extends Component {
     }
   }
 
-  fetchData(namespace, search, appNavConfigData) {
+  fetchData(search) {
     this.setState({loading: true})
-    this.refreshData(namespace, search, appNavConfigData)
+    this.refreshData(search)
   }
 
-  getStatus(job, appNavConfigData) {
-    var statusColorMapping = appNavConfigData && appNavConfigData.statuColorMapping
-    var statusPrecedence = appNavConfigData && appNavConfigData.statusPrecedence ? appNavConfigData && appNavConfigData.statusPrecedence : []
+  getJobStatus(job) {
+    const { appNavConfigMap } = this.props
+    const statusColorMapping = appNavConfigMap && appNavConfigMap.statuColorMapping
+    const statusPrecedence = appNavConfigMap && appNavConfigMap.statusPrecedence ? appNavConfigMap.statusPrecedence : []
 
-    var statusColor = STATUS_COLORS.DEFAULT_COLOR
-    var statusText = ''
-    var sortTitle = ''
+    let statusColor = STATUS_COLORS.DEFAULT_COLOR // default grey
+    let sortTitle = ''
 
-    var appName = job && job.metadata.labels['kappnav-job-application-name']
+    let jobName = job && job.metadata.labels['kappnav-job-application-name']
 
-    // Default the status to Normal until the job returns a done state (eg FAILED, COMPLETED)
-    var doneState = 'Normal'
-    if(job.status.conditions && job.status.conditions[0]) {
-      var type = job.status.conditions[0].type // Assuming ever only have 1 condition
-      // Based status choices on https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.13/#jobcondition-v1-batch
-      if(type.toUpperCase() === 'FAILED') {
-        doneState = 'Problem'
-      } else if(type.toUpperCase() === 'COMPLETE') {
-        doneState = 'Normal'
-      }
+    let doneState = '' // Case sensitive!
+    let statusText = ''
+    if(this.jobIsActive(job)) {
+      doneState = 'In Progress'
+      statusText = msgs.get('in.progress')
+
+    } else if(this.jobIsPending(job)) {
+      doneState = 'Pending'
+      statusText = msgs.get('pending')
+
+    } else if(this.jobFailed(job)) {
+      doneState = 'Failed'
+      statusText = msgs.get('failed')
+
+    } else if(this.jobSucceeded(job)) {
+      doneState = 'Completed'
+      statusText = msgs.get('completed')
+
+    } else {
+      doneState = 'Unknown'
+      statusText = msgs.get('unknown')
     }
 
-    statusText = msgs.get(doneState.toLowerCase())
-
-    var sortIndex = statusPrecedence.findIndex(val => val === doneState)
+    const sortIndex = statusPrecedence.findIndex(val => val === doneState)
 
     if(statusColorMapping && doneState) {
-      var colorKey = statusColorMapping.values && statusColorMapping.values[doneState]
+      const colorKey = statusColorMapping.values && statusColorMapping.values[doneState]
       if(colorKey) {
-        var color = statusColorMapping.colors && statusColorMapping.colors[colorKey]
+        const color = statusColorMapping.colors && statusColorMapping.colors[colorKey]
         if(color) {
           statusColor = color
         }
       }
-      sortTitle = sortIndex + statusColor + appName
+
+      // Within the same statuses (e.g. Failed), we want the most recent 
+      // Failed to be at the top of the Failed grouping
+      const createdTime = getCreationTime(job)
+      const howOldInMilliseconds = getAgeDifference(createdTime).diffDuration
+
+      sortTitle = sortIndex + '-' + howOldInMilliseconds + '-' + jobName
     }
 
     return {
@@ -228,7 +241,36 @@ class JobView extends Component {
     }
   }
 
-  refreshData(namespace, search, appNavConfigData) {
+  jobIsActive(job) {
+    if(!job && !!!job.status.active) {
+      return false
+    }
+    return job.status.active > 0
+  }
+
+  jobIsPending(job) {
+    // If none of these fields exist, the assumption is that
+    // the job is pending
+    return !job && !!!job.status.active
+                && !!!job.status.succeeded
+                && !!!job.status.failed
+  }
+
+  jobSucceeded(job) {
+    if(!job && !!!job.status.succeeded) {
+      return false
+    }
+    return job.status.succeeded > 0
+  }
+
+  jobFailed(job) {
+    if(!job && !!!job.status.failed) {
+      return false
+    }
+    return job.status.failed > 0
+  }
+
+  refreshData(search) {
     fetch('/kappnav/resource/commands').then(result => result.json()).then(result => {
       const rowArray = []
       const actionMap = result[CONFIG_CONSTANTS.ACTION_MAP]
@@ -239,9 +281,9 @@ class JobView extends Component {
         const appUuid = metadata.name
         const jobName = metadataLabel['kappnav-job-action-name']
 
-        var itemObj = {}
+        let itemObj = {}
         itemObj.id = metadata.uid+'-job'
-        itemObj.status = buildStatusHtml(this.getStatus(job, appNavConfigData))
+        itemObj.status = buildStatusHtml(this.getJobStatus(job))
 
         const urlActions = actionMap ? actionMap[CONFIG_CONSTANTS.URL_ACTIONS] : ''
         if(urlActions && urlActions[0]) {
@@ -255,7 +297,7 @@ class JobView extends Component {
           itemObj.actionName = jobName
         }
         
-        var applicationName = metadataLabel['kappnav-job-application-name']
+        const applicationName = metadataLabel['kappnav-job-application-name']
         if (applicationName && applicationName === 'kappnav.not.assigned') {
           itemObj.appName = msgs.get('not.assigned')
         } else {
@@ -277,10 +319,10 @@ class JobView extends Component {
   }
 } // end of JobView component
 
-export default connect(
-  (state) => ({
-      baseInfo: state.baseInfo,
-  }),
-  {
+const mapStateToProps = (state) => {
+  return {
+    appNavConfigMap: state.baseInfo.appNavConfigMap
   }
-)(JobView)
+}
+
+export default connect(mapStateToProps)(JobView)

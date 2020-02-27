@@ -130,6 +130,7 @@ class SecondaryHeader extends React.Component {
                 className="user-width"
                 onChange={(event) => this.initiateLogOut(event)}
                 itemToString={item => (item ? item.text : "")}
+                ariaLabel={msgs.get('user.menu.button.label')}
               />
             </div> : null}
         </div>
@@ -147,7 +148,7 @@ class SecondaryHeader extends React.Component {
             <div className={'secondary-header-wrapper ' + primaryHeaderClasses} role='region' aria-label={title}>
               <div className={`secondary-header ${simpleHeaderClasses}`} ref={div => this.secondaryHeader = div}>
                 {tabs && tabs.length > 0 ? (
-                  <DetailPageHeader hasTabs={true} role="" title={decodeURIComponent(title)} aria-label={`${title} ${msgs.get('secondaryHeader')}`}>
+                  <DetailPageHeader role="presentation" hasTabs={true} title={decodeURIComponent(title)} aria-label={`${title} ${msgs.get('secondaryHeader')}`}>
                     <Breadcrumb>
                       {breadcrumbItems && this.renderBreadCrumb()}
                     </Breadcrumb>
@@ -156,7 +157,7 @@ class SecondaryHeader extends React.Component {
                     </Tabs>
                   </DetailPageHeader>
                 ) : (
-                  <DetailPageHeader hasTabs={true} statusColor={this.state.statusColor} statusText={this.state.statusText} title={decodeURIComponent(title)} aria-label={`${title} ${msgs.get('secondaryHeader')}`}>
+                  <DetailPageHeader role="presentation" hasTabs={true} statusColor={this.state.statusColor} statusText={this.state.statusText} title={decodeURIComponent(title)} aria-label={`${title} ${msgs.get('secondaryHeader')}`}>
                     <Breadcrumb>
                       {this.renderBreadCrumb()}
                     </Breadcrumb>

@@ -126,6 +126,10 @@ class ResourceTable extends Component {
 		var navModalLink = document.getElementById('navModalLink');
 		if (navModalLink && addResourceButton) {
 			navModalLink.onclick = function() {addResourceButton.click()};
+			navModalLink.onkeyup = function(event) {
+				if (event.keyCode === 13) { //enter key
+					addResourceButton.click()}
+			}
 		}
 	}
 
@@ -354,7 +358,7 @@ class ResourceTable extends Component {
 		if (cell.id.includes('title') || cell.id.includes('description') || cell.id.includes('section_data') || cell.id.includes('enablement_label') || cell.id.includes('section_map')) {
 			return c;
 		} else {
-			c = <TableCell key={cell.id}>{cell.value} </TableCell>;
+			c = <TableCell key={cell.id}>{cell.value}</TableCell>;
 		}
 		return c;
 	}
@@ -364,10 +368,10 @@ class ResourceTable extends Component {
 	renderButton(button, selectedRows) {
 		let b;
 		if (button.href) { 
-			b = <Button small kind={button.kind} id={button.buttonText} href={button.href}>{button.buttonText}</Button>
+			b = <Button small kind={button.kind} id={button.buttonText} href={button.href} aria-label={button.buttonText}>{button.buttonText}</Button>
 		} 
 		if (button.action) { //onClick method call passes selectedRows to perform 'action' on/with those values
-			b = <Button small kind={button.kind} id={button.buttonText} onClick={() => {button.action(selectedRows)}}>{button.buttonText}</Button>
+			b = <Button small kind={button.kind} id={button.buttonText} aria-label={button.buttonText} onClick={() => {button.action(selectedRows)}}>{button.buttonText}</Button>
 		}
 		return b;
 	}
@@ -474,7 +478,7 @@ class ResourceTable extends Component {
 														return (
 															rows.map(row => (
 															<TableRow key={row.id}>
-															{row.disabled ? <TableSelectRow {...getSelectionProps({ row })} ariaLabel={row.id + '-checkbox'} checked={row.disabled} disabled={row.disabled}/> : <TableSelectRow {...getSelectionProps({ row })} ariaLabel={row.id + '-checkbox'}/>}
+															{row.disabled ? <TableSelectRow {...getSelectionProps({ row })} ariaLabel={msgs.get('table.checkbox.label', [row.cells[0].value, row.cells[3].value])} checked={row.disabled} disabled={row.disabled}/> : <TableSelectRow {...getSelectionProps({ row })} ariaLabel={msgs.get('table.checkbox.label', [row.cells[0].value, row.cells[3].value])}/>}
 																{row.cells.map(cell => (
 																	this.renderCell(row, cell)
 																))}
@@ -539,7 +543,7 @@ class ResourceTable extends Component {
 													var msg = msgs.get('table.empty', [resource]);
 		
 													return (
-														<TableRow><TableCell colSpan={displayedHeaders + 1}>{msg} <span className='emptyTableResourceLink' id='navModalLink'>{modal}</span>.</TableCell></TableRow>
+														<TableRow><TableCell colSpan={displayedHeaders + 1}>{msg} <span className='emptyTableResourceLink' id='navModalLink' tabindex='0' role='button' aria-label={msg+' '+modal}>{modal}</span>.</TableCell></TableRow>
 													)
 												} else {
 													return(

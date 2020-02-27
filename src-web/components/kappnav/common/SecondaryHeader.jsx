@@ -1,13 +1,13 @@
 /*****************************************************************
  *
- * Copyright 2019 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -90,14 +90,14 @@ class SecondaryHeader extends React.Component {
 
     // https://www.npmjs.com/package/hamburgers
     const hamburgerButton = (
-      <button className={'hamburger hamburger--slider ' + (leftNavOpen ? 'is-active' : '')} 
-              id='hamburger' aria-label={msgs.get('header.menu.label')} 
+      <button className={'hamburger hamburger--slider ' + (leftNavOpen ? 'is-active' : '')}
+              id='hamburger' aria-label={msgs.get('header.menu.label')}
               onClick={this.handleMenuClick} title={msgs.get('header.menu.label')}>
 
         <span className="hamburger-box">
           <span className="hamburger-inner"></span>
         </span>
-        
+
       </button>
     )
 
@@ -183,7 +183,7 @@ class SecondaryHeader extends React.Component {
                      data={this.state.resourceModalData}
                      submitUrl={this.state.resourceModalSubmitUrl}
                      handleClose={(refresh, originalResource, newResource)=>{
-                       if(refresh===true && this.refreshCallback) { 
+                       if(refresh===true && this.refreshCallback) {
                          this.refreshCallback({operation:"edit", originalResource:originalResource, newResource:newResource});
                        }
                        this.setState({resourceModalOpen:false})

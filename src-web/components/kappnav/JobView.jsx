@@ -298,19 +298,29 @@ class JobView extends Component {
         }
         
         const applicationName = metadataLabel['kappnav-job-application-name']
-        if (applicationName && applicationName === 'kappnav.not.assigned') {
-          itemObj.appName = msgs.get('not.assigned')
-        } else {
-          //since component and application namespace can be different, hence we will be using the application namespace
-          itemObj.appName = <a href={location.protocol + '//' + location.host + CONTEXT_PATH + '/applications/' + encodeURIComponent(applicationName) + '?namespace=' + metadataLabel['kappnav-job-application-namespace']}>
-            {metadataLabel['kappnav-job-application-namespace'] + '/' + applicationName}
-          </a>
+        if ( applicationName && applicationName == 'kappnav') { // hidden application name
+          itemObj.appName = '-'; 
+        }
+        else {
+          if (applicationName && applicationName === 'kappnav.not.assigned') {
+            itemObj.appName = msgs.get('not.assigned')
+          } else {
+            //since component and application namespace can be different, hence we will be using the application namespace
+            itemObj.appName = <a href={location.protocol + '//' + location.host + CONTEXT_PATH + '/applications/' + encodeURIComponent(applicationName) + '?namespace=' + metadataLabel['kappnav-job-application-namespace']}>
+              {metadataLabel['kappnav-job-application-namespace'] + '/' + applicationName}
+            </a>
+          }
         }
 
         const createdTime = getCreationTime(job)
         const howOldInMilliseconds = getAgeDifference(createdTime).diffDuration + ''
         itemObj.age = <div data-sorttitle={howOldInMilliseconds}>{getAge(job)}</div>
-        itemObj.component = metadataLabel['kappnav-job-component-namespace'] + '/' + metadataLabel['kappnav-job-component-name']
+        if ( metadataLabel['kappnav-job-application-scope'] == 'true' ) { 
+          itemObj.component= '-'
+        }
+        else { 
+          itemObj.component = metadataLabel['kappnav-job-component-namespace'] + '/' + metadataLabel['kappnav-job-component-name']
+        } 
         itemObj.menuAction = getOverflowMenu(job, actionMap, jobResourceData)
         rowArray.push(itemObj)
       })

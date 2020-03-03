@@ -63,6 +63,10 @@ class ComponentView extends Component {
     return tokenized_url
   }
 
+  /** Intreval IDs to clear later */
+  refreshResourceInt = 0
+  refreshResourceComponentsInt = 0
+
   constructor (props) {
     super(props);
 
@@ -255,13 +259,13 @@ class ComponentView extends Component {
   }
 
     var self = this;
-    window.setInterval(function(){
+    this.refreshResourceInt = window.setInterval(function(){
       refreshResource(self.state.name, self.props.baseInfo.selectedNamespace, self.props.resourceType, self.props.baseInfo.appNavConfigMap).then(result => {
         self.setState({loading: false, data: result});
       });
     }, 10000);
 
-    window.setInterval(function(){
+    this.refreshResourceComponentsInt = window.setInterval(function(){
       refreshResourceComponent(self.state.name, self.props.baseInfo.selectedNamespace, self.props.resourceType, self.props.baseInfo.appNavConfigMap).then(result => {
         if(result === null) {
           this.setState({loadingComponents: false});
@@ -271,6 +275,11 @@ class ComponentView extends Component {
       });
     }, 30000);
 
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.refreshResourceInt)
+    clearInterval(this.refreshResourceComponentsInt)
   }
 
   toggleExpandCollapse(){

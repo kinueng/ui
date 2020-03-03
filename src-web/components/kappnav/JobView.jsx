@@ -300,6 +300,7 @@ class JobView extends Component {
         const applicationName = metadataLabel['kappnav-job-application-name']
         if ( applicationName && applicationName == 'kappnav') { // hidden application name
           itemObj.appName = '-'; 
+          itemObj.actionName = jobName // rewrite jobName as non-link 
         }
         else {
           if (applicationName && applicationName === 'kappnav.not.assigned') {

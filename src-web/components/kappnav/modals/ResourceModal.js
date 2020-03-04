@@ -24,7 +24,7 @@ import { Modal, Loading, InlineNotification } from 'carbon-components-react'
 import msgs from '../../../../nls/kappnav.properties'
 import { REQUEST_STATUS, RESOURCE_TYPES } from '../../../actions/constants'
 import jsYaml from 'js-yaml'
-import { translateKind, getToken } from '../../../actions/common'
+import { translateKind, getToken, parseJSON } from '../../../actions/common'
 
 require('../../../../scss/modal.scss')
 
@@ -83,13 +83,32 @@ class ResourceModal extends React.PureComponent {
 
           var editCallback = function(response, newResource){
             if(response.ok) {
-              this.handleClose(true, this.props.data, newResource)
+              if(response.status === 207) {
+                //kube api exception
+                var data = response.json
+                if(data && data.message === 'Conflict') {
+                  //The resourceVersion is wrong
+                  this.setState({reqErrorMsg: [msgs.get('edit.conflict')]})
+                } else if(data && data.message === 'Bad Request') {
+                  //The data that changed was either readonly or rejected somehow
+                  this.setState({reqErrorMsg: [msgs.get('edit.badrequest')]})
+                } else if(data && data.message) {
+                  //Catch-all for all other excpetions
+                  this.setState({reqErrorMsg: [msgs.get('edit.207', data.message)]})
+                } else {
+                  //Just in case api returned 207 without a message. This should not happen
+                  this.setState({reqErrorMsg: [data]})
+                }
+              } else {
+                //success case
+                this.handleClose(true, this.props.data, newResource)
+              }
             } else {
               this.setState({reqErrorMsg: [response.status + ' ' + response.statusText]})
             }
           }.bind(this)
 
-          // edit the application
+          // edit the resource
           fetch(this.props.submitUrl, {
             method: 'PUT',
             cache: 'no-cache',
@@ -99,6 +118,7 @@ class ResourceModal extends React.PureComponent {
             },
             body: JSON.stringify(resource),
           })
+            .then(parseJSON)
             .then(response => editCallback(response, resource))
         })
       } catch(e) {

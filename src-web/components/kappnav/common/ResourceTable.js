@@ -43,6 +43,8 @@ const {
 
 const translateWithId = (locale, id) => msgs.get(id)
 
+var displayedHeaders; //used to calculate how many columns the message for an empty table(w/ non-selectable rows) should span 
+
 export const SEARCH_HEADER_TYPES= {
 	NOT_SEARCHABLE : 'NOT_SEARCHABLE',
 	STATUS : 'STATUS',
@@ -124,6 +126,10 @@ class ResourceTable extends Component {
 		var navModalLink = document.getElementById('navModalLink');
 		if (navModalLink && addResourceButton) {
 			navModalLink.onclick = function() {addResourceButton.click()};
+			navModalLink.onkeyup = function(event) {
+				if (event.keyCode === 13) { //enter key
+					addResourceButton.click()}
+			}
 		}
 	}
 
@@ -352,7 +358,7 @@ class ResourceTable extends Component {
 		if (cell.id.includes('title') || cell.id.includes('description') || cell.id.includes('section_data') || cell.id.includes('enablement_label') || cell.id.includes('section_map')) {
 			return c;
 		} else {
-			c = <TableCell key={cell.id}>{cell.value} </TableCell>;
+			c = <TableCell key={cell.id}>{cell.value}</TableCell>;
 		}
 		return c;
 	}
@@ -362,10 +368,10 @@ class ResourceTable extends Component {
 	renderButton(button, selectedRows) {
 		let b;
 		if (button.href) { 
-			b = <Button small kind={button.kind} id={button.buttonText} href={button.href}>{button.buttonText}</Button>
+			b = <Button small kind={button.kind} id={button.buttonText} href={button.href} aria-label={button.buttonText}>{button.buttonText}</Button>
 		} 
 		if (button.action) { //onClick method call passes selectedRows to perform 'action' on/with those values
-			b = <Button small kind={button.kind} id={button.buttonText} onClick={() => {button.action(selectedRows)}}>{button.buttonText}</Button>
+			b = <Button small kind={button.kind} id={button.buttonText} aria-label={button.buttonText} onClick={() => {button.action(selectedRows)}}>{button.buttonText}</Button>
 		}
 		return b;
 	}
@@ -445,7 +451,7 @@ class ResourceTable extends Component {
 											<Table zebra={false}>
 												<TableHead>
 													<TableRow>
-														<TableSelectAll {...getSelectionProps()}/>
+														{(rows.length > 0) && <TableSelectAll {...getSelectionProps()}/>}
 														{headers.map(header => (
 															<th scope={'col'} key={header.key}>
 																<button
@@ -464,16 +470,24 @@ class ResourceTable extends Component {
 														))}
 													</TableRow>
 												</TableHead>
-										<TableBody>
-                                            {rows.map(row => (
-												<TableRow key={row.id}>
-													<TableSelectRow {...getSelectionProps({ row })} ariaLabel={row.id + '-checkbox'}/>
-													{row.cells.map(cell => (
-														this.renderCell(row, cell)
-													))}
-												</TableRow>  
-                                            ))}
-                                        </TableBody>
+												<TableBody>
+												{(() => {
+													if (rows.length === 0) {
+														return (this.props.getCustomTableMsg(headers))
+													} else {
+														return (
+															rows.map(row => (
+															<TableRow key={row.id}>
+															{row.disabled ? <TableSelectRow {...getSelectionProps({ row })} ariaLabel={msgs.get('table.checkbox.label', [row.cells[0].value, row.cells[3].value])} checked={row.disabled} disabled={row.disabled}/> : <TableSelectRow {...getSelectionProps({ row })} ariaLabel={msgs.get('table.checkbox.label', [row.cells[0].value, row.cells[3].value])}/>}
+																{row.cells.map(cell => (
+																	this.renderCell(row, cell)
+																))}
+															</TableRow>
+															))
+														)
+													}
+												})()}
+												</TableBody>
 										</Table>
 										)
 									} else {
@@ -483,6 +497,7 @@ class ResourceTable extends Component {
 												<TableRow>
 													<TableExpandHeader />
 													{(() => {
+														displayedHeaders = headers.length
 														return headers.map(header => {
 															if (header.key === 'menuAction') {
 																return (
@@ -491,6 +506,7 @@ class ResourceTable extends Component {
 																	</DataTable.TableHeader>
 																)
 															} else if (header.key === 'title' || header.key === 'description' || header.key === 'section_data' || header.key === 'enablement_label' || header.key === 'section_map') {
+																displayedHeaders-- //subtract 1 for each time a header has these keys since these will not be displayed
 																return c;
 															} else {
 																return (
@@ -527,7 +543,7 @@ class ResourceTable extends Component {
 													var msg = msgs.get('table.empty', [resource]);
 		
 													return (
-														<TableRow><TableCell colSpan={headers.length + 1}>{msg} <span className='emptyTableResourceLink' id='navModalLink'>{modal}</span>.</TableCell></TableRow>
+														<TableRow><TableCell colSpan={displayedHeaders + 1}>{msg} <span className='emptyTableResourceLink' id='navModalLink' tabindex='0' role='button' aria-label={msg+' '+modal}>{modal}</span>.</TableCell></TableRow>
 													)
 												} else {
 													return(

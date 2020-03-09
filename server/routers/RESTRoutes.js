@@ -19,7 +19,7 @@
 var express = require('express'),
     extensions = require('./extensions'),
 	log4js = require('log4js'),
-	logger = log4js.getLogger('server')
+	logger = log4js.getLogger('client')
 
 module.exports = function(app) {
   var router = express.Router();
@@ -33,7 +33,8 @@ module.exports = function(app) {
 }
 
 function logMessage(req, res) {
-  const message = req.body.message
+  const message = req.headers['kappnav-user'] ? '['+req.headers['kappnav-user']+'] ' + req.body.message 
+                                              : req.body.message
   const type = req.body.type
 
   if(type === 'error') {

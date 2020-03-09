@@ -1,6 +1,6 @@
 /*****************************************************************
  *
- * Copyright 2019 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,12 @@
  *
  *****************************************************************/
 
-var express = require('express');
-
-module.exports = function(app) {
-  var router = express.Router();
-
-  app.use("/extensions", router);
+function addRoutes(router) {
+  return router
 }
 
+const extensions = {
+  addRoutes
+}
+
+module.exports = extensions;

@@ -18,6 +18,7 @@
 
 var express = require('express'),
     extensions = require('./extensions'),
+	cookieParser = require('cookie-parser'),
 	log4js = require('log4js'),
 	logger = log4js.getLogger('client')
 
@@ -29,11 +30,11 @@ module.exports = function(app) {
   //Extend the REST apis
   router = extensions.addRoutes(router)
 
-  app.use('/extensions', express.json(), router)
+  app.use('/extensions', express.json(), cookieParser(), router)
 }
 
 function logMessage(req, res) {
-  const message = req.headers['kappnav-user'] ? '['+req.headers['kappnav-user']+'] ' + req.body.message 
+  const message = req.cookies['kappnav-user'] ? '['+req.cookies['kappnav-user']+'] ' + req.body.message 
                                               : req.body.message
   const type = req.body.type
 

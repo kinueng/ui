@@ -136,12 +136,28 @@ class NotificationHandler extends React.PureComponent {
     /**
      * Get the current time from the Kubernetes platform where
      * the jobs are running.
+     * @throws {Exception} - API server responded with error
      */
     getPlatformCurrentTime() {
         return fetch('/kappnav/resource/command-time')
+            .then(response => this.checkForErrorFromCommandActionAPI(response))
             .then(result => result.json())
             .then(json => {
                 return json.time
+            })
+            .catch(errorJSON => {
+                try {
+                    throw "Cannot get the current command action timestamp from the API. errorJSON=" + JSON.stringify(errorJSON)
+                }
+                catch(e) {
+                    if(e instanceof TypeError) {
+                        // In case JSON.stringify() fails to work due to TypeError.  
+                        // This catch should never happened.  Regardless, this code
+                        // cannot cause the UI to catastrophically fail due to errors
+                        throw "Cannot get the current command action timestamp from the API. Exception=" + e
+                    }
+                    throw e
+                }
             })
     }
 
@@ -149,11 +165,19 @@ class NotificationHandler extends React.PureComponent {
      * Poll for completed jobs only that happened after a particular time
      */
     getCompletedJobs() {
-        this.getTimeStampOfLastSeenCompletedJob().then(timestamp => {
-            fetch('/kappnav/resource/commands?time=' + timestamp)
-                .then(result => result.json())
-                .then(result => this.processCompletedJobs(result))
-        })
+        this.getTimeStampOfLastSeenCompletedJob()
+            .then(timestamp => {
+                fetch('/kappnav/resource/commands?time=' + timestamp)
+                    .then(response => this.checkForErrorFromCommandActionAPI(response))
+                    .then(result => result.json())
+                    .then(result => this.processCompletedJobs(result))
+                    .catch(e => {
+                        console.log("Error getting completed jobs after timestamp=" + timestamp)
+                    })
+            })
+            .catch(e => {
+                console.log("Error getting completed jobs after a particular timestamp.")
+            })
     }
 
     /**
@@ -198,6 +222,9 @@ class NotificationHandler extends React.PureComponent {
         return moment().subtract(numMillisecondsAgo, 'milliseconds');
     }
 
+    /**
+     * @throws {Exception}
+     */
     getTimeStampOfLastSeenCompletedJob() {
         let timestamp = window.localStorage.getItem(localStorage_key_last_seen_completed_job_timestamp)
         if(! timestamp) {
@@ -205,14 +232,29 @@ class NotificationHandler extends React.PureComponent {
             // users first time using the UI.  The current time of the platform will
             // be the starting timestamp we use to get the completd jobs last seen by
             // the user
-            return this.getPlatformCurrentTime().then(timestamp => {
-                const store = window.localStorage
-                store.setItem(localStorage_key_last_seen_completed_job_timestamp, timestamp)
-                return timestamp
-            })
+            return this.getPlatformCurrentTime()
+                .then(timestamp => {
+                    const store = window.localStorage
+                    store.setItem(localStorage_key_last_seen_completed_job_timestamp, timestamp)
+                    return timestamp
+                })
         } else {
             return Promise.resolve(timestamp)
         }
+    }
+
+    /**
+     * Inspect the response for errors.  If no errors, return the response intact
+     * @throws {JSON} - API error response
+     */
+    checkForErrorFromCommandActionAPI(response) {
+        if(! response.ok || (response.ok && response.status === 207)) {
+            return response.json().then(responseJSON => {
+                throw responseJSON
+            })
+        }
+
+        return Promise.resolve(response)
     }
 }
 

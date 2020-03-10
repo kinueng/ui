@@ -563,3 +563,12 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
     return menu
   }
 }
+
+export const parseJSON = (response) => {
+  return new Promise((resolve) => response.json()
+    .then((json) => resolve({
+      status: response.status,
+      ok: response.ok,
+      json,
+    })))
+}

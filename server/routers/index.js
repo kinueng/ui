@@ -22,5 +22,5 @@ module.exports = function(app){
   
     require('./health')(app);
 
-    require('./extensions')(app);
+    require('./RESTRoutes')(app);
 };  

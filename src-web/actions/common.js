@@ -188,6 +188,17 @@ export const openModal = (...args) => {
   )
 }
 
+export const openActionModal = (namespace, resourceName, actionName, actionDescription) => {
+  // var restApi = '/kappnav/resource/kappnav/execute/command/'+actionName+'?namespace=kappnav'
+  var restApi = `/kappnav/resource/${resourceName}/execute/command/${actionName}?namespace=${namespace}`
+
+  const resource = {}
+  window.secondaryHeader.showActionResourceModal(true, {
+    primaryBtn: 'modal.button.submit',
+    heading: actionDescription
+  }, resource, restApi) 
+}
+
 const openModal_internal = (operation, resource, application, applicationNamespace, cmd, cmdInput) => {
   const resourceType = resource.kind.toLowerCase()
   if(resourceType === 'job' && operation === 'remove') {

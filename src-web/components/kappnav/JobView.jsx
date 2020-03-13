@@ -96,7 +96,7 @@ class JobView extends Component {
               createNewModal={() => {
                 return (
                   <div>
-                    <Button small icon={'launch--glyph'} iconDescription={msgs.get('run.audit')} onClick={() => openActionModal(document.documentElement.getAttribute('appnavConfigmapNamespace'), 'kappnav', 'app-nav-inventory', "Run Inventory Command Action")}>
+                    <Button small iconDescription={msgs.get('run.audit')} onClick={() => openActionModal(document.documentElement.getAttribute('appnavConfigmapNamespace'), 'kappnav', 'app-nav-inventory', "Run Inventory Command Action")}>
                       {msgs.get('run.audit')}
                     </Button>
                   </div>

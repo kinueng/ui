@@ -36,11 +36,13 @@ FROM registry.access.redhat.com/ubi7-minimal
 
 ARG VERSION
 ARG BUILD_DATE
+ARG COMMIT
 
 LABEL name="Application Navigator" \
       vendor="kAppNav" \
       version=$VERSION \
       release=$VERSION \
+      commit=$COMMIT \
       created=$BUILD_DATE \
       summary="UI image for Application Navigator" \
       description="This image contains the UI for Application Navigator"

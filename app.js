@@ -73,9 +73,7 @@ app.use((err, req, res, next) => {
 
 app.all('*', (req, res, next) => {
     req.user = req.headers['x-forwarded-user']
-    if(req.user && req.user !== ''){
-      req.user = req.user.replace(/:/g,'')
-    } else{
+    if(!req.user || req.user === ''){
       req.user = KUBE_ENV
     }
     const cookieConfig = {

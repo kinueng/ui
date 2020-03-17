@@ -44,10 +44,13 @@ export default class Notification extends React.PureComponent {
         const { type, result } = this.props
 
         const { title, subtitleMsgKey } = this._determineTitleAndSubtitleBasedOnType(type)
+
+        const arg0 = result.metadata.annotations['kappnav-job-action-text']
+        const arg1 = result.metadata.labels['kappnav-job-component-name'] || result.metadata.labels['kappnav-job-application-name']
         
         const subtitle =
             <div>
-            <h3> {msgs.get(subtitleMsgKey, [result.metadata.annotations['kappnav-job-action-text'], result.metadata.labels['kappnav-job-component-name']])}</h3>
+            <h3> {msgs.get(subtitleMsgKey, [arg0, arg1])}</h3>
             <br />
             </div>
 

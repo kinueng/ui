@@ -1,13 +1,13 @@
 /*****************************************************************
  *
- * Copyright 2019 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -183,18 +183,28 @@ export const openModal = (...args) => {
   // https://github.com/carbon-design-system/carbon/issues/4036
   // Carbon Modal a11y focus workaround
   setTimeout(
-    () => openModal_internal(...args), 
+    () => openModal_internal(...args),
     25 // milliseconds
   )
+}
+
+export const openActionModal = (namespace, resourceName, actionName, actionDescription) => {
+  var restApi = `/kappnav/resource/${resourceName}/execute/command/${actionName}?namespace=${namespace}`
+
+  const resource = {}
+  window.secondaryHeader.showActionResourceModal(true, {
+    primaryBtn: 'modal.button.submit',
+    heading: actionDescription
+  }, resource, restApi)
 }
 
 const openModal_internal = (operation, resource, application, applicationNamespace, cmd, cmdInput) => {
   const resourceType = resource.kind.toLowerCase()
   if(resourceType === 'job' && operation === 'remove') {
-    // The delete job logic is very different from the other 
+    // The delete job logic is very different from the other
     window.secondaryHeader.showRemoveResourceModal(
-      true, 
-      { primaryBtn: 'modal.button.' + operation, heading: 'modal.' + operation + '.heading' }, 
+      true,
+      { primaryBtn: 'modal.button.' + operation, heading: 'modal.' + operation + '.heading' },
       resource,
       '/kappnav/resource/command/' + encodeURIComponent(resource.metadata.name)
     )
@@ -208,7 +218,7 @@ const openModal_internal = (operation, resource, application, applicationNamespa
     if(application) {
       url = '/kappnav/resource/' + encodeURIComponent(application)+'/' + encodeURIComponent(resource.metadata.name)+'/'+resource.kind+'/execute/command/'+encodeURIComponent(cmd.name)+'?namespace='+encodeURIComponent(resource.metadata.namespace)+'&application-namespace='+applicationNamespace
     }
-      
+
     var input = undefined
     if(cmdInput && cmd[CONFIG_CONSTANTS.REQUIRES_INPUT]) {
       input = cmdInput[cmd[CONFIG_CONSTANTS.REQUIRES_INPUT]]
@@ -217,7 +227,7 @@ const openModal_internal = (operation, resource, application, applicationNamespa
     window.secondaryHeader.showActionResourceModal(true, {
       primaryBtn: 'modal.button.submit',
       heading: cmd.description
-    }, resource, url, input, cmd)  
+    }, resource, url, input, cmd)
   } else {
     window.secondaryHeader.showRemoveResourceModal(true, {
       primaryBtn: 'modal.button.'+operation,
@@ -316,7 +326,7 @@ export const getHoverOverTextForStatus = (annotations) => {
   return ''
 }
 
-export const getStatus = (metadata, appNavConfigData) => { 
+export const getStatus = (metadata, appNavConfigData) => {
   const statusColorMapping = appNavConfigData && appNavConfigData.statuColorMapping
   const statusPrecedence = appNavConfigData && appNavConfigData.statusPrecedence ? appNavConfigData && appNavConfigData.statusPrecedence : []
   const statusUnknown = appNavConfigData && appNavConfigData.statusUnknown
@@ -333,7 +343,7 @@ export const getStatus = (metadata, appNavConfigData) => {
   const name = metadata && metadata.name;
   const value = annotations && annotations['kappnav.status.value'] ? annotations['kappnav.status.value'] : statusUnknown
   const sortIndex = statusPrecedence.findIndex(val => val === value)
-  
+
   if(statusColorMapping && value) {
     statusText = msgs.get(value.toLowerCase())
     const colorKey = statusColorMapping.values && statusColorMapping.values[value]
@@ -347,18 +357,18 @@ export const getStatus = (metadata, appNavConfigData) => {
   }
 
   return {
-    statusColor: statusColor, 
-    borderColor: STATUS_COLORS.BORDER_COLOR, 
-    statusMessage: statusMessage, 
-    statusText: statusText, 
+    statusColor: statusColor,
+    borderColor: STATUS_COLORS.BORDER_COLOR,
+    statusMessage: statusMessage,
+    statusText: statusText,
     sortTitle: sortTitle}
 }
 
 export const buildStatusHtml = (statusObj) => {
   return (
     <div className='statusCell' data-sorttitle={statusObj.sortTitle}>
-      <span className="bx--detail-page-header-status-icon" 
-            title={statusObj.statusMessage} 
+      <span className="bx--detail-page-header-status-icon"
+            title={statusObj.statusMessage}
             style={{backgroundColor: statusObj.statusColor, borderColor: statusObj.borderColor}}>
       </span>
       <span className="bx--detail-page-header-status-text">{statusObj.statusText}</span>
@@ -367,7 +377,7 @@ export const buildStatusHtml = (statusObj) => {
 }
 
 export const validateUrl = (url) => {
-  // Parse the user provided URL.  This is crude way to prevent XSS by 
+  // Parse the user provided URL.  This is crude way to prevent XSS by
   // sanity checking the user's input is actually a URL
 
   var result = {href: "", text: ""}
@@ -378,8 +388,8 @@ export const validateUrl = (url) => {
       result.text = temp.href
     }
   } catch(err) {
-    // If URL cannot parse the string, that must mean the user input 
-    // is not in a URL format.  Let's be on the safeside and not display 
+    // If URL cannot parse the string, that must mean the user input
+    // is not in a URL format.  Let's be on the safeside and not display
     // the user's input (XSS) and display a reason why the URL is not shown
     result.text = msgs.get('description.title.urlError')
   }
@@ -391,14 +401,14 @@ export const validateUrl = (url) => {
  * @param {*} resourceLabels - a resource's labels
  * @param {*} resourceAnnotations - a resource's annotations
  * @param {*} action - an action's data
- * 
+ *
  * Rule:  if action specifies enablement-label or enablement-annotation AND resource specifies matching
- *        label or annotation, then action is enabled else action is enabled 
+ *        label or annotation, then action is enabled else action is enabled
  */
 function isActionEnabled(resourceLabels, resourceAnnotations, action) {
   let enablementLabel = action[CONFIG_CONSTANTS.ENABLEMENT_LABEL]
   let enablementAnnotation = action[CONFIG_CONSTANTS.ENABLEMENT_ANNOTATION]
-  
+
   if (!enablementLabel && !enablementAnnotation) {
     // If both enablement-label and enablement-annotation are missing, assume the action is enabled for the resource
     return true;
@@ -406,15 +416,15 @@ function isActionEnabled(resourceLabels, resourceAnnotations, action) {
 
   let isEnabled = resourceLabels[enablementLabel];
   if (isEnabled) {
-    // The action's enablement-label has value X and 
+    // The action's enablement-label has value X and
     // the resource has a label of X.  This means the
     // action is enabled for this particular resource
     return true;
   }
- 
+
   isEnabled = resourceAnnotations[enablementAnnotation];
   if (isEnabled) {
-    // The action's enablement-annotation has value X and 
+    // The action's enablement-annotation has value X and
     // the resource has a annotation of X.  This means the
     // action is enabled for this particular resource
     return true;
@@ -459,7 +469,7 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
   var hasStaticActions = staticResourceData && staticResourceData.actions && staticResourceData.actions.length>0
   let staticActions = []
   if(hasStaticActions) {
-    staticActions = 
+    staticActions =
       staticResourceData.actions.map((action, staticindex) => (
         <OverflowMenuItem key={itemId + action}
           primaryFocus={staticindex === 0}
@@ -475,7 +485,7 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
   var hasCustomActions = staticResourceData && staticResourceData.customActions && staticResourceData.customActions.length>0
   let customActions = []
   if(hasCustomActions) {
-    customActions = 
+    customActions =
       staticResourceData.customActions.map((customAction, staticindex) => {
         if(customAction.show(componentData, actionMap, staticResourceData, applicationName, applicationNamespace)){
           var kind = componentData && componentData.kind
@@ -546,7 +556,7 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
         }}
         onMouseEnter={(e) => {
           if(actionDesc){ e.target.title = actionDesc }
-        }} 
+        }}
       />
     })
   }

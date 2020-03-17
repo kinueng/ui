@@ -56,7 +56,9 @@ class JobView extends Component {
         {key: 'component', header: msgs.get('table.header.component'), type: SEARCH_HEADER_TYPES.STRING},
         {key: 'age', header: msgs.get('table.header.age'), type: SEARCH_HEADER_TYPES.STRING},
         {key: 'menuAction', header: msgs.get('table.header.action'), type: SEARCH_HEADER_TYPES.NOT_SEARCHABLE}
-      ]
+      ],
+      viewType: 'table.empty.command.actions',
+      modalType: 'run.audit'
     }
 
     // make 'this' visible to class methods
@@ -96,12 +98,14 @@ class JobView extends Component {
               createNewModal={() => {
                 return (
                   <div>
-                    <Button small iconDescription={msgs.get('run.audit')} onClick={() => openActionModal(document.documentElement.getAttribute('appnavConfigmapNamespace'), 'kappnav', 'app-nav-inventory', msgs.get('run.audit.action.description'))}>
+                    <Button small iconDescription={msgs.get('run.audit')} id={`page-action`} onClick={() => openActionModal(document.documentElement.getAttribute('appnavConfigmapNamespace'), 'kappnav', 'app-nav-inventory', msgs.get('run.audit.action.description'))}>
                       {msgs.get('run.audit')}
                     </Button>
                   </div>
                 )
               }}
+              viewType={this.state.viewType}
+              modalType={this.state.modalType}
             />
           </div>
         </div>

@@ -1,6 +1,6 @@
 /*****************************************************************
  *
- * Copyright 2019 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,7 +132,7 @@ class NavModal extends React.PureComponent {
     const {open, jsonMode, selectedMenuItem, parsingError, validationErrors} = this.state
 
     return (<div>
-      <Button small icon={'add--glyph'} onClick={this.handleOpen.bind(this, true)} disabled={this.props.disabled} iconDescription={msgs.get('svg.description.plus')} id={`create-application`}>
+      <Button small icon={'add--glyph'} onClick={this.handleOpen.bind(this, true)} disabled={this.props.disabled} iconDescription={msgs.get('svg.description.plus')} id={`page-action`}>
         {this.props.buttonName}
       </Button>
       {

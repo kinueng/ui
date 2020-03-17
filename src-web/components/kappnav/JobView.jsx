@@ -1,6 +1,6 @@
 /*****************************************************************
  *
- * Copyright 2019 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,7 +96,7 @@ class JobView extends Component {
               createNewModal={() => {
                 return (
                   <div>
-                    <Button small iconDescription={msgs.get('run.audit')} onClick={() => openActionModal(document.documentElement.getAttribute('appnavConfigmapNamespace'), 'kappnav', 'app-nav-inventory', "Run Inventory Command Action")}>
+                    <Button small iconDescription={msgs.get('run.audit')} onClick={() => openActionModal(document.documentElement.getAttribute('appnavConfigmapNamespace'), 'kappnav', 'app-nav-inventory', msgs.get('run.audit.action.description'))}>
                       {msgs.get('run.audit')}
                     </Button>
                   </div>

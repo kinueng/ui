@@ -1,6 +1,6 @@
 /*****************************************************************
  *
- * Copyright 2019 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -122,7 +122,7 @@ class ResourceTable extends Component {
 	When the resource table is empty, a row with text should have a link to the 'Add [resoure_name]' navmodal.
 	Clicking this link should trigger a click on the 'Add [resource_name]' button above the table */
 	connectAddLinkOnClick() {
-		var addResourceButton = document.getElementById('create-application');
+		var addResourceButton = document.getElementById('page-action');
 		var navModalLink = document.getElementById('navModalLink');
 		if (navModalLink && addResourceButton) {
 			navModalLink.onclick = function() {addResourceButton.click()};
@@ -537,15 +537,22 @@ class ResourceTable extends Component {
 												//viewType is undefined when in the Command Actions view
 												//viewType is the message key for the resource type: applications, WAS ND cells, or Liberty collectives
 												//modal is the message key for the title of the add modal that should pop up (ex: "Add Application")
-												if (rows.length === 0 && viewType) {
-													var resource = msgs.get(viewType);
-													var modal = msgs.get(modalType);
-													var msg = msgs.get('table.empty', [resource]);
-		
-													return (
-														<TableRow><TableCell colSpan={displayedHeaders + 1}>{msg} <span className='emptyTableResourceLink' id='navModalLink' tabindex='0' role='button' aria-label={msg+' '+modal}>{modal}</span>.</TableCell></TableRow>
-													)
-												} else {
+													if (rows.length === 0 && viewType) {
+														var modal = msgs.get(modalType);													
+	
+														if(viewType === 'table.empty.command.actions') { //the message is different for command actions
+															var msg = msgs.get(viewType);
+															return (
+																<TableRow><TableCell colSpan={displayedHeaders + 1}>{msg} <span className='emptyTableResourceLink' id='navModalLink' tabIndex='0' role='button' aria-label={msg+' '+modal}>{modal}</span>?</TableCell></TableRow>
+															)
+														} else {
+															var resource = msgs.get(viewType);
+															var msg = msgs.get('table.empty', [resource]);
+															return (
+																<TableRow><TableCell colSpan={displayedHeaders + 1}>{msg} <span className='emptyTableResourceLink' id='navModalLink' tabIndex='0' role='button' aria-label={msg+' '+modal}>{modal}</span>.</TableCell></TableRow>
+															)
+														}
+													} else {
 													return(
 														rows.map(row => (
 														<React.Fragment key={row.id}>

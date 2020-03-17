@@ -1,6 +1,6 @@
 /*****************************************************************
  *
- * Copyright 2019 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 import 'carbon-components/scss/globals/scss/styles.scss'
 import React, {Component} from 'react'
 import { connect } from 'react-redux'
-import {Loading} from 'carbon-components-react'
+import {Loading, Button} from 'carbon-components-react'
 import {CONTEXT_PATH, PAGE_SIZES, SORT_DIRECTION_ASCENDING, RESOURCE_TYPES, STATUS_COLORS, CONFIG_CONSTANTS} from '../../actions/constants'
 import {getRowSlice, sort, sortColumn, getOverflowMenu, buildStatusHtml, getAge, getAgeDifference, getCreationTime, performUrlAction} from '../../actions/common'
 import msgs from '../../../nls/kappnav.properties'
@@ -27,7 +27,7 @@ import SecondaryHeader from './common/SecondaryHeader.jsx'
 import ResourceTable from './common/ResourceTable.js'
 import getResourceData from '../../definitions/index'
 import {getSearchableCellList, SEARCH_HEADER_TYPES} from './common/ResourceTable.js'
-
+import { getToken, openActionModal } from '../../actions/common'
 
 const jobResourceData = getResourceData(RESOURCE_TYPES.JOB)
 
@@ -75,27 +75,35 @@ class JobView extends Component {
       return (
         <div>
           <SecondaryHeader title={viewTitle} location={location}/>
-          <div className="page-content-container" role="main">
 
-        
-        <ResourceTable
-          rows={this.state.rows}
-          headers={this.state.headers} title={''}
-          onInputChange={(e) => {
-            this.searchInputChange(e)
-          }}
-          totalNumberOfRows={this.state.filteredRows.length}
-          changeTablePage={(e) => {
-            this.handlePaginationClick(e)
-          }}
-          sortColumn={this.state.sortColumn}
-          sortDirection={this.state.sortDirection}
-          handleSort={(e) => {
-            this.handleSort(e)
-          }}
-          pageNumber={this.state.pageNumber}
-        />
-        </div>
+          <div className="page-content-container" role="main">
+            <ResourceTable
+              rows={this.state.rows}
+              headers={this.state.headers} title={''}
+              onInputChange={(e) => {
+                this.searchInputChange(e)
+              }}
+              totalNumberOfRows={this.state.filteredRows.length}
+              changeTablePage={(e) => {
+                this.handlePaginationClick(e)
+              }}
+              sortColumn={this.state.sortColumn}
+              sortDirection={this.state.sortDirection}
+              handleSort={(e) => {
+                this.handleSort(e)
+              }}
+              pageNumber={this.state.pageNumber}
+              createNewModal={() => {
+                return (
+                  <div>
+                    <Button small iconDescription={msgs.get('run.audit')} onClick={() => openActionModal(document.documentElement.getAttribute('appnavConfigmapNamespace'), 'kappnav', 'app-nav-inventory', msgs.get('run.audit.action.description'))}>
+                      {msgs.get('run.audit')}
+                    </Button>
+                  </div>
+                )
+              }}
+            />
+          </div>
         </div>
       )
   }

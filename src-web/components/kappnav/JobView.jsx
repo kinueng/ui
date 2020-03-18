@@ -19,7 +19,7 @@
 import 'carbon-components/scss/globals/scss/styles.scss'
 import React, {Component} from 'react'
 import { connect } from 'react-redux'
-import {Loading, Button} from 'carbon-components-react'
+import {Loading, Button, DataTable} from 'carbon-components-react'
 import {CONTEXT_PATH, PAGE_SIZES, SORT_DIRECTION_ASCENDING, RESOURCE_TYPES, STATUS_COLORS, CONFIG_CONSTANTS} from '../../actions/constants'
 import {getRowSlice, sort, sortColumn, getOverflowMenu, buildStatusHtml, getAge, getAgeDifference, getCreationTime, performUrlAction} from '../../actions/common'
 import msgs from '../../../nls/kappnav.properties'
@@ -30,6 +30,11 @@ import {getSearchableCellList, SEARCH_HEADER_TYPES} from './common/ResourceTable
 import { getToken, openActionModal } from '../../actions/common'
 
 const jobResourceData = getResourceData(RESOURCE_TYPES.JOB)
+
+const {
+  TableCell,
+  TableRow
+} = DataTable;
 
 // This is the view that shows a collection of Command Actions jobs
 class JobView extends Component {
@@ -58,7 +63,6 @@ class JobView extends Component {
         {key: 'menuAction', header: msgs.get('table.header.action'), type: SEARCH_HEADER_TYPES.NOT_SEARCHABLE}
       ],
       viewType: 'table.empty.command.actions',
-      modalType: 'run.audit'
     }
 
     // make 'this' visible to class methods
@@ -105,7 +109,7 @@ class JobView extends Component {
                 )
               }}
               viewType={this.state.viewType}
-              modalType={this.state.modalType}
+              getCustomTableMsg={this.createMessageForEmptyTable}
             />
           </div>
         </div>
@@ -338,6 +342,15 @@ class JobView extends Component {
       })
       this.filterTable(search, this.state.pageNumber, this.state.pageSize, rowArray)
     })
+  }
+
+  createMessageForEmptyTable(headers) {
+    var originalMsg = msgs.get('table.empty.command.actions')
+    var auditLinkTxt = msgs.get('audit.link.text')
+    var removeAuditText = originalMsg.split(auditLinkTxt)
+    var part1 = removeAuditText[0] //text before 'audit'
+    var part2 = removeAuditText[1] //text after 'audit'
+    return <TableRow><TableCell colSpan={headers.length + 1} aria-label={originalMsg}>{part1}<a className='emptyTableResourceLink' id='navModalLink' tabIndex='0' aria-label={msgs.get('run.audit')}>{auditLinkTxt}</a>{part2}</TableCell></TableRow>
   }
 } // end of JobView component
 

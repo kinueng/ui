@@ -1,13 +1,13 @@
 /*****************************************************************
  *
- * Copyright 2019 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,7 +43,7 @@ const {
 
 const translateWithId = (locale, id) => msgs.get(id)
 
-var displayedHeaders; //used to calculate how many columns the message for an empty table(w/ non-selectable rows) should span 
+var displayedHeaders; //used to calculate how many columns the message for an empty table(w/ non-selectable rows) should span
 
 export const SEARCH_HEADER_TYPES= {
 	NOT_SEARCHABLE : 'NOT_SEARCHABLE',
@@ -122,7 +122,7 @@ class ResourceTable extends Component {
 	When the resource table is empty, a row with text should have a link to the 'Add [resoure_name]' navmodal.
 	Clicking this link should trigger a click on the 'Add [resource_name]' button above the table */
 	connectAddLinkOnClick() {
-		var addResourceButton = document.getElementById('create-application');
+		var addResourceButton = document.getElementById('page-action');
 		var navModalLink = document.getElementById('navModalLink');
 		if (navModalLink && addResourceButton) {
 			navModalLink.onclick = function() {addResourceButton.click()};
@@ -134,7 +134,7 @@ class ResourceTable extends Component {
 	}
 
 	/* This function is hidding the expandable icon from the DataTable Carbon Components only for
-	   those resources which doesn't have the "section-map" attribute or if the "section-map" 
+	   those resources which doesn't have the "section-map" attribute or if the "section-map"
 	   attribute is empty*/
 	componentDidMount() {
 		this.connectAddLinkOnClick()
@@ -156,7 +156,7 @@ class ResourceTable extends Component {
 	}
 
 	/* This function is hidding the expandable icon from the DataTable Carbon Components only for
-	   those resources which doesn't have the "section-map" attribute or if the "section-map" 
+	   those resources which doesn't have the "section-map" attribute or if the "section-map"
 	   attribute is empty by first making expandable icon visible on every rows of the DataTable*/
 	componentDidUpdate() {
 		this.connectAddLinkOnClick()
@@ -367,9 +367,9 @@ class ResourceTable extends Component {
 	//button object contains key:value pairs specifying button properties(ex: kind, text, etc)
 	renderButton(button, selectedRows) {
 		let b;
-		if (button.href) { 
+		if (button.href) {
 			b = <Button small kind={button.kind} id={button.buttonText} href={button.href} aria-label={button.buttonText}>{button.buttonText}</Button>
-		} 
+		}
 		if (button.action) { //onClick method call passes selectedRows to perform 'action' on/with those values
 			b = <Button small kind={button.kind} id={button.buttonText} aria-label={button.buttonText} onClick={() => {button.action(selectedRows)}}>{button.buttonText}</Button>
 		}
@@ -528,24 +528,27 @@ class ResourceTable extends Component {
 															}
 														})
 													})()}
-		
+
 												</TableRow>
 											</TableHead>
 											<TableBody>
 											{(() => {
-												//When the resource table is empty, add a new row with a message that encourages users to add a new resource 
-												//viewType is undefined when in the Command Actions view
-												//viewType is the message key for the resource type: applications, WAS ND cells, or Liberty collectives
+												//When the resource table is empty, add a new row with a message that encourages users to add a new resource
+												//modalType is undefined when in the Command Actions view
+												//viewType is the message key for the view: applications, WAS ND cells, Liberty collectives, command actions
 												//modal is the message key for the title of the add modal that should pop up (ex: "Add Application")
-												if (rows.length === 0 && viewType) {
-													var resource = msgs.get(viewType);
-													var modal = msgs.get(modalType);
-													var msg = msgs.get('table.empty', [resource]);
-		
-													return (
-														<TableRow><TableCell colSpan={displayedHeaders + 1}>{msg} <span className='emptyTableResourceLink' id='navModalLink' tabindex='0' role='button' aria-label={msg+' '+modal}>{modal}</span>.</TableCell></TableRow>
-													)
-												} else {
+													if (rows.length === 0 && viewType) {
+														if(viewType === 'table.empty.command.actions') { //need a custom message for empty table in Command Actions view
+															return (this.props.getCustomTableMsg(headers))
+														} else {
+															var modal = msgs.get(modalType);
+															var resource = msgs.get(viewType);
+															var msg = msgs.get('table.empty', [resource]);
+															return (
+																<TableRow><TableCell colSpan={displayedHeaders + 1}>{msg} <span className='emptyTableResourceLink' id='navModalLink' tabIndex='0' role='button' aria-label={msg+' '+modal}>{modal}</span>.</TableCell></TableRow>
+															)
+														}
+													} else {
 													return(
 														rows.map(row => (
 														<React.Fragment key={row.id}>

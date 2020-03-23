@@ -118,7 +118,7 @@ class SecondaryHeader extends React.Component {
               )
           })()}
           <div className="navigation-container"></div>
-          {document.documentElement.getAttribute('kube') === 'ocp' || document.documentElement.getAttribute('kube') === 'okd' ?
+          {/*document.documentElement.getAttribute('kube') === 'ocp' || document.documentElement.getAttribute('kube') === 'okd' ?
             <div>
               <DropdownV2
                 label={<Icon
@@ -130,7 +130,7 @@ class SecondaryHeader extends React.Component {
                 className="user-width"
                 onChange={(event) => this.initiateLogOut(event)}
                 itemToString={item => (item ? item.text : "")}
-                ariaLabel={msgs.get('user.menu.button.label')}
+                ariaLabel={msgs.get('user.menu.button.label')*/}
               />
             </div> : null}
         </div>

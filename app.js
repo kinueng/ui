@@ -105,6 +105,7 @@ app.use('/kappnav', proxy({
   secure: false
 }))
 
+/* Commenting this out because directing to /oauth/sign_in does not work in ocp 4.3, TODO: find a new logout solution
 app.use('/kappnav-ui/logout', (req, res) => {
   //For oauth proxy environemnts remove user and redirect to sign_in.  That doubles as a logout path and removes the session cookie.
   if(KUBE_ENV === 'okd' || KUBE_ENV === 'ocp') {
@@ -112,7 +113,7 @@ app.use('/kappnav-ui/logout', (req, res) => {
     var host = 'https://'+req.headers['host']
     res.redirect(host + '/oauth/sign_in')
   }
-})
+})*/
 
 const agent = new https.Agent({  
   rejectUnauthorized: false

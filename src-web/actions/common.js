@@ -466,7 +466,7 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
   // ***************
   // Static Actions
 
-  var hasStaticActions = staticResourceData && staticResourceData.actions && staticResourceData.actions.length>0
+  const hasStaticActions = staticResourceData && staticResourceData.actions && staticResourceData.actions.length>0
   let staticActions = []
   if(hasStaticActions) {
     staticActions =
@@ -482,16 +482,16 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
 
   // ***************
   // Custom Actions
-  var hasCustomActions = staticResourceData && staticResourceData.customActions && staticResourceData.customActions.length>0
+  const hasCustomActions = staticResourceData && staticResourceData.customActions && staticResourceData.customActions.length>0
   let customActions = []
   if(hasCustomActions) {
     customActions =
       staticResourceData.customActions.map((customAction, staticindex) => {
         if(customAction.show(componentData, actionMap, staticResourceData, applicationName, applicationNamespace)){
-          var kind = componentData && componentData.kind
-          var namespace = componentData && componentData.metadata && componentData.metadata.namespace
-          var name = componentData && componentData.metadata && componentData.metadata.name
-          var componentBodyToRemove =[{
+          const kind = componentData && componentData.kind
+          const namespace = componentData && componentData.metadata && componentData.metadata.namespace
+          const name = componentData && componentData.metadata && componentData.metadata.name
+          const componentBodyToRemove =[{
             "app":name,
             "namespace": namespace,
             "kind":kind
@@ -504,18 +504,18 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
   // ***************
   // URL Actions
 
-  var urlActions = actionMap && actionMap[CONFIG_CONSTANTS.URL_ACTIONS]
+  let urlActions = actionMap && actionMap[CONFIG_CONSTANTS.URL_ACTIONS]
   urlActions = urlActions && urlActions.filter((action) => {
     return !action[CONFIG_CONSTANTS.MENU_ITEM] || action[CONFIG_CONSTANTS.MENU_ITEM]!='false'
   })
-  var hasUrlActions = urlActions && urlActions.length && urlActions.length>0
+  const hasUrlActions = urlActions && urlActions.length && urlActions.length>0
   if(hasUrlActions) {
     urlActions = removeDisabledActions(resourceLabels, resourceAnnotations, urlActions)
 
     urlActions.forEach((action) => { //try to cache the links ahead of time
-      var kind = componentData && componentData.kind
-      var namespace = componentData && componentData.metadata && componentData.metadata.namespace
-      var name = componentData && componentData.metadata && componentData.metadata.name
+      const kind = componentData && componentData.kind
+      const namespace = componentData && componentData.metadata && componentData.metadata.namespace
+      const name = componentData && componentData.metadata && componentData.metadata.name
       performUrlAction(action['url-pattern'], action['open-window'], kind, name, namespace, undefined, false)
     })
 
@@ -538,9 +538,9 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
   // ***************
   // Command Actions
 
-  var cmdActions = actionMap && actionMap[CONFIG_CONSTANTS.CMD_ACTIONS]
-  var cmdInputs = actionMap && actionMap[CONFIG_CONSTANTS.INPUTS]
-  var hasCmdActions = cmdActions && cmdActions.length && cmdActions.length>0
+  let cmdActions = actionMap && actionMap[CONFIG_CONSTANTS.CMD_ACTIONS]
+  const cmdInputs = actionMap && actionMap[CONFIG_CONSTANTS.INPUTS]
+  const hasCmdActions = cmdActions && cmdActions.length && cmdActions.length>0
   if(hasCmdActions) {
     cmdActions = removeDisabledActions(resourceLabels, resourceAnnotations, cmdActions)
 
@@ -566,7 +566,7 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
   // Use filter to remove undefined/null lists that were added by .concat()
   allEnabledActions = allEnabledActions.filter(n => n)
   if(allEnabledActions.length > 0) {
-    var menu =
+    const menu =
       <OverflowMenu floatingMenu flipped iconDescription={msgs.get('svg.description.overflowMenu')}>
         {allEnabledActions}
       </OverflowMenu>

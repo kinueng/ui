@@ -236,10 +236,14 @@ const openModal_internal = (operation, resource, application, applicationNamespa
   }
 }
 
-export const performUrlAction = (urlPattern, openWindow, kind, name, namespace, linkId, followLink) => {
+export const performUrlAction = (urlPattern, openWindow, kind, name, namespace, linkId, followLink, apiVersion) => {
   if(urlPattern) {
+
+    let apiVersionQueryParam = apiVersion ? '&apiVersion='+apiVersion : ''
+    apiVersionQueryParam = encodeURIComponent(apiVersionQueryParam)
+
     //expand the url
-    fetch('/kappnav/resource/' + encodeURIComponent(name)+'/'+kind+'?action-pattern='+encodeURIComponent(urlPattern)+'&namespace='+encodeURIComponent(namespace))
+    fetch('/kappnav/resource/' + encodeURIComponent(name)+'/'+kind+'?action-pattern='+encodeURIComponent(urlPattern)+'&namespace='+encodeURIComponent(namespace)+apiVersionQueryParam)
       .then(response => {
         if (!response.ok) {
         //Failed to get a link back
@@ -457,6 +461,8 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
   var itemId = cloneData.metadata.uid
   const resourceLabels = cloneData.metadata.labels
   const resourceAnnotations = cloneData.metadata.annotations
+  const apiVersion = cloneData['apiVersion']
+  
 
   //remove fields that should not show up on an editor
   delete cloneData.metadata.creationTimestamp
@@ -492,9 +498,9 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
           const namespace = componentData && componentData.metadata && componentData.metadata.namespace
           const name = componentData && componentData.metadata && componentData.metadata.name
           const componentBodyToRemove =[{
-            "app":name,
+            "app": name,
             "namespace": namespace,
-            "kind":kind
+            "kind": kind
           }]
           return customAction.getCustomAction(staticindex, itemId, applicationName, applicationNamespace, componentBodyToRemove)
         }
@@ -516,7 +522,7 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
       const kind = componentData && componentData.kind
       const namespace = componentData && componentData.metadata && componentData.metadata.namespace
       const name = componentData && componentData.metadata && componentData.metadata.name
-      performUrlAction(action['url-pattern'], action['open-window'], kind, name, namespace, undefined, false)
+      performUrlAction(action['url-pattern'], action['open-window'], kind, name, namespace, undefined, false, apiVersion)
     })
 
     urlActions = urlActions.map((action, urlindex) => {
@@ -525,7 +531,7 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
       return <OverflowMenuItem key={action.name}
         primaryFocus={urlindex === 0 && !hasStaticActions}
         itemText={actionLabel}
-        onClick={performUrlAction.bind(this, action['url-pattern'], action['open-window'], componentData && componentData.kind, componentData && componentData.metadata && componentData.metadata.name, componentData && componentData.metadata && componentData.metadata.namespace, undefined, true)}
+        onClick={performUrlAction.bind(this, action['url-pattern'], action['open-window'], componentData && componentData.kind, componentData && componentData.metadata && componentData.metadata.name, componentData && componentData.metadata && componentData.metadata.namespace, undefined, true, apiVersion)}
         onFocus={(e) => {
           if(actionDesc){ e.target.title = actionDesc }
         }}

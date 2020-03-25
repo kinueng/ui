@@ -404,6 +404,7 @@ export function refreshApplicationComponents(appname, namespace, appNavConfigDat
 
         itemObj.compositeKind = compositeKind;
         itemObj.kind = kind;
+        itemObj.apiVersion = component['apiVersion'];
         itemObj.namespace = component.metadata.namespace;
         itemObj.platform = platform;
         if(item.hasOwnProperty("section-map")){

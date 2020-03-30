@@ -99,6 +99,7 @@ class NavModal extends React.PureComponent {
     this.handleSubmit = this.handleSubmit.bind(this)
     this.onMenuClick = this.onMenuClick.bind(this)
     this.handleToggle = this.handleToggle.bind(this)
+    this.closeErrorMsg = this.closeErrorMsg.bind(this)
     this.validateRequiredFields = lodash.throttle(this.validateRequiredFields.bind(this), 1000, {trailing: false})
     this.state = {
       open: false,
@@ -192,7 +193,7 @@ class NavModal extends React.PureComponent {
               {
                 jsonMode
                   ? <NavModalJsonEditor postStatus={this.state.postStatus} postErrorMsg={this.state.postErrorMsg} parsingError={parsingError} json={json} onJsonChange={onJsonChange}/>
-                  : <NavModalForm postStatus={this.state.postStatus} postErrorMsg={this.state.postErrorMsg} parsingError={parsingError} menuItems={menuItems} selectedMenuItem={selectedMenuItem} onMenuClick={this.onMenuClick} childComponents={children} validationErrors={validationErrors} onChange={onChange} learnmoreURL={this.props.learnmoreURL}/>
+                  : <NavModalForm postStatus={this.state.postStatus} postErrorMsg={this.state.postErrorMsg} parsingError={parsingError} menuItems={menuItems} selectedMenuItem={selectedMenuItem} onMenuClick={this.onMenuClick} childComponents={children} validationErrors={validationErrors} onChange={onChange} learnmoreURL={this.props.learnmoreURL} onCloseError={this.closeErrorMsg}/>
               }
             </ModalBody>
             <ModalFooter primaryButtonDisabled={this.props.primaryButtonDisabled} primaryButtonText={msgs.get(
@@ -294,6 +295,9 @@ class NavModal extends React.PureComponent {
 
   handleSubmit() {
     var errorCallback = function(error) {
+      //fixed issue where error wasn't in view when the modal action was submitted
+      var modalInnerContent = document.getElementById('modal-inner-content');
+      modalInnerContent.scrollIntoView();
       this.setState({postStatus: REQUEST_STATUS.ERROR, postErrorMsg: error})
     }.bind(this);
 
@@ -397,6 +401,11 @@ class NavModal extends React.PureComponent {
     }
     return !hasErrors
   }
+
+  //function added to "clear" the error state when the first error is closed and allow another error msg to show
+  closeErrorMsg() {
+    this.setState({postStatus: undefined, postErrorMsg: undefined})
+  }
 }
 
 const AceEditor = (props) => {
@@ -429,7 +438,7 @@ class IsomorphicEditor extends React.Component {
 
 class NavModalForm extends React.PureComponent {
   render() {
-    const { postStatus, postErrorMsg, menuItems, childComponents, onChange, selectedMenuItem, parsingError, validationErrors } = this.props
+    const { postStatus, postErrorMsg, menuItems, childComponents, onChange, selectedMenuItem, parsingError, validationErrors, onCloseError } = this.props
     return (
       // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
       <div className='modal-form' ref={div => this.modalForm = div} role='presentation' onKeyDown={this.handleKeyDown.bind(this)}>
@@ -439,14 +448,15 @@ class NavModalForm extends React.PureComponent {
               {this.getMenuItems()}
             </ul>
           </div>}
-        <div className='modal-inner-content'>
+        <div className='modal-inner-content' id='modal-inner-content'>
           {validationErrors.form && <InlineNotification kind='error' title='' iconDescription={msgs.get('modal.button.close')} subtitle={msgs.get('formerror.missing')} />}
           {(postStatus === REQUEST_STATUS.ERROR || parsingError) &&
             <InlineNotification
               kind='error'
               title=''
               iconDescription={msgs.get('svg.description.error')}
-              subtitle={postStatus === REQUEST_STATUS.ERROR ? postErrorMsg : msgs.get('error.parse.description')} />}
+              subtitle={postStatus === REQUEST_STATUS.ERROR ? postErrorMsg : msgs.get('error.parse.description')} 
+              onCloseButtonClick={onCloseError.bind(null)}/>}
           {(() => {
             const index = menuItems.findIndex(menuItem => menuItem.label === selectedMenuItem);
             if (index >= 0) {

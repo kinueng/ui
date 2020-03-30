@@ -214,9 +214,12 @@ const openModal_internal = (operation, resource, application, applicationNamespa
       heading: 'modal.'+operation+'.heading'
     }, resource,  '/kappnav/'+resourceType+'/'+encodeURIComponent(resource.metadata.name)+'?namespace='+encodeURIComponent(resource.metadata.namespace))
   } else if(operation === 'action') {
-    var url = '/kappnav/resource/' + encodeURIComponent(resource.metadata.name)+'/'+resource.kind+'/execute/command/'+encodeURIComponent(cmd.name)+'?namespace='+encodeURIComponent(resource.metadata.namespace)
+    const apiVersion = resource['apiVersion']
+    let url = '/kappnav/resource/' + encodeURIComponent(resource.metadata.name)+'/'+resource.kind+'/execute/command/'+encodeURIComponent(cmd.name)
+              +'?namespace='+encodeURIComponent(resource.metadata.namespace)+'&apiVersion='+apiVersion
     if(application) {
-      url = '/kappnav/resource/' + encodeURIComponent(application)+'/' + encodeURIComponent(resource.metadata.name)+'/'+resource.kind+'/execute/command/'+encodeURIComponent(cmd.name)+'?namespace='+encodeURIComponent(resource.metadata.namespace)+'&application-namespace='+applicationNamespace
+      url = '/kappnav/resource/' + encodeURIComponent(application)+'/' + encodeURIComponent(resource.metadata.name)+'/'+resource.kind+'/execute/command/'+encodeURIComponent(cmd.name)
+            +'?namespace='+encodeURIComponent(resource.metadata.namespace)+'&application-namespace='+applicationNamespace+'&apiVersion='+apiVersion
     }
 
     var input = undefined
@@ -239,8 +242,7 @@ const openModal_internal = (operation, resource, application, applicationNamespa
 export const performUrlAction = (urlPattern, openWindow, kind, name, namespace, linkId, followLink, apiVersion) => {
   if(urlPattern) {
 
-    let apiVersionQueryParam = apiVersion ? '&apiVersion='+apiVersion : ''
-    apiVersionQueryParam = encodeURIComponent(apiVersionQueryParam)
+    const apiVersionQueryParam = apiVersion ? '&apiVersion='+encodeURIComponent(apiVersion) : ''
 
     //expand the url
     fetch('/kappnav/resource/' + encodeURIComponent(name)+'/'+kind+'?action-pattern='+encodeURIComponent(urlPattern)+'&namespace='+encodeURIComponent(namespace)+apiVersionQueryParam)
@@ -528,6 +530,7 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
     urlActions = urlActions.map((action, urlindex) => {
       let actionLabel = action['text.nls'] ? msgs.get(action['text.nls']) : action.text
       let actionDesc = action['description.nls'] ? msgs.get(action['description.nls']) : action.description
+      const apiVersion = componentData['apiVersion']
       return <OverflowMenuItem key={action.name}
         primaryFocus={urlindex === 0 && !hasStaticActions}
         itemText={actionLabel}

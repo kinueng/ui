@@ -439,10 +439,11 @@ export function refreshApplicationComponents(appname, namespace, appNavConfigDat
           if(link) {
             //Expand the link and modify the URL on the fly to match the expanded link
             var linkId = kind+"_"+metadata.name+"link";
-            itemObj.name=<a id={linkId} href="#" onClick={performUrlAction.bind(this, link, urlActions[0]["open-window"], kind, metadata.name, metadata.namespace, undefined, true)}>
-              {metadata.name}
-            </a>;
-            performUrlAction(link, urlActions[0]["open-window"], kind, metadata.name, metadata.namespace, linkId, false);  //update the link in place
+            itemObj.name = <a id={linkId} href="#" onClick={performUrlAction.bind(this, link, urlActions[0]["open-window"], kind, metadata.name, metadata.namespace, undefined, true)}>
+                            {metadata.name}
+                           </a>;
+            const apiVersion = component['apiVersion']
+            performUrlAction(link, urlActions[0]["open-window"], kind, metadata.name, metadata.namespace, linkId, false, apiVersion);  //update the link in place
           } else {
               itemObj.name = metadata.name;
           }

@@ -102,8 +102,8 @@ class JobView extends Component {
               createNewModal={() => {
                 return (
                   <div>
-                    <Button small iconDescription={msgs.get('run.audit')} id={`page-action`} onClick={() => openActionModal(document.documentElement.getAttribute('appnavConfigmapNamespace'), 'kappnav', 'app-nav-inventory', msgs.get('run.audit.action.description'))}>
-                      {msgs.get('run.audit')}
+                    <Button small iconDescription={msgs.get('run.inventory')} id={`page-action`} onClick={() => openActionModal(document.documentElement.getAttribute('appnavConfigmapNamespace'), 'kappnav', 'app-nav-inventory', msgs.get('run.inventory.action.description'))}>
+                      {msgs.get('run.inventory')}
                     </Button>
                   </div>
                 )
@@ -346,11 +346,11 @@ class JobView extends Component {
 
   createMessageForEmptyTable(headers) {
     var originalMsg = msgs.get('table.empty.command.actions')
-    var auditLinkTxt = msgs.get('audit.link.text')
+    var auditLinkTxt = msgs.get('inventory.link.text')
     var removeAuditText = originalMsg.split(auditLinkTxt)
     var part1 = removeAuditText[0] //text before 'audit'
     var part2 = removeAuditText[1] //text after 'audit'
-    return <TableRow><TableCell colSpan={headers.length + 1} aria-label={originalMsg}>{part1}<a className='emptyTableResourceLink' id='navModalLink' tabIndex='0' aria-label={msgs.get('run.audit')}>{auditLinkTxt}</a>{part2}</TableCell></TableRow>
+    return <TableRow><TableCell colSpan={headers.length + 1} aria-label={originalMsg}>{part1}<a className='emptyTableResourceLink' id='navModalLink' tabIndex='0' aria-label={msgs.get('run.inventory')}>{auditLinkTxt}</a>{part2}</TableCell></TableRow>
   }
 } // end of JobView component
 

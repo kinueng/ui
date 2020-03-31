@@ -1,6 +1,6 @@
 /*****************************************************************
  *
- * Copyright 2019 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import msgs from '../../../../nls/kappnav.properties'
 import { TextInput, Icon, Select, SelectItem, NumberInput } from 'carbon-components-react'
 import withMultiple from './ModalListItem'
 import { FieldWrapper } from './FormField'
+import { isInvalid, getInvalidMsg } from '../../../actions/common'
 
 const translateWithId = (locale, id) => msgs.get(id)
 
@@ -64,8 +65,8 @@ const General = ({ form, onChange, children, error, labelName, labelContent }, c
         labelText={labelName || msgs.get('formfield.name') + ' ' + msgs.get('formtip.common.name')}
         value={form.name}
         onChange={transform.bind(null, 'name', onChange)}
-        invalid={error && error.name}
-        invalidText={` ${msgs.get('formerror.required')}`} />
+        invalid={(error && error.name) || isInvalid(form.name)}
+        invalidText={(error && error.name) ? ` ${msgs.get('formerror.required')}`: getInvalidMsg(form.name)} />
     </FieldWrapper>
     {addOns}
   </div>

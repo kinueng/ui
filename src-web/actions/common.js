@@ -582,3 +582,27 @@ export const parseJSON = (response) => {
       json,
     })))
 }
+
+//Function that validates a name field 
+export const isInvalid = (field) => { 
+  //per the kubernetes documentation a name must:
+  //- start and end with lowercase alphanumeric characters 
+  //- can only contain lowercase alphanumeric characters, -, or . 
+  //- must be less than 253 characters 
+  return ((field.startsWith("-") || field.startsWith(".") || field.endsWith("-") || field.endsWith(".")) || !(field.match('^[a-z0-9-.]*$')) || (field.length > 253)) ? true : false
+}
+
+//Function that returns an error message based on the reason why the name field is invalid
+export const getInvalidMsg = (field) => {
+  if (field.startsWith("-") || field.startsWith(".") || field.endsWith("-") || field.endsWith(".")) { //name starts with '-' or '.', which are allowed, but not at beginning or end 
+    return msgs.get('error.invalid.field.start.end')
+  }
+
+  if (!field.match('^[a-z0-9-.]*$')) { //name contains something other than an lowercase alphanumeric characters, -, or .
+    return msgs.get('error.invalid.field.characters')
+  }
+
+  if (field.length > 253) { //name is too long
+    return msgs.get('error.invalid.field.length')
+  }
+}

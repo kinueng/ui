@@ -589,7 +589,22 @@ export const isInvalid = (field) => {
   //- start and end with lowercase alphanumeric characters 
   //- can only contain lowercase alphanumeric characters, -, or . 
   //- must be less than 253 characters 
-  return ((field.startsWith("-") || field.startsWith(".") || field.endsWith("-") || field.endsWith(".")) || !(field.match('^[a-z0-9-.]*$')) || (field.length > 253)) ? true : false
+
+  //get primary modal button(ex: 'Add' button) to disable it if there are errors due to invalid characters
+  var primaryButton;
+  if (document.getElementById('modal-buttons')) { //only defined once the modal is rendered
+    primaryButton = document.getElementById('modal-buttons').children[1] //'modal-buttons' is the ModalFooter element that contains the modal buttons - children[1] is the primary button
+    if (primaryButton) {
+      if ((field.startsWith("-") || field.startsWith(".") || field.endsWith("-") || field.endsWith(".")) || !(field.match('^[a-z0-9-.]*$')) || (field.length > 253)) {
+        primaryButton.disabled = true //don't allow user to submit action if the field is invalid
+        return true
+      } else {
+        primaryButton.disabled = false
+        return false
+      }
+    }
+  } 
+  return false // will only reach this when modal hasn't rendered yet
 }
 
 //Function that returns an error message based on the reason why the name field is invalid

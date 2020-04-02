@@ -196,7 +196,7 @@ class NavModal extends React.PureComponent {
                   : <NavModalForm postStatus={this.state.postStatus} postErrorMsg={this.state.postErrorMsg} parsingError={parsingError} menuItems={menuItems} selectedMenuItem={selectedMenuItem} onMenuClick={this.onMenuClick} childComponents={children} validationErrors={validationErrors} onChange={onChange} learnmoreURL={this.props.learnmoreURL} onCloseError={this.closeErrorMsg}/>
               }
             </ModalBody>
-            <ModalFooter primaryButtonDisabled={this.props.primaryButtonDisabled} primaryButtonText={msgs.get(
+            <ModalFooter id="modal-buttons" primaryButtonDisabled={this.props.primaryButtonDisabled} primaryButtonText={msgs.get(
                 this.props.modalButtonName
                 ? this.props.modalButtonName
                 : 'modal.button.create')} secondaryButtonText={msgs.get('modal.button.cancel')} onRequestClose={this.handleOpen.bind(this, false)} onRequestSubmit={this.handleSubmit.bind(this)}/>
@@ -478,23 +478,21 @@ class NavModalForm extends React.PureComponent {
     return menuItems.map((item, index) =>
       <li key={index} className={this.isActive(item.label)} id={item.label}>
         <a href="#" onClick={onMenuClick.bind(null, item.label)} className='menu-item' role='menuitem'>{msgs.get(`modal.nav.${item.label}`)}</a>
-        {validationErrors.form && validationErrors[item.label] && !this.isActive(item.label) && <Icon className='modal-tab-error' name='icon--error--glyph' description={msgs.get('svg.description.error')} />}
-        {/* adding tooltip */}
-        <div className ="tooltip-margin">
-          <Tooltip
-            iconDescription={msgs.get('formtip.tooltip')}
-            triggerClassName="tooltip-active-hover"
-            triggerText=''
-            direction='right'
-            showIcon={true}>
-            <p dangerouslySetInnerHTML={{ __html: item.tooltip }} />
-            <div className="bx--tooltip__footer">
-              <a className="bx--link" target="_blank" rel="noopener noreferrer" href={this.props.learnmoreURL}>
-                {msgs.get('tooltip.learn.more')}
-              </a>
-            </div>
-          </Tooltip>
-        </div>
+        {validationErrors.form && validationErrors[item.label] && !this.isActive(item.label) && <div className='modal-error'><Icon className='modal-error' name='icon--error--glyph' description={msgs.get('svg.description.error')} /></div>}
+          {/* adding tooltip */}
+            <Tooltip
+              iconDescription={msgs.get('formtip.tooltip')}
+              triggerClassName="tooltip-active-hover"
+              triggerText=''
+              direction='right'
+              showIcon={true}>
+              <p dangerouslySetInnerHTML={{ __html: item.tooltip }} />
+              <div className="bx--tooltip__footer">
+                <a className="bx--link" target="_blank" rel="noopener noreferrer" href={this.props.learnmoreURL}>
+                  {msgs.get('tooltip.learn.more')}
+                </a>
+              </div>
+            </Tooltip>
       </li>
     )
   }

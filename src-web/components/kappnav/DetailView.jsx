@@ -127,7 +127,7 @@ class DetailView extends Component {
           this.setState({ loading: false, data: result })
 
           //fetch the action maps
-          fetch(('/kappnav/resource/' + encodeURIComponent(result.metadata.name) + '/' + result.kind + '/actions?namespace=' + encodeURIComponent(result.metadata.namespace)))
+          fetch(('/kappnav/resource/' + encodeURIComponent(result.metadata.name) + '/' + result.kind + '/actions?namespace=' + encodeURIComponent(result.metadata.namespace) + '&apiVersion=' + encodeURIComponent(result['apiVersion'])))
             .then(response => {
               if (!response.ok) {
                 //no error here because it just means that the action maps will not be populated

@@ -102,7 +102,7 @@ class JobView extends Component {
               createNewModal={() => {
                 return (
                   <div>
-                    <Button small iconDescription={msgs.get('run.inventory')} id={`page-action`} onClick={() => openActionModal(document.documentElement.getAttribute('appnavConfigmapNamespace'), 'kappnav', 'app-nav-inventory', msgs.get('run.inventory.action.description'))}>
+                    <Button small iconDescription={msgs.get('run.inventory')} id={`page-action`} onClick={() => openActionModal(document.documentElement.getAttribute('appnavConfigmapNamespace'), 'kappnav', 'app.k8s.io%2Fv1beta1', 'app-nav-inventory', msgs.get('run.inventory.action.description'))}>
                       {msgs.get('run.inventory')}
                     </Button>
                   </div>

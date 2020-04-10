@@ -188,8 +188,8 @@ export const openModal = (...args) => {
   )
 }
 
-export const openActionModal = (namespace, resourceName, actionName, actionDescription) => {
-  var restApi = `/kappnav/resource/${resourceName}/execute/command/${actionName}?namespace=${namespace}`
+export const openActionModal = (namespace, resourceName, apiVersion, actionName, actionDescription) => {
+  var restApi = `/kappnav/resource/${resourceName}/execute/command/${actionName}?namespace=${namespace}&apiVersion=${apiVersion}`
 
   const resource = {}
   window.secondaryHeader.showActionResourceModal(true, {

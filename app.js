@@ -68,6 +68,7 @@ app.use((err, req, res, next) => {
 
   // handle CSRF token errors here
   res.status(403)
+  logger.debug('app.use. Successfully handled CSRF token errors by sending 403')
   res.send('form tampered with')
 })
 
@@ -127,6 +128,7 @@ app.use('/kappnav-ui/openshift/appNavIcon.css', (req, res) => {
   }).then(function (response) {
     if (response.status === 200) {
       var url = response.data['kappnav-url']
+      logger.debug('app.use. Successfully got appNavIcon.css')
       const appNavIcon =
           `
             .icon-appnav {
@@ -161,6 +163,7 @@ app.use('/kappnav-ui/openshift/featuredApp.js', (req, res) => {
   }).then(function (response) {
     if (response.status === 200) {
       var url = response.data['kappnav-url']
+      logger.debug('app.use. Successfully got featuredApp.css')
       const featuredApp =
           `
             (function() {
@@ -191,6 +194,7 @@ app.use('/kappnav-ui/openshift/appLauncher.js', (req, res) => {
   }).then(function (response) {
     if (response.status === 200) {
       var url = response.data['kappnav-url']
+      logger.debug('app.use. Successfully got appLauncher.css')
       const appLauncher =
           `
           (function() {

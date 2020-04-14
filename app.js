@@ -64,11 +64,12 @@ app.use(exclude('/health'), cookieParser(), csrfMiddleware)
 
 // error handler
 app.use((err, req, res, next) => {
+  logger.debug('err.code is ' + err.code)
   if (err.code !== 'EBADCSRFTOKEN') return next(err)
 
   // handle CSRF token errors here
   res.status(403)
-  logger.debug('app.use. Successfully handled CSRF token errors by sending 403')
+  logger.debug('Error with CSRF token')
   res.send('form tampered with')
 })
 
@@ -77,6 +78,7 @@ app.all('*', (req, res, next) => {
     if(!req.user || req.user === ''){
       req.user = KUBE_ENV
     }
+    logger.debug('req.user is ' + req.user)
     const cookieConfig = {
       httpOnly: true, // to disable accessing cookie via client side js
       secure: true, // to force https (if you use it)
@@ -128,7 +130,7 @@ app.use('/kappnav-ui/openshift/appNavIcon.css', (req, res) => {
   }).then(function (response) {
     if (response.status === 200) {
       var url = response.data['kappnav-url']
-      logger.debug('app.use. Successfully got appNavIcon.css')
+      logger.debug('Successfully got appNavIcon.css')
       const appNavIcon =
           `
             .icon-appnav {
@@ -163,7 +165,7 @@ app.use('/kappnav-ui/openshift/featuredApp.js', (req, res) => {
   }).then(function (response) {
     if (response.status === 200) {
       var url = response.data['kappnav-url']
-      logger.debug('app.use. Successfully got featuredApp.css')
+      logger.debug('Successfully got featuredApp.css')
       const featuredApp =
           `
             (function() {
@@ -194,7 +196,7 @@ app.use('/kappnav-ui/openshift/appLauncher.js', (req, res) => {
   }).then(function (response) {
     if (response.status === 200) {
       var url = response.data['kappnav-url']
-      logger.debug('app.use. Successfully got appLauncher.css')
+      logger.debug('Successfully got appLauncher.css')
       const appLauncher =
           `
           (function() {
@@ -228,7 +230,7 @@ app.get('*', (req, res) => {
   res.setHeader('Strict-Transport-Security', 'max-age=99999999')
   // eslint-disable-next-line quotes
   res.setHeader('Content-Security-Policy', "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' blob: https://"+req.headers['host']+"/*; frame-ancestors 'self'")
-
+  logger.debug('APPNAV_CONFIGMAP_NAMESPACE is : ' + APPNAV_CONFIGMAP_NAMESPACE + ' CONTEXT_PATH is : ' + CONTEXT_PATH)
   res.render('index', {
     myLocale: i18n.locale(req),
     kube: KUBE_ENV,

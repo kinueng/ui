@@ -16,17 +16,19 @@
  *
  *****************************************************************/
 
-var express = require('express'),
-    extensions = require('./extensions'),
-	cookieParser = require('cookie-parser'),
-	log4js = require('log4js'),
-	logger = log4js.getLogger('client')
+ var express = require('express'),
+     extensions = require('./extensions'),
+     cookieParser = require('cookie-parser'),
+     log4js = require('log4js'),
+     clientLogger = log4js.getLogger('client'), //client logger will log messages coming from client side javacript
+     serverLogger = log4js.getLogger('server')
 
 module.exports = function(app) {
   var router = express.Router();
 
   router.post('/log', logMessage)
-  
+  router.post('/logLevel', setLogLevel)
+
   //Extend the REST apis
   router = extensions.addRoutes(router)
 
@@ -34,22 +36,38 @@ module.exports = function(app) {
 }
 
 function logMessage(req, res) {
-  const message = req.cookies['kappnav-user'] ? '['+req.cookies['kappnav-user']+'] ' + req.body.message 
+  const message = req.cookies['kappnav-user'] ? '['+req.cookies['kappnav-user']+'] ' + req.body.message
                                               : req.body.message
   const type = req.body.type
 
   if(type === 'error') {
-    logger.error(message)
+    clientLogger.error(message)
   } else if(type === 'warn') {
-    logger.warn(message)
+    clientLogger.warn(message)
   } else if(type === 'info') {
-    logger.info(message)
+    clientLogger.info(message)
   } else if(type === 'debug') {
-    logger.debug(message)
+    clientLogger.debug(message)
   } else {
-    logger.trace(message)
+    clientLogger.trace(message)
   }
 
   res.status(200).send({ success: true })
   res.end
+}
+
+function setLogLevel(req, res) {
+  const level = req.body.level
+  setConsoleLevel(level)
+
+  res.status(200).send({ success: true })
+  res.end
+}
+
+const setConsoleLevel = level => {
+  serverLogger.info('Setting logger level to '+level)
+  clientLogger.info('Setting logger level to '+level)
+
+  clientLogger.level = level
+  serverLogger.level = level
 }

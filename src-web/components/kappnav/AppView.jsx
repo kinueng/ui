@@ -1,6 +1,6 @@
 /*****************************************************************
  *
- * Copyright 2019 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -226,7 +226,7 @@ class AppView extends Component {
         errorCallback(msgs.get('error.parse.description') + ' '+response.status + ' '+response.message)
       } else {
         //catch all
-        errorCallback(msgs.get('error.parse.description'))
+        errorCallback(msgs.get('error.create.name.failed', [msgs.get('name.application'), msgs.get('name.application')]))
       }
     }.bind(this);
 

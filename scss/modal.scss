@@ -1,6 +1,6 @@
 /*****************************************************************
  *
- * Copyright 2019 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,15 +90,23 @@
         display: block;
         width: 100%;
       }
-      > svg {
-        fill: $support-01;
-        margin-right: 18px;
+
+      .modal-error {
+        > svg {
+          fill: #e0182d;
+        }
       }
+
       &:hover,
       &.active {
         background: $color__blue-51;
         > a { color: $color__white; }
       }
+
+      .bx--tooltip__trigger {
+        margin-right: 15px;
+      }
+
     }
   }
 
@@ -255,6 +263,9 @@ svg.launch-icon {
   font-family: "IBM Plex Sans";	
   font-size: 12px;
   line-height: 18px;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-all;
 }
 
 #modal-name{

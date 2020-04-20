@@ -118,7 +118,7 @@ class SecondaryHeader extends React.Component {
               )
           })()}
           <div className="navigation-container"></div>
-          {document.documentElement.getAttribute('kube') === 'ocp' || document.documentElement.getAttribute('kube') === 'okd' ?
+          {/* {document.documentElement.getAttribute('kube') === 'ocp' || document.documentElement.getAttribute('kube') === 'okd' ?
             <div>
               <DropdownV2
                 label={<Icon
@@ -132,7 +132,7 @@ class SecondaryHeader extends React.Component {
                 itemToString={item => (item ? item.text : "")}
                 ariaLabel={msgs.get('user.menu.button.label')}
               />
-            </div> : null}
+            </div> : null} */}
         </div>
         <ActionMessageModal open={this.state.actionMessageModalOpen}
           label={this.state.resourceModalLabel}

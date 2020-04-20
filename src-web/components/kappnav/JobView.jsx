@@ -19,7 +19,7 @@
 import 'carbon-components/scss/globals/scss/styles.scss'
 import React, {Component} from 'react'
 import { connect } from 'react-redux'
-import {Loading, Button} from 'carbon-components-react'
+import {Loading, Button, DataTable} from 'carbon-components-react'
 import {CONTEXT_PATH, PAGE_SIZES, SORT_DIRECTION_ASCENDING, RESOURCE_TYPES, STATUS_COLORS, CONFIG_CONSTANTS} from '../../actions/constants'
 import {getRowSlice, sort, sortColumn, getOverflowMenu, buildStatusHtml, getAge, getAgeDifference, getCreationTime, performUrlAction} from '../../actions/common'
 import msgs from '../../../nls/kappnav.properties'
@@ -30,6 +30,11 @@ import {getSearchableCellList, SEARCH_HEADER_TYPES} from './common/ResourceTable
 import { getToken, openActionModal } from '../../actions/common'
 
 const jobResourceData = getResourceData(RESOURCE_TYPES.JOB)
+
+const {
+  TableCell,
+  TableRow
+} = DataTable;
 
 // This is the view that shows a collection of Command Actions jobs
 class JobView extends Component {
@@ -56,7 +61,8 @@ class JobView extends Component {
         {key: 'component', header: msgs.get('table.header.component'), type: SEARCH_HEADER_TYPES.STRING},
         {key: 'age', header: msgs.get('table.header.age'), type: SEARCH_HEADER_TYPES.STRING},
         {key: 'menuAction', header: msgs.get('table.header.action'), type: SEARCH_HEADER_TYPES.NOT_SEARCHABLE}
-      ]
+      ],
+      viewType: 'table.empty.command.actions',
     }
 
     // make 'this' visible to class methods
@@ -96,12 +102,14 @@ class JobView extends Component {
               createNewModal={() => {
                 return (
                   <div>
-                    <Button small iconDescription={msgs.get('run.audit')} onClick={() => openActionModal(document.documentElement.getAttribute('appnavConfigmapNamespace'), 'kappnav', 'app-nav-inventory', msgs.get('run.audit.action.description'))}>
-                      {msgs.get('run.audit')}
+                    <Button small iconDescription={msgs.get('run.inventory')} id={`page-action`} onClick={() => openActionModal(document.documentElement.getAttribute('appnavConfigmapNamespace'), 'kappnav', 'app.k8s.io%2Fv1beta1', 'app-nav-inventory', msgs.get('run.inventory.action.description'))}>
+                      {msgs.get('run.inventory')}
                     </Button>
                   </div>
                 )
               }}
+              viewType={this.state.viewType}
+              getCustomTableMsg={this.createMessageForEmptyTable}
             />
           </div>
         </div>
@@ -298,8 +306,19 @@ class JobView extends Component {
           const detailAction = urlActions[0]
           const kind = 'Job'
           const linkId = kind+'_'+metadata.name+'link'
-          itemObj.actionName = <a rel="noreferrer" id={linkId} href='#' onClick={performUrlAction.bind(this, detailAction['url-pattern'], detailAction['open-window'], kind, appUuid, metadata.namespace, undefined, true)}>{jobName}</a>
-          performUrlAction(detailAction['url-pattern'], detailAction['open-window'], kind, appUuid, metadata.namespace, linkId, false)  //update the link in place
+          
+          // apiVersion was not avaliable in the job information, but the rule for needing apiVersion is
+          // when the API call uses a Kubernetes kind in the path.  In this case, Job is the kind being
+          // called in performUrlAction().
+          const apiVersion = job['apiVersion']
+
+          itemObj.actionName =
+            <a rel="noreferrer"
+              id={linkId} href='#'
+              onClick={performUrlAction.bind(this, detailAction['url-pattern'], detailAction['open-window'], kind, appUuid, metadata.namespace, undefined, true, apiVersion)}>
+                {jobName}
+            </a>
+          performUrlAction(detailAction['url-pattern'], detailAction['open-window'], kind, appUuid, metadata.namespace, linkId, false, apiVersion)  //update the link in place
         } else {
           // Not every K8 platform has a URL for displaying K8 Job kind details
           itemObj.actionName = jobName
@@ -334,6 +353,15 @@ class JobView extends Component {
       })
       this.filterTable(search, this.state.pageNumber, this.state.pageSize, rowArray)
     })
+  }
+
+  createMessageForEmptyTable(headers) {
+    var originalMsg = msgs.get('table.empty.command.actions')
+    var auditLinkTxt = msgs.get('inventory.link.text')
+    var removeAuditText = originalMsg.split(auditLinkTxt)
+    var part1 = removeAuditText[0] //text before 'audit'
+    var part2 = removeAuditText[1] //text after 'audit'
+    return <TableRow><TableCell colSpan={headers.length + 1} aria-label={originalMsg}>{part1}<a className='emptyTableResourceLink' id='navModalLink' tabIndex='0' aria-label={msgs.get('run.inventory')}>{auditLinkTxt}</a>{part2}</TableCell></TableRow>
   }
 } // end of JobView component
 

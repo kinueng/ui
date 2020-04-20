@@ -188,8 +188,8 @@ export const openModal = (...args) => {
   )
 }
 
-export const openActionModal = (namespace, resourceName, actionName, actionDescription) => {
-  var restApi = `/kappnav/resource/${resourceName}/execute/command/${actionName}?namespace=${namespace}`
+export const openActionModal = (namespace, resourceName, apiVersion, actionName, actionDescription) => {
+  var restApi = `/kappnav/resource/${resourceName}/execute/command/${actionName}?namespace=${namespace}&apiVersion=${apiVersion}`
 
   const resource = {}
   window.secondaryHeader.showActionResourceModal(true, {
@@ -214,9 +214,12 @@ const openModal_internal = (operation, resource, application, applicationNamespa
       heading: 'modal.'+operation+'.heading'
     }, resource,  '/kappnav/'+resourceType+'/'+encodeURIComponent(resource.metadata.name)+'?namespace='+encodeURIComponent(resource.metadata.namespace))
   } else if(operation === 'action') {
-    var url = '/kappnav/resource/' + encodeURIComponent(resource.metadata.name)+'/'+resource.kind+'/execute/command/'+encodeURIComponent(cmd.name)+'?namespace='+encodeURIComponent(resource.metadata.namespace)
+    const apiVersion = resource['apiVersion']
+    let url = '/kappnav/resource/' + encodeURIComponent(resource.metadata.name)+'/'+resource.kind+'/execute/command/'+encodeURIComponent(cmd.name)
+              +'?namespace='+encodeURIComponent(resource.metadata.namespace)+'&apiVersion='+apiVersion
     if(application) {
-      url = '/kappnav/resource/' + encodeURIComponent(application)+'/' + encodeURIComponent(resource.metadata.name)+'/'+resource.kind+'/execute/command/'+encodeURIComponent(cmd.name)+'?namespace='+encodeURIComponent(resource.metadata.namespace)+'&application-namespace='+applicationNamespace
+      url = '/kappnav/resource/' + encodeURIComponent(application)+'/' + encodeURIComponent(resource.metadata.name)+'/'+resource.kind+'/execute/command/'+encodeURIComponent(cmd.name)
+            +'?namespace='+encodeURIComponent(resource.metadata.namespace)+'&application-namespace='+applicationNamespace+'&apiVersion='+apiVersion
     }
 
     var input = undefined
@@ -236,10 +239,13 @@ const openModal_internal = (operation, resource, application, applicationNamespa
   }
 }
 
-export const performUrlAction = (urlPattern, openWindow, kind, name, namespace, linkId, followLink) => {
+export const performUrlAction = (urlPattern, openWindow, kind, name, namespace, linkId, followLink, apiVersion) => {
   if(urlPattern) {
+
+    const apiVersionQueryParam = apiVersion ? '&apiVersion='+encodeURIComponent(apiVersion) : ''
+
     //expand the url
-    fetch('/kappnav/resource/' + encodeURIComponent(name)+'/'+kind+'?action-pattern='+encodeURIComponent(urlPattern)+'&namespace='+encodeURIComponent(namespace))
+    fetch('/kappnav/resource/' + encodeURIComponent(name)+'/'+kind+'?action-pattern='+encodeURIComponent(urlPattern)+'&namespace='+encodeURIComponent(namespace)+apiVersionQueryParam)
       .then(response => {
         if (!response.ok) {
         //Failed to get a link back
@@ -457,6 +463,8 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
   var itemId = cloneData.metadata.uid
   const resourceLabels = cloneData.metadata.labels
   const resourceAnnotations = cloneData.metadata.annotations
+  const apiVersion = cloneData['apiVersion']
+  
 
   //remove fields that should not show up on an editor
   delete cloneData.metadata.creationTimestamp
@@ -466,7 +474,7 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
   // ***************
   // Static Actions
 
-  var hasStaticActions = staticResourceData && staticResourceData.actions && staticResourceData.actions.length>0
+  const hasStaticActions = staticResourceData && staticResourceData.actions && staticResourceData.actions.length>0
   let staticActions = []
   if(hasStaticActions) {
     staticActions =
@@ -482,19 +490,19 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
 
   // ***************
   // Custom Actions
-  var hasCustomActions = staticResourceData && staticResourceData.customActions && staticResourceData.customActions.length>0
+  const hasCustomActions = staticResourceData && staticResourceData.customActions && staticResourceData.customActions.length>0
   let customActions = []
   if(hasCustomActions) {
     customActions =
       staticResourceData.customActions.map((customAction, staticindex) => {
         if(customAction.show(componentData, actionMap, staticResourceData, applicationName, applicationNamespace)){
-          var kind = componentData && componentData.kind
-          var namespace = componentData && componentData.metadata && componentData.metadata.namespace
-          var name = componentData && componentData.metadata && componentData.metadata.name
-          var componentBodyToRemove =[{
-            "app":name,
+          const kind = componentData && componentData.kind
+          const namespace = componentData && componentData.metadata && componentData.metadata.namespace
+          const name = componentData && componentData.metadata && componentData.metadata.name
+          const componentBodyToRemove =[{
+            "app": name,
             "namespace": namespace,
-            "kind":kind
+            "kind": kind
           }]
           return customAction.getCustomAction(staticindex, itemId, applicationName, applicationNamespace, componentBodyToRemove)
         }
@@ -504,28 +512,29 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
   // ***************
   // URL Actions
 
-  var urlActions = actionMap && actionMap[CONFIG_CONSTANTS.URL_ACTIONS]
+  let urlActions = actionMap && actionMap[CONFIG_CONSTANTS.URL_ACTIONS]
   urlActions = urlActions && urlActions.filter((action) => {
     return !action[CONFIG_CONSTANTS.MENU_ITEM] || action[CONFIG_CONSTANTS.MENU_ITEM]!='false'
   })
-  var hasUrlActions = urlActions && urlActions.length && urlActions.length>0
+  const hasUrlActions = urlActions && urlActions.length && urlActions.length>0
   if(hasUrlActions) {
     urlActions = removeDisabledActions(resourceLabels, resourceAnnotations, urlActions)
 
     urlActions.forEach((action) => { //try to cache the links ahead of time
-      var kind = componentData && componentData.kind
-      var namespace = componentData && componentData.metadata && componentData.metadata.namespace
-      var name = componentData && componentData.metadata && componentData.metadata.name
-      performUrlAction(action['url-pattern'], action['open-window'], kind, name, namespace, undefined, false)
+      const kind = componentData && componentData.kind
+      const namespace = componentData && componentData.metadata && componentData.metadata.namespace
+      const name = componentData && componentData.metadata && componentData.metadata.name
+      performUrlAction(action['url-pattern'], action['open-window'], kind, name, namespace, undefined, false, apiVersion)
     })
 
     urlActions = urlActions.map((action, urlindex) => {
       let actionLabel = action['text.nls'] ? msgs.get(action['text.nls']) : action.text
       let actionDesc = action['description.nls'] ? msgs.get(action['description.nls']) : action.description
+      const apiVersion = componentData['apiVersion']
       return <OverflowMenuItem key={action.name}
         primaryFocus={urlindex === 0 && !hasStaticActions}
         itemText={actionLabel}
-        onClick={performUrlAction.bind(this, action['url-pattern'], action['open-window'], componentData && componentData.kind, componentData && componentData.metadata && componentData.metadata.name, componentData && componentData.metadata && componentData.metadata.namespace, undefined, true)}
+        onClick={performUrlAction.bind(this, action['url-pattern'], action['open-window'], componentData && componentData.kind, componentData && componentData.metadata && componentData.metadata.name, componentData && componentData.metadata && componentData.metadata.namespace, undefined, true, apiVersion)}
         onFocus={(e) => {
           if(actionDesc){ e.target.title = actionDesc }
         }}
@@ -538,9 +547,9 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
   // ***************
   // Command Actions
 
-  var cmdActions = actionMap && actionMap[CONFIG_CONSTANTS.CMD_ACTIONS]
-  var cmdInputs = actionMap && actionMap[CONFIG_CONSTANTS.INPUTS]
-  var hasCmdActions = cmdActions && cmdActions.length && cmdActions.length>0
+  let cmdActions = actionMap && actionMap[CONFIG_CONSTANTS.CMD_ACTIONS]
+  const cmdInputs = actionMap && actionMap[CONFIG_CONSTANTS.INPUTS]
+  const hasCmdActions = cmdActions && cmdActions.length && cmdActions.length>0
   if(hasCmdActions) {
     cmdActions = removeDisabledActions(resourceLabels, resourceAnnotations, cmdActions)
 
@@ -566,7 +575,7 @@ export const getOverflowMenu = (componentData, actionMap, staticResourceData, ap
   // Use filter to remove undefined/null lists that were added by .concat()
   allEnabledActions = allEnabledActions.filter(n => n)
   if(allEnabledActions.length > 0) {
-    var menu =
+    const menu =
       <OverflowMenu floatingMenu flipped iconDescription={msgs.get('svg.description.overflowMenu')}>
         {allEnabledActions}
       </OverflowMenu>
@@ -581,4 +590,43 @@ export const parseJSON = (response) => {
       ok: response.ok,
       json,
     })))
+}
+
+//Function that validates a name field 
+export const isInvalid = (field) => { 
+  //per the kubernetes documentation a name must:
+  //- start and end with lowercase alphanumeric characters 
+  //- can only contain lowercase alphanumeric characters, -, or . 
+  //- must be less than 253 characters 
+
+  //get primary modal button(ex: 'Add' button) to disable it if there are errors due to invalid characters
+  var primaryButton;
+  if (document.getElementById('modal-buttons')) { //only defined once the modal is rendered
+    primaryButton = document.getElementById('modal-buttons').children[1] //'modal-buttons' is the ModalFooter element that contains the modal buttons - children[1] is the primary button
+    if (primaryButton) {
+      if ((field.startsWith("-") || field.startsWith(".") || field.endsWith("-") || field.endsWith(".")) || !(field.match('^[a-z0-9-.]*$')) || (field.length > 253)) {
+        primaryButton.disabled = true //don't allow user to submit action if the field is invalid
+        return true
+      } else {
+        primaryButton.disabled = false
+        return false
+      }
+    }
+  } 
+  return false // will only reach this when modal hasn't rendered yet
+}
+
+//Function that returns an error message based on the reason why the name field is invalid
+export const getInvalidMsg = (field) => {
+  if (field.startsWith("-") || field.startsWith(".") || field.endsWith("-") || field.endsWith(".")) { //name starts with '-' or '.', which are allowed, but not at beginning or end 
+    return msgs.get('error.invalid.field.start.end')
+  }
+
+  if (!field.match('^[a-z0-9-.]*$')) { //name contains something other than an lowercase alphanumeric characters, -, or .
+    return msgs.get('error.invalid.field.characters')
+  }
+
+  if (field.length > 253) { //name is too long
+    return msgs.get('error.invalid.field.length')
+  }
 }

@@ -1,6 +1,6 @@
 /*****************************************************************
  *
- * Copyright 2019 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,6 +99,7 @@ class NavModal extends React.PureComponent {
     this.handleSubmit = this.handleSubmit.bind(this)
     this.onMenuClick = this.onMenuClick.bind(this)
     this.handleToggle = this.handleToggle.bind(this)
+    this.closeErrorMsg = this.closeErrorMsg.bind(this)
     this.validateRequiredFields = lodash.throttle(this.validateRequiredFields.bind(this), 1000, {trailing: false})
     this.state = {
       open: false,
@@ -132,7 +133,7 @@ class NavModal extends React.PureComponent {
     const {open, jsonMode, selectedMenuItem, parsingError, validationErrors} = this.state
 
     return (<div>
-      <Button small icon={'add--glyph'} onClick={this.handleOpen.bind(this, true)} disabled={this.props.disabled} iconDescription={msgs.get('svg.description.plus')} id={`create-application`}>
+      <Button small icon={'add--glyph'} onClick={this.handleOpen.bind(this, true)} disabled={this.props.disabled} iconDescription={msgs.get('svg.description.plus')} id={`page-action`}>
         {this.props.buttonName}
       </Button>
       {
@@ -192,10 +193,10 @@ class NavModal extends React.PureComponent {
               {
                 jsonMode
                   ? <NavModalJsonEditor postStatus={this.state.postStatus} postErrorMsg={this.state.postErrorMsg} parsingError={parsingError} json={json} onJsonChange={onJsonChange}/>
-                  : <NavModalForm postStatus={this.state.postStatus} postErrorMsg={this.state.postErrorMsg} parsingError={parsingError} menuItems={menuItems} selectedMenuItem={selectedMenuItem} onMenuClick={this.onMenuClick} childComponents={children} validationErrors={validationErrors} onChange={onChange} learnmoreURL={this.props.learnmoreURL}/>
+                  : <NavModalForm postStatus={this.state.postStatus} postErrorMsg={this.state.postErrorMsg} parsingError={parsingError} menuItems={menuItems} selectedMenuItem={selectedMenuItem} onMenuClick={this.onMenuClick} childComponents={children} validationErrors={validationErrors} onChange={onChange} learnmoreURL={this.props.learnmoreURL} onCloseError={this.closeErrorMsg}/>
               }
             </ModalBody>
-            <ModalFooter primaryButtonDisabled={this.props.primaryButtonDisabled} primaryButtonText={msgs.get(
+            <ModalFooter id="modal-buttons" primaryButtonDisabled={this.props.primaryButtonDisabled} primaryButtonText={msgs.get(
                 this.props.modalButtonName
                 ? this.props.modalButtonName
                 : 'modal.button.create')} secondaryButtonText={msgs.get('modal.button.cancel')} onRequestClose={this.handleOpen.bind(this, false)} onRequestSubmit={this.handleSubmit.bind(this)}/>
@@ -294,6 +295,9 @@ class NavModal extends React.PureComponent {
 
   handleSubmit() {
     var errorCallback = function(error) {
+      //fixed issue where error wasn't in view when the modal action was submitted
+      var modalInnerContent = document.getElementById('modal-inner-content');
+      modalInnerContent.scrollIntoView();
       this.setState({postStatus: REQUEST_STATUS.ERROR, postErrorMsg: error})
     }.bind(this);
 
@@ -397,6 +401,11 @@ class NavModal extends React.PureComponent {
     }
     return !hasErrors
   }
+
+  //function added to "clear" the error state when the first error is closed and allow another error msg to show
+  closeErrorMsg() {
+    this.setState({postStatus: undefined, postErrorMsg: undefined})
+  }
 }
 
 const AceEditor = (props) => {
@@ -429,7 +438,7 @@ class IsomorphicEditor extends React.Component {
 
 class NavModalForm extends React.PureComponent {
   render() {
-    const { postStatus, postErrorMsg, menuItems, childComponents, onChange, selectedMenuItem, parsingError, validationErrors } = this.props
+    const { postStatus, postErrorMsg, menuItems, childComponents, onChange, selectedMenuItem, parsingError, validationErrors, onCloseError } = this.props
     return (
       // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
       <div className='modal-form' ref={div => this.modalForm = div} role='presentation' onKeyDown={this.handleKeyDown.bind(this)}>
@@ -439,14 +448,15 @@ class NavModalForm extends React.PureComponent {
               {this.getMenuItems()}
             </ul>
           </div>}
-        <div className='modal-inner-content'>
+        <div className='modal-inner-content' id='modal-inner-content'>
           {validationErrors.form && <InlineNotification kind='error' title='' iconDescription={msgs.get('modal.button.close')} subtitle={msgs.get('formerror.missing')} />}
           {(postStatus === REQUEST_STATUS.ERROR || parsingError) &&
             <InlineNotification
               kind='error'
               title=''
               iconDescription={msgs.get('svg.description.error')}
-              subtitle={postStatus === REQUEST_STATUS.ERROR ? postErrorMsg : msgs.get('error.parse.description')} />}
+              subtitle={postStatus === REQUEST_STATUS.ERROR ? postErrorMsg : msgs.get('error.parse.description')} 
+              onCloseButtonClick={onCloseError.bind(null)}/>}
           {(() => {
             const index = menuItems.findIndex(menuItem => menuItem.label === selectedMenuItem);
             if (index >= 0) {
@@ -468,23 +478,21 @@ class NavModalForm extends React.PureComponent {
     return menuItems.map((item, index) =>
       <li key={index} className={this.isActive(item.label)} id={item.label}>
         <a href="#" onClick={onMenuClick.bind(null, item.label)} className='menu-item' role='menuitem'>{msgs.get(`modal.nav.${item.label}`)}</a>
-        {validationErrors.form && validationErrors[item.label] && !this.isActive(item.label) && <Icon className='modal-tab-error' name='icon--error--glyph' description={msgs.get('svg.description.error')} />}
-        {/* adding tooltip */}
-        <div className ="tooltip-margin">
-          <Tooltip
-            iconDescription={msgs.get('formtip.tooltip')}
-            triggerClassName="tooltip-active-hover"
-            triggerText=''
-            direction='right'
-            showIcon={true}>
-            <p dangerouslySetInnerHTML={{ __html: item.tooltip }} />
-            <div className="bx--tooltip__footer">
-              <a className="bx--link" target="_blank" rel="noopener noreferrer" href={this.props.learnmoreURL}>
-                {msgs.get('tooltip.learn.more')}
-              </a>
-            </div>
-          </Tooltip>
-        </div>
+        {validationErrors.form && validationErrors[item.label] && !this.isActive(item.label) && <div className='modal-error'><Icon className='modal-error' name='icon--error--glyph' description={msgs.get('svg.description.error')} /></div>}
+          {/* adding tooltip */}
+            <Tooltip
+              iconDescription={msgs.get('formtip.tooltip')}
+              triggerClassName="tooltip-active-hover"
+              triggerText=''
+              direction='right'
+              showIcon={true}>
+              <p dangerouslySetInnerHTML={{ __html: item.tooltip }} />
+              <div className="bx--tooltip__footer">
+                <a className="bx--link" target="_blank" rel="noopener noreferrer" href={this.props.learnmoreURL}>
+                  {msgs.get('tooltip.learn.more')}
+                </a>
+              </div>
+            </Tooltip>
       </li>
     )
   }

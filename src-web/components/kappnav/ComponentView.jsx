@@ -301,9 +301,17 @@ class ComponentView extends Component {
       "applicationNamespace": this.props.baseInfo.selectedNamespace
     }
     result.forEach((component) => {
-      var eachComponent = {
-        "componentName": component.name.props.children,
-        "componentNamespace": component.namespace
+      var eachComponent
+      if(component.name.props !== undefined){
+        eachComponent = {
+          "componentName": component.name.props.children,
+          "componentNamespace": component.namespace
+        }
+      } else if(component.name !== undefined) {
+        eachComponent = {
+          "componentName": component.name,
+          "componentNamespace": component.namespace
+        }
       }
       components.push(eachComponent)
     })

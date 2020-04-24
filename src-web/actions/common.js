@@ -616,6 +616,37 @@ export const isInvalid = (field) => {
   return false // will only reach this when modal hasn't rendered yet
 }
 
+// Helper function to validate the consoleurl
+function invalidURL(consoleurl) {
+  var pattern = new RegExp(/^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/);
+  if (pattern.test(consoleurl)) {
+    return false
+  } else {
+    return true
+  }
+}
+
+//Function that validates a consoleURL field 
+export const isInvalidConsoleURL = (field) => {
+  //using Regex to validate the URL
+  //get primary modal button(ex: 'Add' button) to disable it if there are errors due to invalid URL
+  var primaryButton;
+  if (document.getElementById('modal-buttons')) { //only defined once the modal is rendered
+    primaryButton = document.getElementById('modal-buttons').children[1] //'modal-buttons' is the ModalFooter element that contains the modal buttons - children[1] is the primary button
+    if (primaryButton) {
+      if (invalidURL(field)) {
+        primaryButton.disabled = true //don't allow user to submit action if the URL is invalid
+        return true
+      } else {
+        primaryButton.disabled = false
+        return false
+      }
+    } else{
+    }
+  }
+  return false // will only reach this when modal hasn't rendered yet
+}
+
 //Function that returns an error message based on the reason why the name field is invalid
 export const getInvalidMsg = (field) => {
   if (field.startsWith("-") || field.startsWith(".") || field.endsWith("-") || field.endsWith(".")) { //name starts with '-' or '.', which are allowed, but not at beginning or end 

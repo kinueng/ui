@@ -1,64 +1,57 @@
-/*****************************************************************
+/** ***************************************************************
  *
  * Copyright 2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- *****************************************************************/
+ **************************************************************** */
 
-var path = require('path'),
-    webpack = require('webpack'),
-    ExtractTextPlugin = require('extract-text-webpack-plugin'),
-    UglifyJSPlugin = require('uglifyjs-webpack-plugin'),
-    AssetsPlugin = require('assets-webpack-plugin'),
-    WebpackMd5Hash = require('webpack-md5-hash'),
-    FileManagerPlugin = require('filemanager-webpack-plugin'),
-    GitRevisionPlugin = require('git-revision-webpack-plugin'),
-    VersionFile = require('webpack-version-file'),
-    config = require('./config'),
-    CompressionPlugin = require('compression-webpack-plugin')
+const path = require('path');
+const webpack = require('webpack');
+const TerserPlugin = require('terser-webpack-plugin');
+const AssetsPlugin = require('assets-webpack-plugin');
+const WebpackMd5Hash = require('webpack-md5-hash');
+const FileManagerPlugin = require('filemanager-webpack-plugin');
+const GitRevisionPlugin = require('git-revision-webpack-plugin');
+const VersionFile = require('webpack-version-file');
+const CompressionPlugin = require('compression-webpack-plugin');
+const config = require('./config');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-var NO_OP = () => { },
-    PRODUCTION = process.env.BUILD_ENV ? /production/.test(process.env.BUILD_ENV) : false
+const NO_OP = () => { };
+const PRODUCTION = process.env.BUILD_ENV ? /production/.test(process.env.BUILD_ENV) : false;
 
-process.env.BABEL_ENV = 'client'
+process.env.BABEL_ENV = 'client';
 
-var prodExternals = {}
+const prodExternals = {};
 
 module.exports = {
+  mode: 'development',
   context: __dirname,
   devtool: PRODUCTION ? 'source-map' : 'cheap-module-source-map',
   stats: { children: false },
   entry: {
-    'common': ['./scss/common.scss'],
-    'main': ['babel-polyfill', './src-web/index.js']
+    common: './src-web-v2/common.scss',
+    header: './src-web-v2/index.header.js',
   },
 
   externals: Object.assign(PRODUCTION ? prodExternals : {}, {
     // replace require-server with empty function on client
-    './require-server': 'var function(){}'
+    './require-server': 'var function(){}',
   }),
 
   module: {
     rules: [
-      {
-        test: /\.js$/,
-        enforce: 'pre',
-        loader: 'eslint-loader',
-        options: {
-          presets: ['env', 'react', 'es2015']
-        }
-      },
       {
         // Transpile React JSX to ES5
         test: [/\.jsx$/, /\.js$/],
@@ -67,62 +60,57 @@ module.exports = {
       },
       {
         test: [/\.scss$/],
-        loader: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: [
-            {
-              loader: 'css-loader?sourceMap',
-              options: {
-                minimize: PRODUCTION ? true : false
-              }
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader?sourceMap',
+          },
+          {
+            loader: 'postcss-loader?sourceMap',
+            options: {
+              plugins() {
+                return [
+                  require('autoprefixer'),
+                ];
+              },
             },
-            {
-              loader: 'postcss-loader?sourceMap',
-              options: {
-                plugins: function () {
-                  return [
-                    require('autoprefixer')
-                  ]
-                },
-              }
+          },
+          {
+            loader: 'sass-loader?sourceMap',
+            options: {
+              prependData: `$font-path: "${config.get('contextPath')}/fonts";`,
             },
-            {
-              loader: 'sass-loader?sourceMap',
-              options: {
-                data: '$font-path: "'+ config.get('contextPath') + '/fonts";'
-              }
-            }
-          ]
-        })
+          },
+        ],
       },
       {
         test: /\.woff2?$/,
-        loader: 'file-loader?name=fonts/[name].[ext]'
+        loader: 'file-loader?name=fonts/[name].[ext]',
       },
       {
         test: /\.properties$/,
-        loader: 'properties-loader'
+        loader: 'properties-loader',
       },
       {
         test: /\.handlebars$/,
         loader: 'handlebars-loader',
         query: {
           partialDirs: [
-            path.resolve(__dirname, './templates/partials')
+            path.resolve(__dirname, './templates/partials'),
           ],
           helperDirs: [
-            path.resolve(__dirname, './templates/helpers')
+            path.resolve(__dirname, './templates/helpers'),
           ],
           precompileOptions: {
-            knownHelpersOnly: false
-          }
-        }
+            knownHelpersOnly: false,
+          },
+        },
       },
       {
         test: /\.svg$/,
         use: [
-          'svg-sprite-loader'
-        ]
+          'svg-sprite-loader',
+        ],
       },
       {
         test: /\.(png|jpg)$/,
@@ -134,15 +122,20 @@ module.exports = {
     ],
     noParse: [
       // don't parse minified bundles (vendor libs) for faster builds
-      /\.min\.js$/
-    ]
+      /\.min\.js$/,
+    ],
   },
 
   output: {
-    filename: PRODUCTION ? 'js/[name].[hash].min.js' : 'js/[name].min.js', //needs to be hash for production (vs chunckhash) in order to cache bust references to chunks
+    filename: PRODUCTION ? 'js/[name].[hash].min.js' : 'js/[name].min.js', // needs to be hash for production (vs chunckhash) in order to cache bust references to chunks
     chunkFilename: PRODUCTION ? 'js/[name].[chunkhash].min.js' : 'js/[name].min.js',
-    path: __dirname + '/public',
-    publicPath: config.get('contextPath').replace(/\/?$/, '/')
+    path: `${__dirname}/public`,
+    publicPath: config.get('contextPath').replace(/\/?$/, '/'),
+  },
+
+  optimization: {
+    minimize: PRODUCTION,
+    minimizer: [new TerserPlugin()],
   },
 
   plugins: [
@@ -150,34 +143,30 @@ module.exports = {
       'process.env': {
         NODE_ENV: JSON.stringify(PRODUCTION ? 'production' : 'development'),
       },
-      CONSOLE_CONTEXT_URL: JSON.stringify(config.get('contextPath'))
+      CONSOLE_CONTEXT_URL: JSON.stringify(config.get('contextPath')),
     }),
     new webpack.DllReferencePlugin({
       context: process.env.STORYBOOK ? path.join(__dirname, '..') : __dirname,
       manifest: require('./dll/vendorappnav-manifest.json'),
     }),
-    new ExtractTextPlugin({
+    new MiniCssExtractPlugin({
       filename: PRODUCTION ? 'css/[name].[contenthash].css' : 'css/[name].css',
-      allChunks: true
+      chunkFilename: PRODUCTION ? 'css/[id].[contenthash].css' : 'css/[id].css',
     }),
-    PRODUCTION ? new UglifyJSPlugin({
-      sourceMap: true
-    }) : NO_OP,
     new webpack.LoaderOptionsPlugin({
       options: {
         eslint: {
           configFile: './.eslintrc.json',
-          quiet: true
-        }
-      }
+          quiet: true,
+        },
+      },
     }),
     new webpack.LoaderOptionsPlugin({
       options: {
-        context: __dirname
-      }
+        context: __dirname,
+      },
     }),
     new CompressionPlugin({
-      asset: '[path].gz[query]',
       algorithm: 'gzip',
       test: /\.js$|\.css$/,
       minRatio: 1,
@@ -186,7 +175,7 @@ module.exports = {
       path: path.join(__dirname, 'public'),
       fullPath: false,
       prettyPrint: true,
-      update: true
+      update: true,
     }),
     PRODUCTION ? new webpack.HashedModuleIdsPlugin() : new webpack.NamedModulesPlugin(),
     new WebpackMd5Hash(),
@@ -194,11 +183,11 @@ module.exports = {
       onEnd: {
         copy: [
           { source: 'node_modules/carbon-icons/dist/carbon-icons.svg', destination: 'public/graphics' },
-          { source: 'graphics/*.svg', destination: 'public/graphics'},
-          { source: 'graphics/*.png', destination: 'public/graphics'},
+          { source: 'graphics/*.svg', destination: 'public/graphics' },
+          { source: 'graphics/*.png', destination: 'public/graphics' },
           { source: 'fonts', destination: 'public/fonts' },
-        ]
-      }
+        ],
+      },
     }),
     new VersionFile({
       output: './public/version.txt',
@@ -206,15 +195,15 @@ module.exports = {
       template: './version.ejs',
       data: {
         date: new Date(),
-        revision: (new GitRevisionPlugin()).commithash()
-      }
-    })
+        revision: (new GitRevisionPlugin()).commithash(),
+      },
+    }),
   ],
 
   resolveLoader: {
     modules: [
       path.join(__dirname, 'node_modules'),
-      path.join(__dirname, 'node_modules/node-i18n-util/lib') // properties-loader
-    ]
-  }
-}
+      path.join(__dirname, 'node_modules/node-i18n-util/lib'), // properties-loader
+    ],
+  },
+};

@@ -1,75 +1,70 @@
-/*****************************************************************
+/** ***************************************************************
  *
  * Copyright 2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- *****************************************************************/
+ **************************************************************** */
 
-var path = require('path'),
-    webpack = require('webpack'),
-    UglifyJSPlugin = require('uglifyjs-webpack-plugin'),
-    AssetsPlugin = require('assets-webpack-plugin'),
-    WebpackMd5Hash = require('webpack-md5-hash'),
-    CompressionPlugin = require('compression-webpack-plugin')
+const path = require('path');
+const webpack = require('webpack');
+const TerserPlugin = require('terser-webpack-plugin');
+const AssetsPlugin = require('assets-webpack-plugin');
+const WebpackMd5Hash = require('webpack-md5-hash');
+const CompressionPlugin = require('compression-webpack-plugin');
 
-var NO_OP = () => { },
-    PRODUCTION = process.env.BUILD_ENV ? /production/.test(process.env.BUILD_ENV) : false
+const NO_OP = () => { };
+const PRODUCTION = process.env.BUILD_ENV ? /production/.test(process.env.BUILD_ENV) : false;
 
-process.env.BABEL_ENV = 'client'
+process.env.BABEL_ENV = 'client';
 
 module.exports = {
   entry: {
-    'vendorappnav': [
-	  'babel-polyfill',
+    vendorappnav: [
       'carbon-components-react',
       'lodash',
-      'moment',
-	  'node-libs-browser',
-      'normalizr',
+      'node-libs-browser',
       'prop-types',
-	  "react-ace",
       'react-dom',
       'react-dom/server',
-      'react-router-dom',
       'react',
-      'redux-logger',
-      'redux-thunk',
-	  'react-transition-group',
-      'reselect'
-    ]
+      '@carbon/icons',
+      '@carbon/themes',
+    ],
   },
   output: {
-    path: __dirname + '/public',
+    path: `${__dirname}/public`,
     filename: PRODUCTION ? 'dll.[name].[chunkhash].js' : 'dll.[name].js',
-    library: '[name]'
+    library: '[name]',
   },
+
+  optimization: {
+    minimize: PRODUCTION,
+    minimizer: [new TerserPlugin()],
+  },
+
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {
-        NODE_ENV: JSON.stringify(PRODUCTION ? 'production' : 'development')
-      }
+        NODE_ENV: JSON.stringify(PRODUCTION ? 'production' : 'development'),
+      },
     }),
     new webpack.DllPlugin({
       path: path.join(__dirname, 'dll', '[name]-manifest.json'),
       name: '[name]',
-      context: __dirname
+      context: __dirname,
     }),
-    PRODUCTION ? new UglifyJSPlugin({
-      sourceMap: true
-    }) : NO_OP,
     new CompressionPlugin({
-      asset: '[path].gz[query]',
       algorithm: 'gzip',
       test: /\.js$|\.css$|\.html$/,
     }),
@@ -77,12 +72,12 @@ module.exports = {
       path: path.join(__dirname, 'public'),
       fullPath: false,
       prettyPrint: true,
-      update: true
+      update: true,
     }),
     PRODUCTION ? new webpack.HashedModuleIdsPlugin() : new webpack.NamedModulesPlugin(),
-    new WebpackMd5Hash()
+    new WebpackMd5Hash(),
   ],
   resolve: {
-    modules: [path.join(__dirname, 'node_modules')]
-  }
-}
+    modules: [path.join(__dirname, 'node_modules')],
+  },
+};

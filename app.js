@@ -29,14 +29,17 @@ var log4js = require('log4js'),
     consolidate = require('consolidate'),
     cookieParser = require('cookie-parser'),
     csurf = require('csurf'),
-    proxy = require('http-proxy-middleware'),
     https = require('https')
+
+const { createProxyMiddleware } = require('http-proxy-middleware');
+const webpackDevMiddleware = require('webpack-dev-middleware');
+const webpack = require('webpack');
 
 const logger = log4js.getLogger('server')
 var log4js_config = process.env.LOG4JS_CONFIG ? JSON.parse(process.env.LOG4JS_CONFIG) : undefined
 log4js.configure(log4js_config || 'config/log4js.json')
 
-require('./lib/shared/dust-helpers')
+// require('./lib/shared/dust-helpers')
 require('./server/routers/index')(app)
 
 const TARGET = process.env.TARGET || 'http://localhost:9080',
@@ -46,6 +49,15 @@ const TARGET = process.env.TARGET || 'http://localhost:9080',
       APPNAV_CONFIGMAP_NAMESPACE = process.env.KAPPNAV_CONFIG_NAMESPACE || 'kappnav'
 
 const csrfMiddleware = csurf({ cookie: true })
+
+// Tell express to use the webpack-dev-middleware and use the webpack.config.js
+// configuration file as a base.
+// FIXME: How to remove this from production?
+
+const webpackConfig = require('./webpack.config.js');
+app.use(webpackDevMiddleware(webpack(webpackConfig), {
+  publicPath: webpackConfig.output.publicPath,
+}));
 
 var exclude = function(path) {
   return function(req, res, next) {
@@ -102,7 +114,7 @@ app.use(CONTEXT_PATH, express.static(STATIC_PATH, {
   }
 }))
 
-app.use('/kappnav', proxy({
+app.use('/kappnav', createProxyMiddleware({
   target: TARGET,
   changeOrigin: true,
   secure: false
@@ -218,9 +230,8 @@ app.use('/kappnav-ui/openshift/appLauncher.js', (req, res) => {
   })
 })
 
-app.engine('dust', consolidate.dust)
-app.set('view engine', 'dust')
-app.set('views', __dirname + '/views')
+app.set('view engine', 'ejs');
+app.set('views', `${__dirname}/views`);
 
 app.locals.manifest = require('./public/webpack-assets.json')
 
@@ -229,7 +240,7 @@ app.get('*', (req, res) => {
   res.setHeader('Pragma', 'no-cache')
   res.setHeader('Strict-Transport-Security', 'max-age=99999999')
   // eslint-disable-next-line quotes
-  res.setHeader('Content-Security-Policy', "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' blob: https://"+req.headers['host']+"/*; frame-ancestors 'self'")
+  // res.setHeader('Content-Security-Policy', "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' blob: https://"+req.headers['host']+"/*; frame-ancestors 'self'")
   logger.debug('APPNAV_CONFIGMAP_NAMESPACE is : ' + APPNAV_CONFIGMAP_NAMESPACE + ' CONTEXT_PATH is : ' + CONTEXT_PATH)
   res.render('index', {
     myLocale: i18n.locale(req),

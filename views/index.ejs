@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang='<%= myLocale %>' kube="{kube}" displayUser="{displayUser}" appnavConfigmapNamespace="{appnavConfigmapNamespace}" >
+  <meta name="csrf-token" content="{csrfToken}">
+
+  <head>
+    <meta charset="UTF-8">
+    <link rel='stylesheet' href='<%= manifest.common.css %>'>
+
+  </head>
+
+  <body aria-label='<%= title %>'>
+    <div id="header"></div>
+    <div id="main"></div>
+    <script src='<%= manifest.vendorappnav.js %>'></script>
+    <script src='<%= manifest.header.js %>'></script>
+    <script src='<%= manifest.common.js %>'></script>
+  </body>
+
+</html>

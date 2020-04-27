@@ -1,0 +1,16 @@
+// Enable @carbon/themes
+@import '@carbon/themes/scss/themes';
+$carbon--theme: $carbon--theme--g10;
+@include carbon--theme();
+
+@import 'carbon-components/scss/globals/scss/styles.scss';
+
+$carbon-sidenav-width: 3rem;
+
+.bx--content {
+  padding-left: $carbon-sidenav-width * 2;
+}
+
+.bx--side-nav__navigation {
+  background-color: #161616;
+}

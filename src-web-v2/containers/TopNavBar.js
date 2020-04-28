@@ -1,14 +1,17 @@
 import React, { PureComponent } from 'react';
-import HeaderContainer from 'carbon-components-react/lib/components/UIShell/HeaderContainer';
+// import HeaderContainer from 'carbon-components-react/lib/components/UIShell/HeaderContainer';
 import {
+  HeaderContainer,
   Header,
   HeaderName,
   SkipToContent,
   HeaderMenuButton,
 } from 'carbon-components-react/lib/components/UIShell';
 
-import GlobalActions from '../components/GlobalActions';
-import LeftNavMenu from '../components/LeftNavMenu';
+import {
+  GlobalActions,
+  LeftNavMenu,
+} from '../components';
 
 import App from './App';
 
@@ -38,6 +41,8 @@ export default class TopNavBar extends PureComponent {
 
                 <GlobalActions />
               </Header>
+
+              {/* The main body of the page */}
               <App />
             </>
           )}

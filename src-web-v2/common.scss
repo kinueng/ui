@@ -14,3 +14,18 @@ $carbon-sidenav-width: 3rem;
 .bx--side-nav__navigation {
   background-color: #161616;
 }
+
+svg {
+  &.kv--normal-icon {
+    fill: green;
+  }
+  &.kv--warning-icon {
+    fill: #F8C22B;
+    & [data-icon-path='inner-path'] {
+      fill: black;
+    }
+  }
+  &.kv--problem-icon {
+    fill: red;
+  }
+}

@@ -14,7 +14,7 @@ import {
   TreeViewAlt20,
 } from '@carbon/icons-react';
 
-class LeftNavMenu extends PureComponent {
+export class LeftNavMenu extends PureComponent {
   render() {
     const { expanded } = this.props;
     return (

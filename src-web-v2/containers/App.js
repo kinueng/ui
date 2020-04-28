@@ -6,6 +6,9 @@ import {
 import {
   Button,
   DataTable,
+  OverflowMenu,
+  OverflowMenuItem,
+  Icon,
 } from 'carbon-components-react';
 
 import {
@@ -13,6 +16,9 @@ import {
   Edit20,
   Settings20,
   Add20,
+  CheckmarkOutline20,
+  WarningAltInvertedFilled20,
+  WarningSquareFilled20,
 } from '@carbon/icons-react';
 
 const {
@@ -24,18 +30,17 @@ const {
   TableCell,
   TableHeader,
   TableToolbar,
-  TableBatchActions,
-  TableBatchAction,
   TableToolbarSearch,
   TableToolbarContent,
-  TableToolbarMenu,
-  TableToolbarAction,
-  TableSelectAll,
-  TableSelectRow,
   TableExpandHeader,
   TableExpandRow,
   TableExpandedRow,
+  TableToolbarAction,
 } = DataTable;
+
+import {
+  DropdownMenu
+} from '../components';
 
 const defaultHeaders = [
   {
@@ -62,7 +67,13 @@ const initialRows = [
   {
     id: 'b',
     name: 'bookinfo',
-    status: 'Normal',
+    status: 'Warning',
+    namespace: 'kappnav',
+  },
+  {
+    id: 'c',
+    name: 'music-library',
+    status: 'Problem',
     namespace: 'kappnav',
   },
 ];
@@ -79,9 +90,11 @@ export default class App extends PureComponent {
             headers,
             getHeaderProps,
             getRowProps,
+            getTableProps,
             onInputChange,
           }) => (
             <TableContainer title="Applications">
+
               <TableToolbar>
                 <TableToolbarContent>
                   <TableToolbarSearch onChange={onInputChange} />
@@ -96,7 +109,9 @@ export default class App extends PureComponent {
                   </Button>
                 </TableToolbarContent>
               </TableToolbar>
-              <Table>
+
+              <Table {...getTableProps()}>
+
                 <TableHead>
                   <TableRow>
                     {/* add the expand header before all other headers */}
@@ -108,13 +123,24 @@ export default class App extends PureComponent {
                     ))}
                   </TableRow>
                 </TableHead>
+
                 <TableBody>
-                  {rows.map(row => (
+                  {rows.map((row) => (
                     <React.Fragment key={row.id}>
                       <TableExpandRow {...getRowProps({ row })}>
-                        {row.cells.map(cell => (
-                          <TableCell key={cell.id}>{cell.value}</TableCell>
+                        {row.cells.map((cell) => (
+                          <TableCell key={cell.id}>
+                            <span>
+                              {cell.value === 'Normal' && <CheckmarkOutline20 className="kv--normal-icon" /> }
+                              {cell.value === 'Warning' && <WarningAltInvertedFilled20 className="kv--warning-icon" /> }
+                              {cell.value === 'Problem' && <WarningSquareFilled20 className="kv--problem-icon" /> }
+                              {cell.value}
+                            </span>
+                          </TableCell>
                         ))}
+                        <TableCell>
+                          <DropdownMenu />
+                        </TableCell>
                       </TableExpandRow>
                       {row.isExpanded && (
                         <TableExpandedRow colSpan={headers.length + 1}>
@@ -125,6 +151,7 @@ export default class App extends PureComponent {
                     </React.Fragment>
                   ))}
                 </TableBody>
+
               </Table>
             </TableContainer>
           )}

@@ -58,6 +58,7 @@
     "node-i18n-util": "^1.0.5",
     "node-sass": "^4.13.1",
     "postcss-loader": "^3.0.0",
+    "react-router-dom": "^5.1.2",
     "redux-thunk": "^2.3.0",
     "sass": "^1.26.3",
     "sass-loader": "^8.0.2",
@@ -82,8 +83,6 @@
     "ejs": "^3.0.2",
     "lodash": "^4.17.15",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-redux": "^7.2.0",
-    "redux": "^4.0.5"
+    "react-dom": "^16.13.1"
   }
 }

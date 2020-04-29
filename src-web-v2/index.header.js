@@ -14,11 +14,14 @@
 
 import React from 'react';
 import { render } from 'react-dom';
+import { BrowserRouter as Router, Route } from "react-router-dom";
 import TopNavBar from './containers/TopNavBar';
 
 /* eslint-disable react/jsx-filename-extension */
 
 render(
-  <TopNavBar />,
+  <Router basename="/kappnav-ui">
+    <TopNavBar />
+  </Router>,
   document.getElementById('header'),
 );

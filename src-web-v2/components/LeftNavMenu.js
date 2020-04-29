@@ -1,4 +1,6 @@
 import React, { PureComponent } from 'react';
+import { Link } from "react-router-dom";
+
 import {
   SideNav,
   SideNavItems,
@@ -25,7 +27,7 @@ export class LeftNavMenu extends PureComponent {
       >
         <SideNavItems>
           <SideNavMenu renderIcon={Application20} title="Applications">
-            <SideNavMenuItem href="">
+            <SideNavMenuItem element={Link} to="applications/stock-trader">
               Stock Trader
             </SideNavMenuItem>
             <SideNavMenuItem href="">
@@ -35,15 +37,15 @@ export class LeftNavMenu extends PureComponent {
               Music Service
             </SideNavMenuItem>
           </SideNavMenu>
-          <SideNavLink renderIcon={Code20} href="">
+          <SideNavLink renderIcon={Code20} element={Link} to="jobs">
             Command Actions
           </SideNavLink>
-          <SideNavLink renderIcon={Category20} href="">
+          {/* <SideNavLink renderIcon={Category20} href="">
             WAS ND Cells
           </SideNavLink>
           <SideNavLink renderIcon={TreeViewAlt20} href="">
             Liberty Collectives
-          </SideNavLink>
+          </SideNavLink> */}
         </SideNavItems>
       </SideNav>
     );

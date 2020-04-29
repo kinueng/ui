@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-// import HeaderContainer from 'carbon-components-react/lib/components/UIShell/HeaderContainer';
+import { Link } from "react-router-dom";
+
 import {
   HeaderContainer,
   Header,
@@ -35,7 +36,7 @@ export default class TopNavBar extends PureComponent {
 
                 <LeftNavMenu expanded={isSideNavExpanded} />
 
-                <HeaderName href="" prefix="IBM">
+                <HeaderName element={Link} to="/" prefix="IBM">
                   Application Navigator
                 </HeaderName>
 

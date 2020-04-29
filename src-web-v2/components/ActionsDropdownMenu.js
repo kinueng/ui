@@ -4,7 +4,7 @@ import {
   OverflowMenuItem,
 } from 'carbon-components-react';
 
-export class DropdownMenu extends PureComponent {
+export class ActionsDropdownMenu extends PureComponent {
   render() {
     return (
       <>
@@ -17,4 +17,4 @@ export class DropdownMenu extends PureComponent {
   }
 }
 
-export default DropdownMenu;
+export default ActionsDropdownMenu;

@@ -29,7 +29,10 @@ COPY webpack.dll.js /app/
 COPY version.ejs /app/
 COPY views /app/views
 
-RUN cd /app; npm run build:production; npm prune; rm -rf .git
+#RUN cd /app; npm run build:production; npm prune; rm -rf .git
+RUN cd /app
+RUN npm run build:production
+RUN npm prune; rm -rf .git
 
 # Stage 2: Run node server
 FROM registry.access.redhat.com/ubi7-minimal

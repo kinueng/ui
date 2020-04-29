@@ -50,15 +50,15 @@ class LeftNav extends React.Component {
         <li className="left-nav-item primary-nav-item">
           {/* Tried using the below, but was having some issues */}
           {/* <Link role='menuitem' to='/kappnav-ui/applications'>Applications</Link> */}
-          <a role='menuitem' href="/kappnav-ui/applications" title={msgs.get('page.applicationView.title')}>{msgs.get('page.applicationView.title')}</a>
+          <a role='menuitem' className = 'anchor-props' href="/kappnav-ui/applications" title={msgs.get('page.applicationView.title')}>{msgs.get('page.applicationView.title')}</a>
         </li>
         <li className="left-nav-item primary-nav-item">
-        <a role='menuitem' href="/kappnav-ui/jobs" title={msgs.get('page.jobsView.title')}>{msgs.get('page.jobsView.title')}</a>
+        <a role='menuitem' className = 'anchor-props' href="/kappnav-ui/jobs" title={msgs.get('page.jobsView.title')}>{msgs.get('page.jobsView.title')}</a>
         </li>
         {/* getting all extended routes if any */}
         {getExtendedRoutes().length > 0 ? getExtendedRoutes().map((route) => {
             return <li className="left-nav-item primary-nav-item">
-              <a role='menuitem' href={route.href} title={route.title}>{route.title}</a>
+              <a role='menuitem' className = 'anchor-props' href={route.href} title={route.title}>{route.title}</a>
             </li>
         }): null}
       </ul>
